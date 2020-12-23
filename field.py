@@ -16,20 +16,21 @@ class Field(pg.sprite.Sprite):
         self.rect = self.image.get_rect()
         self.rect.x = int(screen_width * 0.1)
         self.rect.y = int(screen_height * 0.1)
-        self.cells = []
+        self.cells = [[None] * 12 for _ in range(12)]
         options = {Cell: [0, 39],
                    Trap: [0, 30],
                    Health: [0, 20],
                    Task: [0, 30],
                    Teleport: [0, 25]}
         option = None
-        for i in range(12):
-            for j in range(12):
-                while (not option or option in self.get_sibling_cells(i, j)
-                       or options[option][0] + 1 > options[option][1]):
+        for i in range(len(self.cells)):
+            for j in range(len(self.cells[i])):
+                while (not option or (option and option in self.get_sibling_cells(i, j))
+                       or (option and options[option][0] + 1 > options[option][1])):
                     option = choice(list(options.keys()))
-                self.cells.append(option)
                 options[option][0] += 1
+                self.cells[i][j] = option
+                option = None
         self.current_cell = (0, 0)
         print(self.cells)
 
@@ -44,6 +45,7 @@ class Field(pg.sprite.Sprite):
                 square.append(cell)
             except IndexError:
                 continue
+        return_array = list(filter(lambda x: x, square))
         return list(filter(lambda x: x, square))
 
     def handle_move(self, event: pg.event.Event):
