@@ -1,8 +1,8 @@
 from random import randint, choice
-
+from collections import Counter
 import pygame as pg
-
 from cell import *
+
 
 # import pygame.examples.eventlist
 # pygame.examples.eventlist.main()
@@ -17,22 +17,22 @@ class Field(pg.sprite.Sprite):
         self.rect.x = int(screen_width * 0.1)
         self.rect.y = int(screen_height * 0.1)
         self.cells = [[None] * 12 for _ in range(12)]
-        options = {Cell: [0, 39],
-                   Trap: [0, 30],
-                   Health: [0, 20],
-                   Task: [0, 30],
-                   Teleport: [0, 25]}
-        option = None
-        for i in range(len(self.cells)):
-            for j in range(len(self.cells[i])):
-                while (not option or (option and option in self.get_sibling_cells(i, j))
-                       or (option and options[option][0] + 1 > options[option][1])):
+        options = {Cell: [0, 78],
+                   Trap: [0, 60],
+                   Health: [0, 40],
+                   Task: [0, 60],
+                   Teleport: [0, 50]}
+        for i in range(12):
+            for j in range(12):
+                option = choice(list(options.keys()))
+                while option in self.get_sibling_cells(i, j) or options[option][0] + 1 > options[option][1]:
                     option = choice(list(options.keys()))
                 options[option][0] += 1
                 self.cells[i][j] = option
-                option = None
+                if options[option][1] <= options[option][0]:
+                    del options[option]
         self.current_cell = (0, 0)
-        print(self.cells)
+        # print(self.cells)
 
     def get_sibling_cells(self, i, j):
         cells = ['self.cells[i - 1][j - 1]', 'self.cells[i - 1][j]', 'self.cells[i - 1][j + 1]',
@@ -41,12 +41,10 @@ class Field(pg.sprite.Sprite):
         square = []
         for cell in cells:
             try:
-                cell = eval(cell)
-                square.append(cell)
+                square.append(eval(cell))
             except IndexError:
                 continue
-        return_array = list(filter(lambda x: x, square))
-        return list(filter(lambda x: x, square))
+        return square
 
     def handle_move(self, event: pg.event.Event):
         if event.key == pg.K_UP or event.key == pg.K_w:
@@ -57,6 +55,24 @@ class Field(pg.sprite.Sprite):
             print('left')
         elif event.key == pg.K_RIGHT or event.key == pg.K_d:
             print('right')
+
+    # def render(self, screen):
+    #     cell_size = 22
+    #     for i in range(12):
+    #         for j in range(12):
+    #             if str(self.cells[i][j]) == "<class 'cell.Task'>":
+    #                 screen.fill(pg.Color('red'), (cell_size * i, cell_size * j,
+    #                                               cell_size, cell_size))
+    #             elif str(self.cells[i][j]) == "<class 'cell.Health'>":
+    #                 screen.fill(pg.Color('green'), (cell_size * i, cell_size * j,
+    #                                                 cell_size, cell_size))
+    #             elif str(self.cells[i][j]) == "<class 'cell.Trap'>":
+    #                 screen.fill(pg.Color('orange'), (cell_size * i, cell_size * j,
+    #                                                  cell_size, cell_size))
+    #             elif str(self.cells[i][j]) == "<class 'cell.Teleport'>":
+    #                 screen.fill(pg.Color('purple'), (cell_size * i, cell_size * j,
+    #                                                  cell_size, cell_size))
+    #             pg.draw.rect(screen, 'white', (cell_size * i, cell_size * j, cell_size, cell_size), 2)
 
 
 def main():
