@@ -82,7 +82,9 @@ class Field(pg.sprite.Sprite):
                         self.be_way(i, j)
                         self.current_cell[0] += 1
                 if move_allowed:
-                    hero.move_hero(self.current_cell, (self.left, self.top))
+                    callback = hero.move_hero(self.current_cell, (self.left, self.top))
+                    if callback == 'show-dice':
+                        self.show_dice()
 
     def be_way(self, i, j) -> None:
         self.cells[i][j] = 'way'
@@ -116,6 +118,10 @@ class Field(pg.sprite.Sprite):
     def is_frozen(self):
         return self.frozen
 
+    def show_dice(self, dice):
+        self.froze()
+        dice.visibled()
+
 
 def main():
     pg.init()
@@ -135,7 +141,7 @@ def main():
                 running = False
             elif event.type == pg.KEYDOWN:
                 if event.key == pg.K_SPACE and hero.get_moves() == 0:
-                    field.froze()
+                    field.show_dice(dice)
                     moves = dice.handle_rotating()
                     if moves:
                         hero.add_moves(moves)

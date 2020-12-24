@@ -12,13 +12,24 @@ class Dice(pg.sprite.Sprite, ImageLoader):
         self.images = [pg.transform.scale(self.load_image(img), (150, 150)) for img in Dice.img_names]
         self.image = self.images[0]
         self.rect = self.image.get_rect()
-        img_width, img_height = self.image.get_size()
-        self.rect.x = field_indent[0] + field_size[0] // 2 - img_width // 2
-        self.rect.y = field_indent[1] + field_size[1] // 2 - img_height // 2
+        self.img_width, self.img_height = self.image.get_size()
+        self.field_size = field_size
+        self.field_indent = field_indent
+        self.visible = False
+        self.visibled()
         self.rotating = True
 
     def is_rotating(self) -> bool:
         return self.rotating
+
+    def visibled(self):
+        self.visible = not self.visible
+        if self.visible:
+            self.rect.x = self.field_indent[0] + self.field_size[0] // 2 - self.img_width // 2
+            self.rect.y = self.field_indent[1] + self.field_size[1] // 2 - self.img_height // 2
+        else:
+            self.rect.x = -1000
+            self.rect.y = -1000
 
     def handle_rotating(self):
         self.rotating = not self.rotating

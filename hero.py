@@ -16,7 +16,7 @@ class Hero(pg.sprite.Sprite, ImageLoader):
         self.health_quantity = 0
         self.trap_quantity = 0
         self.teleport_quantity = 0
-        self.moves = 1
+        self.moves = 1  # герой вступает на поле
         self.move_hero(current_cell, indent)
 
     def move_hero(self, current_cell, indent):
@@ -26,7 +26,7 @@ class Hero(pg.sprite.Sprite, ImageLoader):
             self.rect = self.image.get_rect(
                 bottomright=(left + self.size_hero * (current_cell[0] + 1),
                              top + self.size_hero * (current_cell[1] + 1)))
-            print('left: %d moves' % self.moves)
+            return 'show-dice' if self.moves == 0 else None
 
     def get_moves(self):
         return self.moves
