@@ -18,6 +18,7 @@ class Field(pg.sprite.Sprite):
         self.top = screen_height // 2 - len(self.cells) * self.cell_size // 2.25
         self.distribution_of_cells()
         self.current_cell = [0, 0]
+        self.frozen = False
 
     def distribution_of_cells(self) -> None:
         options = {Cell: [0, 78],
@@ -53,23 +54,24 @@ class Field(pg.sprite.Sprite):
         return square
 
     def handle_move(self, event: pg.event.Event) -> None:
-        i, j = self.current_cell
-        if event.key == pg.K_UP or event.key == pg.K_w:
-            if self.current_cell[1] != 0:
-                self.be_way(i, j)
-                self.current_cell[1] -= 1
-        elif event.key == pg.K_DOWN or event.key == pg.K_s:
-            if self.current_cell[1] != 11:
-                self.be_way(i, j)
-                self.current_cell[1] += 1
-        elif event.key == pg.K_LEFT or event.key == pg.K_a:
-            if self.current_cell[0] != 0:
-                self.be_way(i, j)
-                self.current_cell[0] -= 1
-        elif event.key == pg.K_RIGHT or event.key == pg.K_d:
-            if self.current_cell[0] != 11:
-                self.be_way(i, j)
-                self.current_cell[0] += 1
+        if not self.frozen:
+            i, j = self.current_cell
+            if event.key == pg.K_UP or event.key == pg.K_w:
+                if self.current_cell[1] != 0:
+                    self.be_way(i, j)
+                    self.current_cell[1] -= 1
+            elif event.key == pg.K_DOWN or event.key == pg.K_s:
+                if self.current_cell[1] != 11:
+                    self.be_way(i, j)
+                    self.current_cell[1] += 1
+            elif event.key == pg.K_LEFT or event.key == pg.K_a:
+                if self.current_cell[0] != 0:
+                    self.be_way(i, j)
+                    self.current_cell[0] -= 1
+            elif event.key == pg.K_RIGHT or event.key == pg.K_d:
+                if self.current_cell[0] != 11:
+                    self.be_way(i, j)
+                    self.current_cell[0] += 1
 
     def be_way(self, i, j) -> None:
         self.cells[i][j] = 'way'
@@ -97,6 +99,9 @@ class Field(pg.sprite.Sprite):
     def get_current_cell(self) -> list:
         return self.current_cell
 
+    def froze(self):
+        self.frozen = not self.frozen
+
 
 def main():
     pg.init()
@@ -115,8 +120,11 @@ def main():
             if event.type == pg.QUIT:
                 running = False
             elif event.type == pg.KEYDOWN:
-                field.handle_move(event)
-                clock.tick(fps)
+                if event.key == pg.K_SPACE:
+                    field.froze()
+                else:
+                    field.handle_move(event)
+                    clock.tick(fps)
             field.render(screen)
             hero.move_hero(field.get_current_cell(), field.get_indent())
         all_sprites.update()
