@@ -1,6 +1,6 @@
 from random import choice
 from cell import *
-from Hero import *
+from hero import *
 from dice import *
 
 # import pygame.examples.eventlist
@@ -74,6 +74,9 @@ class Field(pg.sprite.Sprite):
     def be_way(self, i, j) -> None:
         self.cells[i][j] = 'way'
 
+    def get_size(self):
+        return self.cell_size * len(self.cells[0]), self.cell_size * len(self.cells)
+
     def get_indent(self):
         return self.left, self.top
 
@@ -103,7 +106,7 @@ def main():
     all_sprites = pg.sprite.Group()
     field = Field(screen)
     hero = Hero(all_sprites)
-    dice = Dice(size, all_sprites)
+    dice = Dice(field.get_size(), field.get_indent(), all_sprites)
     running = True
     clock = pg.time.Clock()
     fps = 30
