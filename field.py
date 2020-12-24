@@ -53,25 +53,35 @@ class Field(pg.sprite.Sprite):
                 continue
         return square
 
-    def handle_move(self, event: pg.event.Event) -> None:
+    def check_move(self):
+        pass
+
+    def handle_move(self, event: pg.event.Event, hero: Hero) -> None:
         if not self.frozen:
             i, j = self.current_cell
+            move_allowed = False
             if event.key == pg.K_UP or event.key == pg.K_w:
                 if self.current_cell[1] != 0:
+                    move_allowed = True
                     self.be_way(i, j)
                     self.current_cell[1] -= 1
             elif event.key == pg.K_DOWN or event.key == pg.K_s:
-                if self.current_cell[1] != 11:
+                if self.current_cell[1] != len(self.cells[0]) - 1:
+                    move_allowed = True
                     self.be_way(i, j)
                     self.current_cell[1] += 1
             elif event.key == pg.K_LEFT or event.key == pg.K_a:
                 if self.current_cell[0] != 0:
+                    move_allowed = True
                     self.be_way(i, j)
                     self.current_cell[0] -= 1
             elif event.key == pg.K_RIGHT or event.key == pg.K_d:
-                if self.current_cell[0] != 11:
+                if self.current_cell[0] != len(self.cells) - 1:
+                    move_allowed = True
                     self.be_way(i, j)
                     self.current_cell[0] += 1
+            if move_allowed:
+                hero.move_hero(self.current_cell, (self.left, self.top))
 
     def be_way(self, i, j) -> None:
         self.cells[i][j] = 'way'
@@ -110,7 +120,7 @@ def main():
     pg.display.set_caption('Goof the Game')
     all_sprites = pg.sprite.Group()
     field = Field(screen)
-    hero = Hero(all_sprites)
+    hero = Hero((0, 0), field.get_indent(), all_sprites)
     dice = Dice(field.get_size(), field.get_indent(), all_sprites)
     running = True
     clock = pg.time.Clock()
@@ -123,10 +133,9 @@ def main():
                 if event.key == pg.K_SPACE:
                     field.froze()
                 else:
-                    field.handle_move(event)
+                    field.handle_move(event, hero)
                     clock.tick(fps)
             field.render(screen)
-            hero.move_hero(field.get_current_cell(), field.get_indent())
         all_sprites.update()
         all_sprites.draw(screen)
         pg.display.flip()
