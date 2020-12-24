@@ -1,22 +1,23 @@
 from random import choice
 from cell import *
 from Hero import *
+from dice import *
 
 # import pygame.examples.eventlist
 # pygame.examples.eventlist.main()
 
 
 class Field(pg.sprite.Sprite):
-    def __init__(self, screen, group: pg.sprite.AbstractGroup):
-        super(Field, self).__init__(group)
+    def __init__(self, screen):
+        super(Field, self).__init__()
         self.cells = [[None] * 12 for _ in range(12)]
         self.screen = screen
         screen_width, screen_height = screen.get_size()
-        self.left, self.top = screen_width * 0.025, screen_height * 0.025
-        self.cell_size = 60
+        self.cell_size = 50
+        self.left = screen_width // 2 - len(self.cells[0]) * self.cell_size // 2
+        self.top = screen_height // 2 - len(self.cells) * self.cell_size // 2.25
         self.distribution_of_cells()
         self.current_cell = [0, 0]
-        # print(self.cells)
 
     def distribution_of_cells(self) -> None:
         options = {Cell: [0, 78],
@@ -87,18 +88,6 @@ class Field(pg.sprite.Sprite):
                     screen.fill(pg.Color('lightgreen'), (self.left + self.cell_size * i,
                                                          self.top + self.cell_size * j,
                                                          self.cell_size, self.cell_size))
-                # elif str(self.cells[i][j]) == "<class 'cell.Task'>":
-                #     screen.fill(pg.Color('pink'), (self.cell_size * i, self.cell_size * j,
-                #                                   self.cell_size, self.cell_size))
-                # elif str(self.cells[i][j]) == "<class 'cell.Health'>":
-                #     screen.fill(pg.Color('green'), (self.cell_size * i, self.cell_size * j,
-                #                                     self.cell_size, self.cell_size))
-                # elif str(self.cells[i][j]) == "<class 'cell.Trap'>":
-                #     screen.fill(pg.Color('orange'), (self.cell_size * i, self.cell_size * j,
-                #                                      self.cell_size, self.cell_size))
-                # elif str(self.cells[i][j]) == "<class 'cell.Teleport'>":
-                #     screen.fill(pg.Color('purple'), (self.cell_size * i, self.cell_size * j,
-                #                                      self.cell_size, self.cell_size))
                 pg.draw.rect(screen, 'white', (self.left + self.cell_size * i, self.top + self.cell_size * j,
                                                self.cell_size, self.cell_size), 2)
 
@@ -112,8 +101,9 @@ def main():
     screen = pg.display.set_mode(size)
     pg.display.set_caption('Goof the Game')
     all_sprites = pg.sprite.Group()
-    field = Field(screen, all_sprites)
-    hero = Hero(screen, all_sprites)
+    field = Field(screen)
+    hero = Hero(all_sprites)
+    dice = Dice(size, all_sprites)
     running = True
     clock = pg.time.Clock()
     fps = 30
@@ -126,6 +116,8 @@ def main():
                 clock.tick(fps)
             field.render(screen)
             hero.move_hero(field.get_current_cell(), field.get_indent())
+        all_sprites.update()
+        all_sprites.draw(screen)
         pg.display.flip()
     pg.quit()
 

@@ -1,16 +1,17 @@
 import pygame as pg
+from img_loader import ImageLoader
 
 
-class Hero(pg.sprite.Sprite):
-    hero = pg.image.load('data/itachi.jpg')
-    hero = pg.transform.scale(hero, (60, 60))
-    hero.set_colorkey((255, 255, 255))
+class Hero(pg.sprite.Sprite, ImageLoader):
+    img_filename = 'itachi.jpg'
 
-    def __init__(self, screen, group: pg.sprite.AbstractGroup):
-        self.screen = screen
+    def __init__(self, group: pg.sprite.AbstractGroup):
+        self.image = self.load_image(Hero.img_filename)
+        self.image = pg.transform.scale(self.image, (50, 50))
+        self.image.set_colorkey((255, 255, 255))
         super(Hero, self).__init__(group)
         self.live = 3
-        self.size_hero = 60
+        self.size_hero = 50
         self.task_quantity = 0
         self.health_quantity = 0
         self.trap_quantity = 0
@@ -19,7 +20,7 @@ class Hero(pg.sprite.Sprite):
 
     def move_hero(self, current_cell, indent):
         left, top = indent
-        Hero.hero_rect = Hero.hero.get_rect(
+        self.rect = self.image.get_rect(
             bottomright=(left + self.size_hero * (current_cell[0] + 1),
                          top + self.size_hero * (current_cell[1] + 1)))
-        self.screen.blit(Hero.hero, Hero.hero_rect)
+        # self.screen.blit(self.hero, Hero.hero_rect)
