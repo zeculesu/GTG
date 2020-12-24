@@ -82,9 +82,12 @@ class Field(pg.sprite.Sprite):
                     callback = hero.move_hero(self.current_cell, (self.left, self.top))
                     if callback == 'show-dice':
                         self.show_dice(dice)
+                if self.current_cell[0] == len(self.cells) - 1 and self.current_cell[1] == len(self.cells) - 1:
+                    print('finish')
 
     def be_way(self, i, j) -> None:
-        self.cells[i][j] = 'way'
+        if str(self.cells[i][j]) != "finish":
+            self.cells[i][j] = 'way'
 
     def get_size(self):
         return self.cell_size * len(self.cells[0]), self.cell_size * len(self.cells)
@@ -92,8 +95,16 @@ class Field(pg.sprite.Sprite):
     def get_indent(self):
         return self.left, self.top
 
-    def render(self, screen):
+    def render(self, screen, moves, lives):
         screen.fill('black')
+        pg.font.init()
+        font = pg.font.Font(None, 36)
+        move = font.render(f'Количество ходов - {moves}', True,
+                          '#80deea')
+        live = font.render(f'Жизни - {lives}', True,
+                          '#80deea')
+        screen.blit(move, (self.left, 50))
+        screen.blit(live, (self.left + font.size(f'Количество ходов - {moves}')[0] + 120, 50))
         for i in range(12):
             for j in range(12):
                 if str(self.cells[i][j]) == "finish":
@@ -103,8 +114,8 @@ class Field(pg.sprite.Sprite):
                     screen.fill(pg.Color('lightgreen'), (self.left + self.cell_size * i,
                                                          self.top + self.cell_size * j,
                                                          self.cell_size, self.cell_size))
-                pg.draw.rect(screen, 'white', (self.left + self.cell_size * i, self.top + self.cell_size * j,
-                                               self.cell_size, self.cell_size), 2)
+                pg.draw.rect(screen, '#e8eaf6', (self.left + self.cell_size * i, self.top + self.cell_size * j,
+                                                 self.cell_size, self.cell_size), 2)
 
     def get_current_cell(self) -> list:
         return self.current_cell
@@ -146,7 +157,7 @@ def main():
                 else:
                     field.handle_move(event, hero, dice)
                     clock.tick(fps)
-            field.render(screen)
+            field.render(screen, hero.get_moves(), hero.get_live())
         if dice.is_rotating():
             dice.rotate()
         all_sprites.update()

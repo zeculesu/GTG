@@ -19,6 +19,9 @@ class Hero(pg.sprite.Sprite, ImageLoader):
         self.moves = 1  # герой вступает на поле
         self.move_hero(current_cell, indent)
 
+    def get_live(self) -> int:
+        return self.live
+
     def move_hero(self, current_cell, indent):
         if self.moves != 0:
             self.moves -= 1
@@ -33,4 +36,3 @@ class Hero(pg.sprite.Sprite, ImageLoader):
 
     def add_moves(self, moves):
         self.moves += moves
-        print('got %d moves!' % self.moves)
