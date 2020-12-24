@@ -7,15 +7,12 @@ from Hero import *
 
 
 class Field(pg.sprite.Sprite):
-    def __init__(self, screen_size: tuple, screen, group: pg.sprite.AbstractGroup):
+    def __init__(self, screen, group: pg.sprite.AbstractGroup):
         super(Field, self).__init__(group)
-        screen_width, screen_height = screen_size
-        self.image = pg.Surface((int(screen_width * 0.9), int(screen_height * 0.9)))
-        self.rect = self.image.get_rect()
-        self.rect.x = int(screen_width * 0.1)
-        self.rect.y = int(screen_height * 0.1)
         self.cells = [[None] * 12 for _ in range(12)]
         self.screen = screen
+        screen_width, screen_height = screen.get_size()
+        self.left, self.top = screen_width * 0.025, screen_height * 0.025
         self.cell_size = 60
         self.distribution_of_cells()
         self.current_cell = [0, 0]
@@ -76,15 +73,19 @@ class Field(pg.sprite.Sprite):
     def be_way(self, i, j) -> None:
         self.cells[i][j] = 'way'
 
+    def get_indent(self):
+        return self.left, self.top
+
     def render(self, screen):
         screen.fill('black')
         for i in range(12):
             for j in range(12):
                 if str(self.cells[i][j]) == "finish":
-                    screen.fill(pg.Color('red'), (self.cell_size * i, self.cell_size * j,
+                    screen.fill(pg.Color('red'), (self.left + self.cell_size * i, self.top + self.cell_size * j,
                                                   self.cell_size, self.cell_size))
                 if str(self.cells[i][j]) == "way":
-                    screen.fill(pg.Color('lightgreen'), (self.cell_size * i, self.cell_size * j,
+                    screen.fill(pg.Color('lightgreen'), (self.left + self.cell_size * i,
+                                                         self.top + self.cell_size * j,
                                                          self.cell_size, self.cell_size))
                 # elif str(self.cells[i][j]) == "<class 'cell.Task'>":
                 #     screen.fill(pg.Color('pink'), (self.cell_size * i, self.cell_size * j,
@@ -98,11 +99,12 @@ class Field(pg.sprite.Sprite):
                 # elif str(self.cells[i][j]) == "<class 'cell.Teleport'>":
                 #     screen.fill(pg.Color('purple'), (self.cell_size * i, self.cell_size * j,
                 #                                      self.cell_size, self.cell_size))
-                pg.draw.rect(screen, 'white', (self.cell_size * i, self.cell_size * j,
+                pg.draw.rect(screen, 'white', (self.left + self.cell_size * i, self.top + self.cell_size * j,
                                                self.cell_size, self.cell_size), 2)
 
     def get_current_cell(self) -> list:
         return self.current_cell
+
 
 def main():
     pg.init()
@@ -110,17 +112,20 @@ def main():
     screen = pg.display.set_mode(size)
     pg.display.set_caption('Goof the Game')
     all_sprites = pg.sprite.Group()
-    field = Field(size, screen, all_sprites)
+    field = Field(screen, all_sprites)
     hero = Hero(screen, all_sprites)
     running = True
+    clock = pg.time.Clock()
+    fps = 30
     while running:
         for event in pg.event.get():
             if event.type == pg.QUIT:
                 running = False
             elif event.type == pg.KEYDOWN:
                 field.handle_move(event)
+                clock.tick(fps)
             field.render(screen)
-            hero.move_hero(field.get_current_cell())
+            hero.move_hero(field.get_current_cell(), field.get_indent())
         pg.display.flip()
     pg.quit()
 

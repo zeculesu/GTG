@@ -6,6 +6,7 @@ class Cell(pg.sprite.Sprite):
 
 
 class Trap(Cell):
+    img_name = 'trap.png'
     pass
 
 

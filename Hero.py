@@ -17,7 +17,9 @@ class Hero(pg.sprite.Sprite):
         self.teleport_quantity = 0
         self.motion = 0
 
-    def move_hero(self, current_cell):
+    def move_hero(self, current_cell, indent):
+        left, top = indent
         Hero.hero_rect = Hero.hero.get_rect(
-            bottomright=(self.size_hero * (current_cell[0] + 1), self.size_hero * (current_cell[1] + 1)))
+            bottomright=(left + self.size_hero * (current_cell[0] + 1),
+                         top + self.size_hero * (current_cell[1] + 1)))
         self.screen.blit(Hero.hero, Hero.hero_rect)
