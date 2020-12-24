@@ -3,9 +3,6 @@ from cell import *
 from hero import *
 from dice import *
 
-# import pygame.examples.eventlist
-# pygame.examples.eventlist.main()
-
 
 class Field(pg.sprite.Sprite):
     def __init__(self, screen):
@@ -56,7 +53,7 @@ class Field(pg.sprite.Sprite):
     def check_move(self):
         pass
 
-    def handle_move(self, event: pg.event.Event, hero: Hero) -> None:
+    def handle_move(self, event: pg.event.Event, hero: Hero, dice: Dice) -> None:
         if not self.frozen:
             i, j = self.current_cell
             move_allowed = False
@@ -84,7 +81,7 @@ class Field(pg.sprite.Sprite):
                 if move_allowed:
                     callback = hero.move_hero(self.current_cell, (self.left, self.top))
                     if callback == 'show-dice':
-                        self.show_dice()
+                        self.show_dice(dice)
 
     def be_way(self, i, j) -> None:
         self.cells[i][j] = 'way'
@@ -121,6 +118,7 @@ class Field(pg.sprite.Sprite):
     def show_dice(self, dice):
         self.froze()
         dice.visibled()
+        dice.rotating = True
 
 
 def main():
@@ -146,7 +144,7 @@ def main():
                     if moves:
                         hero.add_moves(moves)
                 else:
-                    field.handle_move(event, hero)
+                    field.handle_move(event, hero, dice)
                     clock.tick(fps)
             field.render(screen)
         if dice.is_rotating():
