@@ -18,7 +18,7 @@ class Field(pg.sprite.Sprite):
         self.top = screen_height // 2 - len(self.cells) * self.cell_size // 2.25
         self.distribution_of_cells()
         self.current_cell = [0, 0]
-        self.frozen = False
+        self.frozen = True
 
     def distribution_of_cells(self) -> None:
         options = {Cell: [0, 78],
@@ -60,28 +60,29 @@ class Field(pg.sprite.Sprite):
         if not self.frozen:
             i, j = self.current_cell
             move_allowed = False
-            if event.key == pg.K_UP or event.key == pg.K_w:
-                if self.current_cell[1] != 0:
-                    move_allowed = True
-                    self.be_way(i, j)
-                    self.current_cell[1] -= 1
-            elif event.key == pg.K_DOWN or event.key == pg.K_s:
-                if self.current_cell[1] != len(self.cells[0]) - 1:
-                    move_allowed = True
-                    self.be_way(i, j)
-                    self.current_cell[1] += 1
-            elif event.key == pg.K_LEFT or event.key == pg.K_a:
-                if self.current_cell[0] != 0:
-                    move_allowed = True
-                    self.be_way(i, j)
-                    self.current_cell[0] -= 1
-            elif event.key == pg.K_RIGHT or event.key == pg.K_d:
-                if self.current_cell[0] != len(self.cells) - 1:
-                    move_allowed = True
-                    self.be_way(i, j)
-                    self.current_cell[0] += 1
-            if move_allowed:
-                hero.move_hero(self.current_cell, (self.left, self.top))
+            if hero.get_moves() > 0:
+                if event.key == pg.K_UP or event.key == pg.K_w:
+                    if self.current_cell[1] != 0:
+                        move_allowed = True
+                        self.be_way(i, j)
+                        self.current_cell[1] -= 1
+                elif event.key == pg.K_DOWN or event.key == pg.K_s:
+                    if self.current_cell[1] != len(self.cells[0]) - 1:
+                        move_allowed = True
+                        self.be_way(i, j)
+                        self.current_cell[1] += 1
+                elif event.key == pg.K_LEFT or event.key == pg.K_a:
+                    if self.current_cell[0] != 0:
+                        move_allowed = True
+                        self.be_way(i, j)
+                        self.current_cell[0] -= 1
+                elif event.key == pg.K_RIGHT or event.key == pg.K_d:
+                    if self.current_cell[0] != len(self.cells) - 1:
+                        move_allowed = True
+                        self.be_way(i, j)
+                        self.current_cell[0] += 1
+                if move_allowed:
+                    hero.move_hero(self.current_cell, (self.left, self.top))
 
     def be_way(self, i, j) -> None:
         self.cells[i][j] = 'way'
@@ -112,6 +113,9 @@ class Field(pg.sprite.Sprite):
     def froze(self):
         self.frozen = not self.frozen
 
+    def is_frozen(self):
+        return self.frozen
+
 
 def main():
     pg.init()
@@ -130,15 +134,21 @@ def main():
             if event.type == pg.QUIT:
                 running = False
             elif event.type == pg.KEYDOWN:
-                if event.key == pg.K_SPACE:
+                if event.key == pg.K_SPACE and hero.get_moves() == 0:
                     field.froze()
+                    moves = dice.handle_rotating()
+                    if moves:
+                        hero.add_moves(moves)
                 else:
                     field.handle_move(event, hero)
                     clock.tick(fps)
             field.render(screen)
+        if dice.is_rotating():
+            dice.rotate()
         all_sprites.update()
         all_sprites.draw(screen)
         pg.display.flip()
+        clock.tick(10)
     pg.quit()
 
 

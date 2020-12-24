@@ -1,4 +1,5 @@
 import pygame as pg
+from random import choice
 from img_loader import ImageLoader
 
 
@@ -14,3 +15,17 @@ class Dice(pg.sprite.Sprite, ImageLoader):
         img_width, img_height = self.image.get_size()
         self.rect.x = field_indent[0] + field_size[0] // 2 - img_width // 2
         self.rect.y = field_indent[1] + field_size[1] // 2 - img_height // 2
+        self.rotating = True
+
+    def is_rotating(self) -> bool:
+        return self.rotating
+
+    def handle_rotating(self):
+        self.rotating = not self.rotating
+        return self.images.index(self.image) + 1 if not self.is_rotating() else None
+
+    def rotate(self):
+        if self.is_rotating():
+            prev_image = self.image
+            while self.image == prev_image:
+                self.image = choice(self.images)
