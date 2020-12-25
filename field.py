@@ -120,21 +120,19 @@ class Field(pg.sprite.Sprite, ImageLoader):
         screen.fill((20, 18, 32))
         pg.font.init()
         font = pg.font.Font('font/Special Elite.ttf', 36)
-        move = font.render(f'Moves - {moves}', True,
-                           '#80deea')
-        live = font.render(f'Lives - {lives}', True,
-                          '#80deea')
+        move = font.render('Moves - %d' % moves, True, pg.Color('#80deea'))
+        live = font.render('Lives - %d' % lives, True, pg.Color('#80deea'))
         screen.blit(move, (self.left, 50))
-        screen.blit(live, (self.left + font.size(f'Количество ходов - {moves}')[0] + 150, 50))
+        screen.blit(live, (self.left + font.size('Количество ходов - %d' % moves)[0] + 150, 50))
         for i in range(12):
             for j in range(12):
                 if str(self.cells[i][j]) == "finish":
                     pg.draw.rect(screen, '#88001b', (self.left + self.cell_size * i, self.top + self.cell_size * j,
-                                                 self.cell_size, self.cell_size))
+                                                     self.cell_size, self.cell_size))
                 if str(self.cells[i][j]) != "finish":
                     screen.fill('#b4e9ff', (self.left + self.cell_size * i,
-                                                         self.top + self.cell_size * j,
-                                                         self.cell_size, self.cell_size))
+                                            self.top + self.cell_size * j,
+                                            self.cell_size, self.cell_size))
                 if str(self.cells[i][j]) == "way":
                     screen.fill(pg.Color('lightgreen'), (self.left + self.cell_size * i,
                                                          self.top + self.cell_size * j,
