@@ -127,7 +127,7 @@ class Field(pg.sprite.Sprite, ImageLoader):
         for i in range(12):
             for j in range(12):
                 if str(self.cells[i][j]) == "finish":
-                    pg.draw.rect(screen, '#88001b', (self.left + self.cell_size * i, self.top + self.cell_size * j,
+                    pg.draw.rect(screen, '#fe1f18', (self.left + self.cell_size * i, self.top + self.cell_size * j,
                                                      self.cell_size, self.cell_size))
                 if str(self.cells[i][j]) != "finish":
                     screen.fill('#b4e9ff', (self.left + self.cell_size * i,
