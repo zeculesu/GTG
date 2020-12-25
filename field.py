@@ -172,17 +172,18 @@ def start_screen():
 
     fon = ImageLoader.load_image('fon.png')
     screen.blit(fon, (0, 0))
+    pg.display.flip()
     while True:
         for event in pg.event.get():
             if event.type == pg.QUIT:
                 pg.quit()
             elif event.type == pg.KEYDOWN:
-                main()
-        pg.display.flip()
+                pg.quit()
+                return
 
 
 def main():
-    pg.quit()
+    start_screen()
     pg.init()
     #pg.key.set_repeat(200, 120)
     size = 760, 760
@@ -224,4 +225,4 @@ def main():
 
 
 if __name__ == '__main__':
-    start_screen()
+    main()
