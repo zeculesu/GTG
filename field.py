@@ -2,14 +2,15 @@ from random import choice
 import pygame as pg
 import os
 from img_loader import ImageLoader
+from typing import Union
 from cell import *
 from hero import *
 from dice import *
+from savers import *
 
 
 class Field(pg.sprite.Sprite, ImageLoader):
-
-    def __init__(self, screen):
+    def __init__(self, screen: pg.Surface):
         super(Field, self).__init__()
         self.cells, self.screen, self.cell_size, self.left, self.top = None, None, None, None, None
         self.current_cell, self.frozen, self.finished = None, None, None
@@ -51,7 +52,7 @@ class Field(pg.sprite.Sprite, ImageLoader):
                 if options[option][1] <= options[option][0]:
                     del options[option]
 
-    def get_sibling_cells(self, i, j) -> list:
+    def get_sibling_cells(self, i: int, j: int) -> list:
         cells = ['self.cells[i - 1][j - 1]', 'self.cells[i - 1][j]', 'self.cells[i - 1][j + 1]',
                  'self.cells[i][j - 1]', 'self.cells[i][j + 1]',
                  'self.cells[i + 1][j - 1]', 'self.cells[i + 1][j]', 'self.cells[i + 1][j + 1]']
@@ -63,21 +64,14 @@ class Field(pg.sprite.Sprite, ImageLoader):
                 continue
         return square
 
-    def at_finish(self):
+    def at_finish(self) -> bool:
         return (self.current_cell[0] == len(self.cells) - 1
                 and self.current_cell[1] == len(self.cells) - 1)
 
-    def is_finished(self):
+    def is_finished(self) -> bool:
         return self.finished
 
-    def check_move(self):
-        pass
-
-    def end_screen(self, hero: Hero):
-        img = pg.Surface((100, 100))
-        print('cell passed: %d' % hero.get_passed_cells())
-
-    def handle_move(self, event: pg.event.Event, hero: Hero, dice: Dice) -> None:
+    def handle_move(self, event: pg.event.Event, hero: Hero, dice: Dice) -> Union[str, None]:
         if not self.frozen:
             i, j = self.current_cell
             move_allowed = False
@@ -109,19 +103,20 @@ class Field(pg.sprite.Sprite, ImageLoader):
                 if self.at_finish():
                     self.froze()
                     self.finished = True
-                    self.end_screen(hero)
+                    return 'end-screen'
+            return None
 
     def be_way(self, i, j) -> None:
         if str(self.cells[i][j]) != "finish":
             self.cells[i][j] = 'way'
 
-    def get_size(self):
+    def get_size(self) -> tuple:
         return self.cell_size * len(self.cells[0]), self.cell_size * len(self.cells)
 
-    def get_indent(self):
+    def get_indent(self) -> tuple:
         return self.left, self.top
 
-    def render(self, screen, moves, lives):
+    def render(self, screen: pg.Surface, moves: int, lives: int) -> None:
         screen.fill((20, 18, 32))
         pg.font.init()
         font = pg.font.Font('font/Special Elite.ttf', 36)
@@ -150,37 +145,20 @@ class Field(pg.sprite.Sprite, ImageLoader):
     def get_current_cell(self) -> list:
         return self.current_cell
 
-    def froze(self):
+    def froze(self) -> None:
         self.frozen = not self.frozen
 
-    def is_frozen(self):
+    def is_frozen(self) -> bool:
         return self.frozen
 
-    def show_dice(self, dice):
+    def show_dice(self, dice: Dice) -> None:
         self.froze()
         dice.visibled()
         dice.rotating = True
 
 
-def start_screen():
-    pg.init()
-    size = 700, 436
-    screen = pg.display.set_mode(size)
-
-    fon = ImageLoader.load_image('fon.png')
-    screen.blit(fon, (0, 0))
-    pg.display.flip()
-    while True:
-        for event in pg.event.get():
-            if event.type == pg.QUIT:
-                pg.quit()
-            elif event.type == pg.KEYDOWN:
-                pg.quit()
-                return
-
-
 def main():
-    start_screen()
+    StartScreen()
     pg.init()
     size = 760, 760
     screen = pg.display.set_mode(size)
@@ -192,7 +170,7 @@ def main():
     field.start(screen, hero, dice)
     running = True
     clock = pg.time.Clock()
-    fps = 30
+    fps = 60
     screen.fill((50, 41, 88))
     while running:
         for event in pg.event.get():
@@ -208,7 +186,9 @@ def main():
                     elif field.is_finished():
                         field.start(screen, hero, dice)
                 else:
-                    field.handle_move(event, hero, dice)
+                    callback = field.handle_move(event, hero, dice)
+                    if callback == 'end-screen':
+                        EndScreen(hero)
                     clock.tick(fps)
             field.render(screen, hero.get_moves(), hero.get_live())
         if dice.is_rotating():
