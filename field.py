@@ -74,6 +74,7 @@ class Field(pg.sprite.Sprite, ImageLoader):
         pass
 
     def end_screen(self, hero: Hero):
+        img = pg.Surface((100, 100))
         print('cell passed: %d' % hero.get_passed_cells())
 
     def handle_move(self, event: pg.event.Event, hero: Hero, dice: Dice) -> None:
@@ -103,7 +104,7 @@ class Field(pg.sprite.Sprite, ImageLoader):
                         self.current_cell[0] += 1
                 if move_allowed:
                     callback = hero.move_hero(self.current_cell, (self.left, self.top))
-                    if callback == 'show-dice':
+                    if callback == 'show-dice' and not self.at_finish():
                         self.show_dice(dice)
                 if self.at_finish():
                     self.froze()
@@ -143,10 +144,6 @@ class Field(pg.sprite.Sprite, ImageLoader):
                     screen.fill(pg.Color('lightgreen'), (self.left + self.cell_size * i,
                                                          self.top + self.cell_size * j,
                                                          self.cell_size, self.cell_size))
-                    # rect = self.image.get_rect(
-                    #     bottomright=(self.left + 45 * (i + 1),
-                    #                  self.top + 45 * (j + 1)))
-                    # screen.blit(self.image, rect)
                 pg.draw.rect(screen, '#0a2fa2', (self.left + self.cell_size * i, self.top + self.cell_size * j,
                                                  self.cell_size, self.cell_size), 2)
 
@@ -167,7 +164,7 @@ class Field(pg.sprite.Sprite, ImageLoader):
 
 def start_screen():
     pg.init()
-    size = width, height = 700, 436
+    size = 700, 436
     screen = pg.display.set_mode(size)
 
     fon = ImageLoader.load_image('fon.png')
@@ -185,7 +182,6 @@ def start_screen():
 def main():
     start_screen()
     pg.init()
-    #pg.key.set_repeat(200, 120)
     size = 760, 760
     screen = pg.display.set_mode(size)
     pg.display.set_caption('Goof the Game')
