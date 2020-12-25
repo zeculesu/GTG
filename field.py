@@ -17,7 +17,7 @@ class Field(pg.sprite.Sprite, ImageLoader):
         self.start(screen)
 
     def start(self, screen, hero=None, dice=None):
-        self.cells = [[None] * 12 for _ in range(12)]
+        self.cells = [[[None, False]] * 12 for _ in range(12)]
         self.screen = screen
         screen_width, screen_height = screen.get_size()
         self.cell_size = 50
@@ -41,21 +41,22 @@ class Field(pg.sprite.Sprite, ImageLoader):
             for j in range(12):
                 if i == 0 and j == 0:
                     continue
-                elif i == 11 and j == 11:
-                    self.cells[i][j] = 'finish'
+                elif i == len(self.cells[i]) - 1 and j == len(self.cells[i]) - 1:
+                    self.cells[i][j][0] = 'finish'
                     break
                 option = choice(list(options.keys()))
                 while option in self.get_sibling_cells(i, j) or options[option][0] + 1 > options[option][1]:
                     option = choice(list(options.keys()))
                 options[option][0] += 1
-                self.cells[i][j] = option
+                self.cells[i][j][0] = option
                 if options[option][1] <= options[option][0]:
                     del options[option]
+        print(self.cells)
 
     def get_sibling_cells(self, i: int, j: int) -> list:
-        cells = ['self.cells[i - 1][j - 1]', 'self.cells[i - 1][j]', 'self.cells[i - 1][j + 1]',
-                 'self.cells[i][j - 1]', 'self.cells[i][j + 1]',
-                 'self.cells[i + 1][j - 1]', 'self.cells[i + 1][j]', 'self.cells[i + 1][j + 1]']
+        cells = ['self.cells[i - 1][j - 1][0]', 'self.cells[i - 1][j][0]', 'self.cells[i - 1][j + 1][0]',
+                 'self.cells[i][j - 1][0]', 'self.cells[i][j + 1][0]',
+                 'self.cells[i + 1][j - 1][0]', 'self.cells[i + 1][j][0]', 'self.cells[i + 1][j + 1][0]']
         square = []
         for cell in cells:
             try:
@@ -98,6 +99,8 @@ class Field(pg.sprite.Sprite, ImageLoader):
                         self.current_cell[0] += 1
                 if move_allowed:
                     callback = hero.move_hero(self.current_cell, (self.left, self.top))
+                    if hero.get_moves() == 0:
+                        self.paint()
                     if callback == 'show-dice' and not self.at_finish():
                         self.show_dice(dice)
                 if self.at_finish():
@@ -106,9 +109,13 @@ class Field(pg.sprite.Sprite, ImageLoader):
                     return 'end-screen'
             return None
 
+    def paint(self):
+        i, j = self.current_cell
+        self.cells[i][j][1] = True
+
     def be_way(self, i, j) -> None:
-        if str(self.cells[i][j]) != "finish":
-            self.cells[i][j] = 'way'
+        if str(self.cells[i][j][0]) != "finish":
+            self.cells[i][j][0] = 'way'
 
     def get_size(self) -> tuple:
         return self.cell_size * len(self.cells[0]), self.cell_size * len(self.cells)
@@ -124,19 +131,27 @@ class Field(pg.sprite.Sprite, ImageLoader):
         live = font.render('Lives - %d' % lives, True, pg.Color('#80deea'))
         screen.blit(move, (self.left, 50))
         screen.blit(live, (self.left + font.size('Количество ходов - %d' % moves)[0] + 150, 50))
+        translate = {"<class 'cell.Task'>": 'yellow',
+                     "<class 'cell.Teleport'>": 'purple',
+                     "<class 'cell.Health'>": 'green',
+                     "<class 'cell.Trap'>": 'orange',
+                     "<class 'cell.Cell'>": 'black'}
         for i in range(12):
             for j in range(12):
-                if str(self.cells[i][j]) == "finish":
+                screen.fill('#b4e9ff', (self.left + self.cell_size * i,
+                                        self.top + self.cell_size * j,
+                                        self.cell_size, self.cell_size))
+                if str(self.cells[i][j][0]) == "finish" and not self.cells[i][j][1]:
                     pg.draw.rect(screen, '#fe1f18', (self.left + self.cell_size * i, self.top + self.cell_size * j,
                                                      self.cell_size, self.cell_size))
-                if str(self.cells[i][j]) != "finish":
-                    screen.fill('#b4e9ff', (self.left + self.cell_size * i,
-                                            self.top + self.cell_size * j,
-                                            self.cell_size, self.cell_size))
-                if str(self.cells[i][j]) == "way":
+                elif str(self.cells[i][j][0]) == "way" and not self.cells[i][j][1]:
                     screen.fill(pg.Color('lightgreen'), (self.left + self.cell_size * i,
                                                          self.top + self.cell_size * j,
                                                          self.cell_size, self.cell_size))
+                elif self.cells[i][j][1]:
+                    pg.draw.rect(self.screen, translate[str(self.cells[i][j][0])],
+                                 (self.left + self.cell_size * i, self.top + self.cell_size * j,
+                                  self.cell_size, self.cell_size))
                 pg.draw.rect(screen, '#0a2fa2', (self.left + self.cell_size * i, self.top + self.cell_size * j,
                                                  self.cell_size, self.cell_size), 2)
 
