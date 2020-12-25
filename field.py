@@ -7,12 +7,14 @@ from dice import *
 
 
 class Field(pg.sprite.Sprite, ImageLoader):
-    # img_filename = 'grass.png'
 
     def __init__(self, screen):
         super(Field, self).__init__()
-        # self.image = self.load_image(Field.img_filename)
-        # self.image = pg.transform.scale(self.image, (25, 25))
+        self.cells, self.screen, self.cell_size, self.left, self.top = None, None, None, None, None
+        self.current_cell, self.frozen, self.finished = None, None, None
+        self.start(screen)
+
+    def start(self, screen, hero=None, dice=None):
         self.cells = [[None] * 12 for _ in range(12)]
         self.screen = screen
         screen_width, screen_height = screen.get_size()
@@ -22,6 +24,10 @@ class Field(pg.sprite.Sprite, ImageLoader):
         self.distribution_of_cells()
         self.current_cell = [0, 0]
         self.frozen = True
+        self.finished = False
+        if hero and dice:
+            hero.start(self.current_cell, (self.left, self.top))
+            dice.start()
 
     def distribution_of_cells(self) -> None:
         options = {Cell: [0, 78],
@@ -56,8 +62,18 @@ class Field(pg.sprite.Sprite, ImageLoader):
                 continue
         return square
 
+    def at_finish(self):
+        return (self.current_cell[0] == len(self.cells) - 1
+                and self.current_cell[1] == len(self.cells) - 1)
+
+    def is_finished(self):
+        return self.finished
+
     def check_move(self):
         pass
+
+    def end_screen(self, hero: Hero):
+        print('cell passed: %d' % hero.get_passed_cells())
 
     def handle_move(self, event: pg.event.Event, hero: Hero, dice: Dice) -> None:
         if not self.frozen:
@@ -88,8 +104,10 @@ class Field(pg.sprite.Sprite, ImageLoader):
                     callback = hero.move_hero(self.current_cell, (self.left, self.top))
                     if callback == 'show-dice':
                         self.show_dice(dice)
-                if self.current_cell[0] == len(self.cells) - 1 and self.current_cell[1] == len(self.cells) - 1:
-                    print('finish')
+                if self.at_finish():
+                    self.froze()
+                    self.finished = True
+                    self.end_screen(hero)
 
     def be_way(self, i, j) -> None:
         if str(self.cells[i][j]) != "finish":
@@ -106,7 +124,7 @@ class Field(pg.sprite.Sprite, ImageLoader):
         pg.font.init()
         font = pg.font.Font('font/Special Elite.ttf', 36)
         move = font.render(f'Moves - {moves}', True,
-                          '#80deea')
+                           '#80deea')
         live = font.render(f'Lives - {lives}', True,
                           '#80deea')
         screen.blit(move, (self.left, 50))
@@ -152,6 +170,7 @@ def main():
     field = Field(screen)
     hero = Hero((0, 0), field.get_indent(), all_sprites)
     dice = Dice(field.get_size(), field.get_indent(), all_sprites)
+    field.start(screen, hero, dice)
     running = True
     clock = pg.time.Clock()
     fps = 30
@@ -160,11 +179,14 @@ def main():
             if event.type == pg.QUIT:
                 running = False
             elif event.type == pg.KEYDOWN:
-                if event.key == pg.K_SPACE and hero.get_moves() == 0:
-                    field.show_dice(dice)
-                    moves = dice.handle_rotating()
-                    if moves:
-                        hero.add_moves(moves)
+                if event.key == pg.K_SPACE:
+                    if hero.get_moves() == 0:
+                        field.show_dice(dice)
+                        moves = dice.handle_rotating()
+                        if moves:
+                            hero.add_moves(moves)
+                    elif field.is_finished():
+                        field.start(screen, hero, dice)
                 else:
                     field.handle_move(event, hero, dice)
                     clock.tick(fps)

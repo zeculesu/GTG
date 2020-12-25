@@ -15,6 +15,10 @@ class Dice(pg.sprite.Sprite, ImageLoader):
         self.img_width, self.img_height = self.image.get_size()
         self.field_size = field_size
         self.field_indent = field_indent
+        self.visible, self.rotating = False, True
+        self.start()
+
+    def start(self):
         self.visible = False
         self.visibled()
         self.rotating = True
