@@ -1,12 +1,18 @@
 from random import choice
+import pygame as pg
+from img_loader import ImageLoader
 from cell import *
 from hero import *
 from dice import *
 
 
-class Field(pg.sprite.Sprite):
+class Field(pg.sprite.Sprite, ImageLoader):
+    # img_filename = 'grass.png'
+
     def __init__(self, screen):
         super(Field, self).__init__()
+        # self.image = self.load_image(Field.img_filename)
+        # self.image = pg.transform.scale(self.image, (25, 25))
         self.cells = [[None] * 12 for _ in range(12)]
         self.screen = screen
         screen_width, screen_height = screen.get_size()
@@ -98,13 +104,13 @@ class Field(pg.sprite.Sprite):
     def render(self, screen, moves, lives):
         screen.fill('black')
         pg.font.init()
-        font = pg.font.Font(None, 36)
-        move = font.render(f'Количество ходов - {moves}', True,
+        font = pg.font.Font('font/Special Elite.ttf', 36)
+        move = font.render(f'Moves - {moves}', True,
                           '#80deea')
-        live = font.render(f'Жизни - {lives}', True,
+        live = font.render(f'Lives - {lives}', True,
                           '#80deea')
         screen.blit(move, (self.left, 50))
-        screen.blit(live, (self.left + font.size(f'Количество ходов - {moves}')[0] + 120, 50))
+        screen.blit(live, (self.left + font.size(f'Количество ходов - {moves}')[0] + 150, 50))
         for i in range(12):
             for j in range(12):
                 if str(self.cells[i][j]) == "finish":
@@ -114,6 +120,10 @@ class Field(pg.sprite.Sprite):
                     screen.fill(pg.Color('lightgreen'), (self.left + self.cell_size * i,
                                                          self.top + self.cell_size * j,
                                                          self.cell_size, self.cell_size))
+                    # rect = self.image.get_rect(
+                    #     bottomright=(self.left + 45 * (i + 1),
+                    #                  self.top + 45 * (j + 1)))
+                    # screen.blit(self.image, rect)
                 pg.draw.rect(screen, '#e8eaf6', (self.left + self.cell_size * i, self.top + self.cell_size * j,
                                                  self.cell_size, self.cell_size), 2)
 
@@ -134,6 +144,7 @@ class Field(pg.sprite.Sprite):
 
 def main():
     pg.init()
+    #pg.key.set_repeat(200, 120)
     size = 760, 760
     screen = pg.display.set_mode(size)
     pg.display.set_caption('Goof the Game')
