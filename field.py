@@ -33,10 +33,10 @@ class Field(pg.sprite.Sprite, ImageLoader):
             dice.start()
 
     def distribution_of_cells(self) -> None:
-        options = {Cell: [0, 78],
+        options = {Cell: [0, 58],
                    Trap: [0, 30],
                    Health: [0, 40],
-                   Task: [0, 80],
+                   Task: [0, 100],
                    Teleport: [0, 60]}
         for i in range(12):
             for j in range(12):
@@ -100,18 +100,29 @@ class Field(pg.sprite.Sprite, ImageLoader):
                 if move_allowed:
                     callback = hero.move_hero(self.current_cell, (self.left, self.top))
                     if hero.get_moves() == 0:
-                        self.paint()
+                        self.paint(hero)
                     if callback == 'show-dice' and not self.at_finish():
                         self.show_dice(dice)
                 if self.at_finish():
                     self.froze()
                     self.finished = True
+                    print(hero.get_quantity())
                     return 'end-screen'
             return None
 
-    def paint(self):
+    def paint(self, hero):
         i, j = self.current_cell
         self.true_false_cell[i][j] = True
+        if str(self.cells[i][j]) == "<class 'cell.Teleport'>":
+            cell = Teleport(i, j, hero, self.top, self.left)
+            i_new, j_new = cell.teleportation()
+            self.current_cell = [i_new, j_new]
+        if str(self.cells[i][j]) == "<class 'cell.Health'>":
+            cell = Health(hero)
+            cell.add_health()
+        if str(self.cells[i][j]) == "<class 'cell.Trap'>":
+            cell = Trap(hero)
+            cell.minus_health()
 
     def be_way(self, i, j) -> None:
         if str(self.cells[i][j]) != "finish" and not self.true_false_cell[i][j]:

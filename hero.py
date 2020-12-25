@@ -26,6 +26,15 @@ class Hero(pg.sprite.Sprite, ImageLoader):
         self.cells_passed = -1
         self.move_hero(current_cell, indent)
 
+    def get_quantity(self):
+        return self.task_quantity, self.health_quantity, self.task_quantity, self.trap_quantity
+
+    def add_quantity(self, cell):
+        eval(f"self.{cell}_quantity += 1")
+
+    def add_live(self, live: int) -> None:
+        self.live += live
+
     def get_live(self) -> int:
         return self.live
 
