@@ -135,6 +135,10 @@ class Field(pg.sprite.Sprite, ImageLoader):
                 if str(self.cells[i][j]) == "finish":
                     pg.draw.rect(screen, '#88001b', (self.left + self.cell_size * i, self.top + self.cell_size * j,
                                                  self.cell_size, self.cell_size))
+                if str(self.cells[i][j]) != "finish":
+                    screen.fill('#b4e9ff', (self.left + self.cell_size * i,
+                                                         self.top + self.cell_size * j,
+                                                         self.cell_size, self.cell_size))
                 if str(self.cells[i][j]) == "way":
                     screen.fill(pg.Color('lightgreen'), (self.left + self.cell_size * i,
                                                          self.top + self.cell_size * j,
@@ -143,10 +147,6 @@ class Field(pg.sprite.Sprite, ImageLoader):
                     #     bottomright=(self.left + 45 * (i + 1),
                     #                  self.top + 45 * (j + 1)))
                     # screen.blit(self.image, rect)
-                if str(self.cells[i][j]) != "finish":
-                    screen.fill('#b4e9ff', (self.left + self.cell_size * i,
-                                                         self.top + self.cell_size * j,
-                                                         self.cell_size, self.cell_size))
                 pg.draw.rect(screen, '#0a2fa2', (self.left + self.cell_size * i, self.top + self.cell_size * j,
                                                  self.cell_size, self.cell_size), 2)
 
