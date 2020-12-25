@@ -1,5 +1,6 @@
 from random import choice
 import pygame as pg
+import os
 from img_loader import ImageLoader
 from cell import *
 from hero import *
@@ -120,7 +121,7 @@ class Field(pg.sprite.Sprite, ImageLoader):
         return self.left, self.top
 
     def render(self, screen, moves, lives):
-        screen.fill('black')
+        screen.fill((20, 18, 32))
         pg.font.init()
         font = pg.font.Font('font/Special Elite.ttf', 36)
         move = font.render(f'Moves - {moves}', True,
@@ -132,8 +133,8 @@ class Field(pg.sprite.Sprite, ImageLoader):
         for i in range(12):
             for j in range(12):
                 if str(self.cells[i][j]) == "finish":
-                    screen.fill(pg.Color('red'), (self.left + self.cell_size * i, self.top + self.cell_size * j,
-                                                  self.cell_size, self.cell_size))
+                    pg.draw.rect(screen, '#88001b', (self.left + self.cell_size * i, self.top + self.cell_size * j,
+                                                 self.cell_size, self.cell_size))
                 if str(self.cells[i][j]) == "way":
                     screen.fill(pg.Color('lightgreen'), (self.left + self.cell_size * i,
                                                          self.top + self.cell_size * j,
@@ -142,7 +143,11 @@ class Field(pg.sprite.Sprite, ImageLoader):
                     #     bottomright=(self.left + 45 * (i + 1),
                     #                  self.top + 45 * (j + 1)))
                     # screen.blit(self.image, rect)
-                pg.draw.rect(screen, '#e8eaf6', (self.left + self.cell_size * i, self.top + self.cell_size * j,
+                if str(self.cells[i][j]) != "finish":
+                    screen.fill('#b4e9ff', (self.left + self.cell_size * i,
+                                                         self.top + self.cell_size * j,
+                                                         self.cell_size, self.cell_size))
+                pg.draw.rect(screen, '#0a2fa2', (self.left + self.cell_size * i, self.top + self.cell_size * j,
                                                  self.cell_size, self.cell_size), 2)
 
     def get_current_cell(self) -> list:
@@ -160,7 +165,24 @@ class Field(pg.sprite.Sprite, ImageLoader):
         dice.rotating = True
 
 
+def start_screen():
+    pg.init()
+    size = width, height = 700, 436
+    screen = pg.display.set_mode(size)
+
+    fon = ImageLoader.load_image('fon.png')
+    screen.blit(fon, (0, 0))
+    while True:
+        for event in pg.event.get():
+            if event.type == pg.QUIT:
+                pg.quit()
+            elif event.type == pg.KEYDOWN:
+                main()
+        pg.display.flip()
+
+
 def main():
+    pg.quit()
     pg.init()
     #pg.key.set_repeat(200, 120)
     size = 760, 760
@@ -174,6 +196,7 @@ def main():
     running = True
     clock = pg.time.Clock()
     fps = 30
+    screen.fill((50, 41, 88))
     while running:
         for event in pg.event.get():
             if event.type == pg.QUIT:
@@ -201,4 +224,4 @@ def main():
 
 
 if __name__ == '__main__':
-    main()
+    start_screen()
