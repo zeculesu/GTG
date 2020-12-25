@@ -17,7 +17,8 @@ class Field(pg.sprite.Sprite, ImageLoader):
         self.start(screen)
 
     def start(self, screen, hero=None, dice=None):
-        self.cells = [[[None, False]] * 12 for _ in range(12)]
+        self.cells = [[None] * 12 for _ in range(12)]
+        self.true_false_cell = [[None] * 12 for _ in range(12)]
         self.screen = screen
         screen_width, screen_height = screen.get_size()
         self.cell_size = 50
@@ -33,30 +34,29 @@ class Field(pg.sprite.Sprite, ImageLoader):
 
     def distribution_of_cells(self) -> None:
         options = {Cell: [0, 78],
-                   Trap: [0, 60],
+                   Trap: [0, 30],
                    Health: [0, 40],
-                   Task: [0, 60],
-                   Teleport: [0, 50]}
+                   Task: [0, 80],
+                   Teleport: [0, 60]}
         for i in range(12):
             for j in range(12):
                 if i == 0 and j == 0:
                     continue
                 elif i == len(self.cells[i]) - 1 and j == len(self.cells[i]) - 1:
-                    self.cells[i][j][0] = 'finish'
+                    self.cells[i][j] = 'finish'
                     break
                 option = choice(list(options.keys()))
                 while option in self.get_sibling_cells(i, j) or options[option][0] + 1 > options[option][1]:
                     option = choice(list(options.keys()))
                 options[option][0] += 1
-                self.cells[i][j][0] = option
+                self.cells[i][j] = option
                 if options[option][1] <= options[option][0]:
                     del options[option]
-        print(self.cells)
 
     def get_sibling_cells(self, i: int, j: int) -> list:
-        cells = ['self.cells[i - 1][j - 1][0]', 'self.cells[i - 1][j][0]', 'self.cells[i - 1][j + 1][0]',
-                 'self.cells[i][j - 1][0]', 'self.cells[i][j + 1][0]',
-                 'self.cells[i + 1][j - 1][0]', 'self.cells[i + 1][j][0]', 'self.cells[i + 1][j + 1][0]']
+        cells = ['self.cells[i - 1][j - 1]', 'self.cells[i - 1][j]', 'self.cells[i - 1][j + 1]',
+                 'self.cells[i][j - 1]', 'self.cells[i][j + 1]',
+                 'self.cells[i + 1][j - 1]', 'self.cells[i + 1][j]', 'self.cells[i + 1][j + 1]']
         square = []
         for cell in cells:
             try:
@@ -111,11 +111,11 @@ class Field(pg.sprite.Sprite, ImageLoader):
 
     def paint(self):
         i, j = self.current_cell
-        self.cells[i][j][1] = True
+        self.true_false_cell[i][j] = True
 
     def be_way(self, i, j) -> None:
-        if str(self.cells[i][j][0]) != "finish":
-            self.cells[i][j][0] = 'way'
+        if str(self.cells[i][j]) != "finish" and not self.true_false_cell[i][j]:
+            self.cells[i][j] = 'way'
 
     def get_size(self) -> tuple:
         return self.cell_size * len(self.cells[0]), self.cell_size * len(self.cells)
@@ -141,15 +141,15 @@ class Field(pg.sprite.Sprite, ImageLoader):
                 screen.fill('#b4e9ff', (self.left + self.cell_size * i,
                                         self.top + self.cell_size * j,
                                         self.cell_size, self.cell_size))
-                if str(self.cells[i][j][0]) == "finish" and not self.cells[i][j][1]:
+                if str(self.cells[i][j]) == "finish":
                     pg.draw.rect(screen, '#fe1f18', (self.left + self.cell_size * i, self.top + self.cell_size * j,
                                                      self.cell_size, self.cell_size))
-                elif str(self.cells[i][j][0]) == "way" and not self.cells[i][j][1]:
+                elif str(self.cells[i][j]) == "way":
                     screen.fill(pg.Color('lightgreen'), (self.left + self.cell_size * i,
                                                          self.top + self.cell_size * j,
                                                          self.cell_size, self.cell_size))
-                elif self.cells[i][j][1]:
-                    pg.draw.rect(self.screen, translate[str(self.cells[i][j][0])],
+                elif self.true_false_cell[i][j]:
+                    pg.draw.rect(self.screen, translate[str(self.cells[i][j])],
                                  (self.left + self.cell_size * i, self.top + self.cell_size * j,
                                   self.cell_size, self.cell_size))
                 pg.draw.rect(screen, '#0a2fa2', (self.left + self.cell_size * i, self.top + self.cell_size * j,
