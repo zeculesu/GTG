@@ -11,26 +11,28 @@ class Hero(pg.sprite.Sprite, ImageLoader):
         self.image.set_colorkey((255, 255, 255))
         super(Hero, self).__init__(group)
         self.live, self.size_hero, self.moves, self.cells_passed = None, None, None, None
-        self.task_quantity, self.health_quantity = None, None
-        self.trap_quantity, self.teleport_quantity = None, None
+        self.quantity = {'task': None,
+                         'health': None,
+                         'trap': None,
+                         'teleport': None}
         self.start(current_cell, indent)
 
     def start(self, current_cell, indent):
         self.live = 3
         self.size_hero = 50
-        self.task_quantity = 0
-        self.health_quantity = 0
-        self.trap_quantity = 0
-        self.teleport_quantity = 0
+        self.quantity = {'task': 0,
+                         'health': 0,
+                         'trap': 0,
+                         'teleport': 0}
         self.moves = 1  # герой вступает на поле
         self.cells_passed = -1
         self.move_hero(current_cell, indent)
 
     def get_quantity(self):
-        return self.task_quantity, self.health_quantity, self.task_quantity, self.trap_quantity
+        return self.quantity
 
     def add_quantity(self, cell):
-        eval(f"self.{cell}_quantity += 1")
+        self.quantity[cell] += 1
 
     def add_live(self, live: int) -> None:
         self.live += live
