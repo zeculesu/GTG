@@ -1,5 +1,5 @@
-import pygame as pg
 from random import choice
+import pygame as pg
 from typing import Union
 
 from loader import Loader
@@ -128,6 +128,12 @@ class Field(pg.sprite.Sprite, Loader):
         if str(self.cells[i][j]) == "<class 'cell.Trap'>":
             cell = Trap(hero)
             cell.minus_health()
+        if str(self.cells[i][j]) == "<class 'cell.Task'>":
+            cell = Task(hero)
+            cell.number_of_special_cells('task')
+        if str(self.cells[i][j]) == "<class 'cell.Cell'>":
+            cell = Cell(hero)
+            cell.number_of_special_cells('cell')
 
     def be_way(self, i, j) -> None:
         if str(self.cells[i][j]) != "finish" and not self.true_false_cell[i][j]:
@@ -142,7 +148,7 @@ class Field(pg.sprite.Sprite, Loader):
     def render(self, screen: pg.Surface, moves: int, lives: int) -> None:
         screen.fill((20, 18, 32))
         pg.font.init()
-        font = pg.font.Font('font/Special Elite.ttf', 36)
+        font = self.load_font('Special Elite.ttf', 36)
         move = font.render('Moves - %d' % moves, True, pg.Color('#80deea'))
         live = font.render('Lives - %d' % lives, True, pg.Color('#80deea'))
         screen.blit(move, (self.left, 50))
@@ -154,7 +160,8 @@ class Field(pg.sprite.Sprite, Loader):
                      "<class 'cell.Cell'>": 'black'}
         for i in range(12):
             for j in range(12):
-                screen.fill('#b4e9ff', (self.left + self.cell_size * i,
+                # b4e9ff
+                screen.fill('#ebebeb', (self.left + self.cell_size * i,
                                         self.top + self.cell_size * j,
                                         self.cell_size, self.cell_size))
                 if str(self.cells[i][j]) == "finish":

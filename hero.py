@@ -3,18 +3,19 @@ from loader import Loader
 
 
 class Hero(pg.sprite.Sprite, Loader):
-    img_filename = 'itachi.jpg'
+    img_filename = 'hero_3.png'
 
     def __init__(self, current_cell, indent, group: pg.sprite.AbstractGroup):
         self.image = self.load_image(Hero.img_filename)
-        self.image = pg.transform.scale(self.image, (50, 50))
+        self.image = pg.transform.scale(self.image, (52, 52))
         self.image.set_colorkey((255, 255, 255))
         super(Hero, self).__init__(group)
         self.live, self.size_hero, self.moves, self.cells_passed = None, None, None, None
         self.quantity = {'task': None,
                          'health': None,
                          'trap': None,
-                         'teleport': None}
+                         'teleport': None,
+                         'cell': None}
         self.start(current_cell, indent)
 
     def start(self, current_cell, indent):
@@ -23,7 +24,8 @@ class Hero(pg.sprite.Sprite, Loader):
         self.quantity = {'task': 0,
                          'health': 0,
                          'trap': 0,
-                         'teleport': 0}
+                         'teleport': 0,
+                         'cell': 0}
         self.moves = 1  # герой вступает на поле
         self.cells_passed = -1
         self.move_hero(current_cell, indent)
