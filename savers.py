@@ -20,6 +20,13 @@ class StartScreen(ImageLoader):
 
 
 class EndScreen(pg.sprite.Sprite):
-    def __init__(self, hero):
-        super(EndScreen, self).__init__()
+    def __init__(self, hero, group):
+        super(EndScreen, self).__init__(group)
         self.hero = hero
+        self.image = self.draw_saver()
+
+    def draw_saver(self) -> pg.Surface:
+        pass
+
+    def update(self, *args, **kwargs):
+        pass

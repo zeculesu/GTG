@@ -1,19 +1,20 @@
-from random import choice
 import pygame as pg
-import os
-from img_loader import ImageLoader
+from random import choice
 from typing import Union
-from cell import *
-from hero import *
-from dice import *
-from savers import *
+
+from img_loader import ImageLoader
+from hero import Hero
+from dice import Dice
+from cell import Cell, Trap, Health, Task, Teleport
+from savers import EndScreen
 
 
 class Field(pg.sprite.Sprite, ImageLoader):
-    def __init__(self, screen: pg.Surface):
+    def __init__(self, screen: pg.Surface, group):
         super(Field, self).__init__()
         self.cells, self.screen, self.cell_size, self.left, self.top = None, None, None, None, None
         self.current_cell, self.frozen, self.finished = None, None, None
+        self.group = group
         self.start(screen)
 
     def start(self, screen, hero=None, dice=None):
@@ -101,6 +102,10 @@ class Field(pg.sprite.Sprite, ImageLoader):
                     callback = hero.move_hero(self.current_cell, (self.left, self.top))
                     if hero.get_moves() == 0:
                         self.paint(hero)
+                        if hero.get_live() == 0:
+                            self.froze()
+                            EndScreen(hero, self.group)
+                            callback = None
                     if callback == 'show-dice' and not self.at_finish():
                         self.show_dice(dice)
                 if self.at_finish():
@@ -179,50 +184,3 @@ class Field(pg.sprite.Sprite, ImageLoader):
         self.froze()
         dice.visibled()
         dice.rotating = True
-
-
-def main():
-    StartScreen()
-    pg.init()
-    size = 760, 760
-    screen = pg.display.set_mode(size)
-    pg.display.set_caption('Goof the Game')
-    all_sprites = pg.sprite.Group()
-    field = Field(screen)
-    hero = Hero((0, 0), field.get_indent(), all_sprites)
-    dice = Dice(field.get_size(), field.get_indent(), all_sprites)
-    field.start(screen, hero, dice)
-    running = True
-    clock = pg.time.Clock()
-    fps = 60
-    screen.fill((50, 41, 88))
-    while running:
-        for event in pg.event.get():
-            if event.type == pg.QUIT:
-                running = False
-            elif event.type == pg.KEYDOWN:
-                if event.key == pg.K_SPACE:
-                    if hero.get_moves() == 0:
-                        field.show_dice(dice)
-                        moves = dice.handle_rotating()
-                        if moves:
-                            hero.add_moves(moves)
-                    elif field.is_finished():
-                        field.start(screen, hero, dice)
-                else:
-                    callback = field.handle_move(event, hero, dice)
-                    if callback == 'end-screen':
-                        EndScreen(hero)
-                    clock.tick(fps)
-            field.render(screen, hero.get_moves(), hero.get_live())
-        if dice.is_rotating():
-            dice.rotate()
-        all_sprites.update()
-        all_sprites.draw(screen)
-        pg.display.flip()
-        clock.tick(10)
-    pg.quit()
-
-
-if __name__ == '__main__':
-    main()
