@@ -16,7 +16,7 @@ def main():
     field = Field(screen, all_sprites)
     hero = Hero((0, 0), field.get_indent(), all_sprites)
     dice = Dice(field.get_size(), field.get_indent(), all_sprites)
-    field.start(screen, hero, dice)
+    field.start(hero, dice)
     running = True
     clock = pg.time.Clock()
     fps = 60

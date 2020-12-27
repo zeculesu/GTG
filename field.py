@@ -12,30 +12,27 @@ from savers import EndScreen
 class Field(pg.sprite.Sprite, Loader):
     def __init__(self, screen: pg.Surface, group):
         super(Field, self).__init__()
-        self.cells, self.screen, self.cell_size, self.left, self.top = None, None, None, None, None
-        self.current_cell, self.frozen, self.finished, self.moving_finish = None, None, None, None
-        self.true_false_cell, self.finish = None, None
         self.group = group
-        self.start(screen, inner_call=True)
-
-    def start(self, screen, hero=None, dice=None, inner_call=False):
+        self.screen = screen
         self.cells = [[None] * 12 for _ in range(12)]
-        if inner_call:
-            screen_width, screen_height = screen.get_size()
-            self.cell_size = 50
-            self.left = screen_width // 2 - len(self.cells[0]) * self.cell_size // 2
-            self.top = screen_height // 2 - len(self.cells) * self.cell_size // 2.25
-        else:
-            self.true_false_cell = [[None] * 12 for _ in range(12)]
-            self.screen = screen
-            self.distribution_of_cells(hero)
-            self.current_cell = [0, 0]
-            self.frozen = True
-            self.finished = False
-            self.moving_finish = 0
-            if hero and dice:
-                hero.start(self.current_cell, (self.left, self.top))
-                dice.start()
+        self.cell_size = 50
+        screen_width, screen_height = screen.get_size()
+        self.left = screen_width // 2 - len(self.cells[0]) * self.cell_size // 2
+        self.top = screen_height // 2 - len(self.cells) * self.cell_size // 2.25
+        self.true_false_cell, self.current_cell = None, None
+        self.frozen, self.finished, self.moving_finish = None, None, None
+        self.start(screen)
+
+    def start(self, hero=None, dice=None):
+        self.true_false_cell = [[None] * 12 for _ in range(12)]
+        self.distribution_of_cells(hero)
+        self.current_cell = [0, 0]
+        self.frozen = True
+        self.finished = False
+        self.moving_finish = 0
+        if hero and dice:
+            hero.start(self.current_cell, (self.left, self.top))
+            dice.start()
 
     def distribution_of_cells(self, hero: Hero) -> None:
         options = {Cell: [0, 58],
