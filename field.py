@@ -10,7 +10,7 @@ from savers import EndScreen
 
 
 class Field(pg.sprite.Sprite, Loader):
-    def __init__(self, screen: pg.Surface, group):
+    def __init__(self, screen: pg.Surface, group: pg.sprite.AbstractGroup):
         super(Field, self).__init__()
         self.group = group
         self.screen = screen
@@ -19,20 +19,18 @@ class Field(pg.sprite.Sprite, Loader):
         screen_width, screen_height = screen.get_size()
         self.left = screen_width // 2 - len(self.cells[0]) * self.cell_size // 2
         self.top = screen_height // 2 - len(self.cells) * self.cell_size // 2.25
-        self.true_false_cell, self.current_cell = None, None
+        self.true_false_cell, self.current_cell, self.finish = None, None, None
         self.frozen, self.finished, self.moving_finish = None, None, None
-        self.start(screen)
 
-    def start(self, hero=None, dice=None):
+    def start(self, hero: Hero, dice: Dice) -> None:
         self.true_false_cell = [[None] * 12 for _ in range(12)]
         self.distribution_of_cells(hero)
         self.current_cell = [0, 0]
         self.frozen = True
         self.finished = False
         self.moving_finish = 0
-        if hero and dice:
-            hero.start(self.current_cell, (self.left, self.top))
-            dice.start()
+        hero.start(self.current_cell, (self.left, self.top))
+        dice.start()
 
     def distribution_of_cells(self, hero: Hero) -> None:
         options = {Cell: [0, 58],
@@ -104,7 +102,7 @@ class Field(pg.sprite.Sprite, Loader):
                 if move_allowed:
                     callback = hero.move_hero(self.current_cell, (self.left, self.top))
                     if hero.get_moves() == 0:
-                        self.paint(hero)
+                        self.paint()
                         if hero.get_live() == 0:
                             self.froze()
                             EndScreen(hero, self.group)
@@ -130,7 +128,7 @@ class Field(pg.sprite.Sprite, Loader):
                 self.finish = [i, j]
                 self.moving_finish += 1
 
-    def paint(self, hero):
+    def paint(self):
         i, j = self.current_cell
         self.true_false_cell[i][j] = True
         cell = self.cells[i][j]

@@ -14,7 +14,8 @@ class Cell:
         self.active = False
 
     def number_of_special_cells(self, cell):
-        self.hero.add_quantity(cell)
+        if self.is_active():
+            self.hero.add_quantity(cell)
 
 
 class Trap(Cell):
