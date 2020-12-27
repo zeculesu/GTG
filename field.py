@@ -14,28 +14,30 @@ class Field(pg.sprite.Sprite, Loader):
         super(Field, self).__init__()
         self.cells, self.screen, self.cell_size, self.left, self.top = None, None, None, None, None
         self.current_cell, self.frozen, self.finished, self.moving_finish = None, None, None, None
-        self.finish = None
+        self.true_false_cell, self.finish = None, None
         self.group = group
-        self.start(screen)
+        self.start(screen, inner_call=True)
 
-    def start(self, screen, hero=None, dice=None):
+    def start(self, screen, hero=None, dice=None, inner_call=False):
         self.cells = [[None] * 12 for _ in range(12)]
-        self.true_false_cell = [[None] * 12 for _ in range(12)]
-        self.screen = screen
-        screen_width, screen_height = screen.get_size()
-        self.cell_size = 50
-        self.left = screen_width // 2 - len(self.cells[0]) * self.cell_size // 2
-        self.top = screen_height // 2 - len(self.cells) * self.cell_size // 2.25
-        self.distribution_of_cells()
-        self.current_cell = [0, 0]
-        self.frozen = True
-        self.finished = False
-        self.moving_finish = 0
-        if hero and dice:
-            hero.start(self.current_cell, (self.left, self.top))
-            dice.start()
+        if inner_call:
+            screen_width, screen_height = screen.get_size()
+            self.cell_size = 50
+            self.left = screen_width // 2 - len(self.cells[0]) * self.cell_size // 2
+            self.top = screen_height // 2 - len(self.cells) * self.cell_size // 2.25
+        else:
+            self.true_false_cell = [[None] * 12 for _ in range(12)]
+            self.screen = screen
+            self.distribution_of_cells(hero)
+            self.current_cell = [0, 0]
+            self.frozen = True
+            self.finished = False
+            self.moving_finish = 0
+            if hero and dice:
+                hero.start(self.current_cell, (self.left, self.top))
+                dice.start()
 
-    def distribution_of_cells(self) -> None:
+    def distribution_of_cells(self, hero: Hero) -> None:
         options = {Cell: [0, 58],
                    Trap: [0, 30],
                    Health: [0, 40],
@@ -53,7 +55,9 @@ class Field(pg.sprite.Sprite, Loader):
                 while option in self.get_sibling_cells(i, j) or options[option][0] + 1 > options[option][1]:
                     option = choice(list(options.keys()))
                 options[option][0] += 1
-                self.cells[i][j] = option
+                args = ((i, j, hero, self.top, self.left) if str(option) == "<class 'cell.Teleport'>"
+                        else (hero,))
+                self.cells[i][j] = option(*args)
                 if options[option][1] <= options[option][0]:
                     del options[option]
 
@@ -132,21 +136,17 @@ class Field(pg.sprite.Sprite, Loader):
     def paint(self, hero):
         i, j = self.current_cell
         self.true_false_cell[i][j] = True
-        if str(self.cells[i][j]) == "<class 'cell.Teleport'>":
-            cell = Teleport(i, j, hero, self.top, self.left)
+        cell = self.cells[i][j]
+        if isinstance(cell, Teleport):
             i_new, j_new = cell.teleportation()
             self.current_cell = [i_new, j_new]
-        if str(self.cells[i][j]) == "<class 'cell.Health'>":
-            cell = Health(hero)
+        elif isinstance(cell, Health):
             cell.add_health()
-        if str(self.cells[i][j]) == "<class 'cell.Trap'>":
-            cell = Trap(hero)
+        elif isinstance(cell, Trap):
             cell.minus_health()
-        if str(self.cells[i][j]) == "<class 'cell.Task'>":
-            cell = Task(hero)
+        elif isinstance(cell, Task):
             cell.number_of_special_cells('task')
-        if str(self.cells[i][j]) == "<class 'cell.Cell'>":
-            cell = Cell(hero)
+        elif isinstance(cell, Cell):
             cell.number_of_special_cells('cell')
 
     def be_way(self, i, j) -> None:
@@ -167,11 +167,11 @@ class Field(pg.sprite.Sprite, Loader):
         live = font.render('Lives - %d' % lives, True, pg.Color('#92d4ec'))
         screen.blit(move, (self.left, 50))
         screen.blit(live, (self.left + font.size('Количество ходов - %d' % moves)[0] + 170, 50))
-        translate = {"<class 'cell.Task'>": 'yellow',
-                     "<class 'cell.Teleport'>": 'purple',
-                     "<class 'cell.Health'>": 'green',
-                     "<class 'cell.Trap'>": 'orange',
-                     "<class 'cell.Cell'>": 'black'}
+        translate = {Task: 'yellow',
+                     Teleport: 'purple',
+                     Health: 'green',
+                     Trap: 'orange',
+                     Cell: 'black'}
         for i in range(12):
             for j in range(12):
                 # b4e9ff
@@ -183,10 +183,10 @@ class Field(pg.sprite.Sprite, Loader):
                                                      self.cell_size, self.cell_size))
                 elif str(self.cells[i][j]) == "way":
                     screen.fill(pg.Color('#92d4ec'), (self.left + self.cell_size * i,
-                                                         self.top + self.cell_size * j,
-                                                         self.cell_size, self.cell_size))
+                                                      self.top + self.cell_size * j,
+                                                      self.cell_size, self.cell_size))
                 elif self.true_false_cell[i][j]:
-                    pg.draw.rect(self.screen, translate[str(self.cells[i][j])],
+                    pg.draw.rect(self.screen, translate[self.cells[i][j].__class__],
                                  (self.left + self.cell_size * i, self.top + self.cell_size * j,
                                   self.cell_size, self.cell_size))
                 pg.draw.rect(screen, '#0a2fa2', (self.left + self.cell_size * i, self.top + self.cell_size * j,
