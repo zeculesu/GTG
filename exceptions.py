@@ -1,2 +1,6 @@
-class ImageNotFoundError(Exception):
+class ImageNotFoundError(FileNotFoundError):
+    pass
+
+
+class FontNotFoundError(FileNotFoundError):
     pass

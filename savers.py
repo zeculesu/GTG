@@ -1,13 +1,13 @@
-from img_loader import ImageLoader
+from loader import Loader
 import pygame as pg
 
 
-class StartScreen(ImageLoader):
+class StartScreen(Loader):
     def __init__(self):
         pg.init()
         size = 700, 436
         screen = pg.display.set_mode(size)
-        fon = ImageLoader.load_image('fon.png')
+        fon = Loader.load_image('fon.png')
         screen.blit(fon, (0, 0))
         pg.display.flip()
         while True:

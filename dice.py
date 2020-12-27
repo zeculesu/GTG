@@ -1,9 +1,9 @@
 import pygame as pg
 from random import choice
-from img_loader import ImageLoader
+from loader import Loader
 
 
-class Dice(pg.sprite.Sprite, ImageLoader):
+class Dice(pg.sprite.Sprite, Loader):
     img_names = ['dice_1.png', 'dice_2.png', 'dice_3.png',
                  'dice_4.png', 'dice_5.png', 'dice_6.png']
 

@@ -2,14 +2,14 @@ import pygame as pg
 from random import choice
 from typing import Union
 
-from img_loader import ImageLoader
+from loader import Loader
 from hero import Hero
 from dice import Dice
 from cell import Cell, Trap, Health, Task, Teleport
 from savers import EndScreen
 
 
-class Field(pg.sprite.Sprite, ImageLoader):
+class Field(pg.sprite.Sprite, Loader):
     def __init__(self, screen: pg.Surface, group):
         super(Field, self).__init__()
         self.cells, self.screen, self.cell_size, self.left, self.top = None, None, None, None, None

@@ -1,8 +1,8 @@
 import pygame as pg
-from img_loader import ImageLoader
+from loader import Loader
 
 
-class Hero(pg.sprite.Sprite, ImageLoader):
+class Hero(pg.sprite.Sprite, Loader):
     img_filename = 'itachi.jpg'
 
     def __init__(self, current_cell, indent, group: pg.sprite.AbstractGroup):
