@@ -149,10 +149,10 @@ class Field(pg.sprite.Sprite, Loader):
         screen.fill((20, 18, 32))
         pg.font.init()
         font = self.load_font('Special Elite.ttf', 36)
-        move = font.render('Moves - %d' % moves, True, pg.Color('#80deea'))
-        live = font.render('Lives - %d' % lives, True, pg.Color('#80deea'))
+        move = font.render('Moves - %d' % moves, True, pg.Color('#92d4ec'))
+        live = font.render('Lives - %d' % lives, True, pg.Color('#92d4ec'))
         screen.blit(move, (self.left, 50))
-        screen.blit(live, (self.left + font.size('Количество ходов - %d' % moves)[0] + 150, 50))
+        screen.blit(live, (self.left + font.size('Количество ходов - %d' % moves)[0] + 170, 50))
         translate = {"<class 'cell.Task'>": 'yellow',
                      "<class 'cell.Teleport'>": 'purple',
                      "<class 'cell.Health'>": 'green',
@@ -168,7 +168,7 @@ class Field(pg.sprite.Sprite, Loader):
                     pg.draw.rect(screen, '#fe1f18', (self.left + self.cell_size * i, self.top + self.cell_size * j,
                                                      self.cell_size, self.cell_size))
                 elif str(self.cells[i][j]) == "way":
-                    screen.fill(pg.Color('lightgreen'), (self.left + self.cell_size * i,
+                    screen.fill(pg.Color('#92d4ec'), (self.left + self.cell_size * i,
                                                          self.top + self.cell_size * j,
                                                          self.cell_size, self.cell_size))
                 elif self.true_false_cell[i][j]:
