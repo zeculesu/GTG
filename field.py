@@ -13,7 +13,8 @@ class Field(pg.sprite.Sprite, Loader):
     def __init__(self, screen: pg.Surface, group):
         super(Field, self).__init__()
         self.cells, self.screen, self.cell_size, self.left, self.top = None, None, None, None, None
-        self.current_cell, self.frozen, self.finished = None, None, None
+        self.current_cell, self.frozen, self.finished, self.moving_finish = None, None, None, None
+        self.finish = None
         self.group = group
         self.start(screen)
 
@@ -29,6 +30,7 @@ class Field(pg.sprite.Sprite, Loader):
         self.current_cell = [0, 0]
         self.frozen = True
         self.finished = False
+        self.moving_finish = 0
         if hero and dice:
             hero.start(self.current_cell, (self.left, self.top))
             dice.start()
@@ -45,6 +47,7 @@ class Field(pg.sprite.Sprite, Loader):
                     continue
                 elif i == len(self.cells[i]) - 1 and j == len(self.cells[i]) - 1:
                     self.cells[i][j] = 'finish'
+                    self.finish = [i, j]
                     break
                 option = choice(list(options.keys()))
                 while option in self.get_sibling_cells(i, j) or options[option][0] + 1 > options[option][1]:
@@ -67,8 +70,7 @@ class Field(pg.sprite.Sprite, Loader):
         return square
 
     def at_finish(self) -> bool:
-        return (self.current_cell[0] == len(self.cells) - 1
-                and self.current_cell[1] == len(self.cells) - 1)
+        return self.current_cell == self.finish
 
     def is_finished(self) -> bool:
         return self.finished
@@ -106,6 +108,7 @@ class Field(pg.sprite.Sprite, Loader):
                             self.froze()
                             EndScreen(hero, self.group)
                             callback = None
+                    self.move_finish()
                     if callback == 'show-dice' and not self.at_finish():
                         self.show_dice(dice)
                 if self.at_finish():
@@ -114,6 +117,17 @@ class Field(pg.sprite.Sprite, Loader):
                     print(hero.get_quantity())
                     return 'end-screen'
             return None
+
+    def move_finish(self):
+        if self.moving_finish < 3:
+            if 'finish' in self.get_sibling_cells(self.current_cell[0], self.current_cell[1]):
+                i, j = choice([0, 11]), choice([0, 11])
+                while i == self.finish[0] and j == self.finish[1]:
+                    i, j = choice([0, 11]), choice([0, 11])
+                self.cells[self.finish[0]][self.finish[1]] = "<class 'cell.Cell'>"
+                self.cells[i][j] = 'finish'
+                self.finish = [i, j]
+                self.moving_finish += 1
 
     def paint(self, hero):
         i, j = self.current_cell
