@@ -159,8 +159,9 @@ class Field(pg.sprite.Sprite, Loader):
     def get_indent(self) -> tuple:
         return self.left, self.top
 
-    def render(self, screen: pg.Surface, moves: int, lives: int) -> None:
-        screen.fill((20, 18, 32))
+    def render(self, screen: pg.Surface, moves: int, lives: int, backGround) -> None:
+        screen.fill([255, 255, 255])
+        screen.blit(backGround.image, backGround.rect)
         pg.font.init()
         font = self.load_font('Special Elite.ttf', 36)
         move = font.render('Moves - %d' % moves, True, pg.Color('#92d4ec'))
