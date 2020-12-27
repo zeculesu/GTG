@@ -33,7 +33,7 @@ def main():
                         if moves:
                             hero.add_moves(moves)
                     elif field.is_finished():
-                        field.start(screen, hero, dice)
+                        field.start(hero, dice)
                 else:
                     callback = field.handle_move(event, hero, dice)
                     if callback == 'end-screen':

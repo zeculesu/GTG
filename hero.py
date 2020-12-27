@@ -7,7 +7,7 @@ class Hero(pg.sprite.Sprite, Loader):
 
     def __init__(self, current_cell, indent, group: pg.sprite.AbstractGroup):
         self.image = self.load_image(Hero.img_filename)
-        self.image = pg.transform.scale(self.image, (52, 52))
+        self.image = pg.transform.scale(self.image, (50, 50))
         self.image.set_colorkey((255, 255, 255))
         super(Hero, self).__init__(group)
         self.live, self.size_hero, self.moves, self.cells_passed = None, None, None, None

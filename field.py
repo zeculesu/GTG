@@ -63,6 +63,9 @@ class Field(pg.sprite.Sprite, Loader):
         square = []
         for cell in cells:
             try:
+                if i == 0 or j == 0:
+                    if 'i - 1' in cell or 'j - 1' in cell:
+                        continue
                 square.append(eval(cell))
             except IndexError:
                 continue
@@ -117,7 +120,7 @@ class Field(pg.sprite.Sprite, Loader):
                     return 'end-screen'
             return None
 
-    def move_finish(self):
+    def move_finish(self) -> None:
         if self.moving_finish < 3:
             if 'finish' in self.get_sibling_cells(self.current_cell[0], self.current_cell[1]):
                 i, j = choice([0, 11]), choice([0, 11])
