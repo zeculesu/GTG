@@ -21,9 +21,14 @@ class StartScreen(Loader):
 
 class EndScreen(pg.sprite.Sprite):
     def __init__(self, hero, group):
-        super(EndScreen, self).__init__(group)
-        self.hero = hero
-        self.image = self.draw_saver()
+        # super(EndScreen, self).__init__(group)
+        # self.hero = hero
+        # self.image = self.draw_saver()
+        if hero.get_live() == 0:
+            print('you died, you are loh')
+        else:
+            print('you won (no, you are still loh), congratulations')
+        print('cell passed: %d' % hero.get_passed_cells())
 
     def draw_saver(self) -> pg.Surface:
         pass

@@ -133,8 +133,10 @@ class Field(pg.sprite.Sprite, Loader):
         self.true_false_cell[i][j] = True
         cell = self.cells[i][j]
         if isinstance(cell, Teleport):
-            i_new, j_new = cell.teleportation()
-            self.current_cell = [i_new, j_new]
+            new_coords = cell.teleportation()
+            if new_coords:
+                i_new, j_new = new_coords
+                self.current_cell = [i_new, j_new]
         elif isinstance(cell, Health):
             cell.add_health()
         elif isinstance(cell, Trap):
