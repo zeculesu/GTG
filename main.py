@@ -40,13 +40,16 @@ def main():
                 else:
                     callback = field.handle_move(event, hero, dice)
                     if callback == 'end-screen':
-                        EndScreen(hero, all_sprites)
-                    clock.tick(fps)
+                        field.render(screen, hero.get_moves(), hero.get_live(), bg)
+                        all_sprites.update()
+                        all_sprites.draw(screen)
+                        EndScreen(screen, hero, all_sprites)
+        if not field.is_finished():
             field.render(screen, hero.get_moves(), hero.get_live(), bg)
+            all_sprites.update()
+            all_sprites.draw(screen)
         if dice.is_rotating():
             dice.rotate()
-        all_sprites.update()
-        all_sprites.draw(screen)
         pg.display.flip()
         clock.tick(10)
     pg.quit()

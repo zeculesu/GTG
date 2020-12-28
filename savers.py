@@ -1,5 +1,8 @@
+import os
+
 from loader import Loader
 import pygame as pg
+from PIL import Image, ImageFilter
 
 
 class StartScreen(Loader):
@@ -20,18 +23,24 @@ class StartScreen(Loader):
 
 
 class EndScreen(pg.sprite.Sprite):
-    def __init__(self, hero, group):
+    def __init__(self, screen: pg.Surface, hero, group):
         # super(EndScreen, self).__init__(group)
-        # self.hero = hero
-        # self.image = self.draw_saver()
-        if hero.get_live() == 0:
-            print('you died, you are loh')
-        else:
-            print('you won (no, you are still loh), congratulations')
-        print('cell passed: %d' % hero.get_passed_cells())
+        in_path = os.path.join('data', 'temp.png')
+        out_path = os.path.join('data', 'temp2.png')
+        pg.image.save(screen, in_path)
+        pil_img = Image.open(in_path)
+        pil_img = pil_img.filter(ImageFilter.GaussianBlur(radius=6))
+        pil_img.save(out_path)
+        screen.blit(pg.image.load(out_path), screen.get_rect())
+        self.clear_temp_files()
 
-    def draw_saver(self) -> pg.Surface:
-        pass
+    @staticmethod
+    def clear_temp_files():
+        env = os.listdir(os.path.join('data'))
+        for filename in ('temp.png', 'temp2.png'):
+            if filename in env:
+                del_path = os.path.join('data', filename)
+                os.remove(del_path)
 
     def update(self, *args, **kwargs):
         pass
