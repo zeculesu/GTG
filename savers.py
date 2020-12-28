@@ -1,5 +1,4 @@
 import os
-
 from loader import Loader
 import pygame as pg
 from PIL import Image, ImageFilter
@@ -10,6 +9,7 @@ class StartScreen(Loader):
         pg.init()
         size = 700, 436
         screen = pg.display.set_mode(size)
+        pg.display.set_caption('Goof the Game')
         fon = Loader.load_image('fon.png')
         screen.blit(fon, (0, 0))
         pg.display.flip()
