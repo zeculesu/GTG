@@ -1,18 +1,9 @@
 import pygame as pg
-from pygame.locals import *
 from field import Field
 from hero import Hero
 from dice import Dice
 from loader import Loader
-from savers import StartScreen, EndScreen
-
-
-class Background(pg.sprite.Sprite):
-    def __init__(self, image_file, location):
-        pg.sprite.Sprite.__init__(self)   #call Sprite initializer
-        self.image = image_file
-        self.rect = self.image.get_rect()
-        self.rect.left, self.rect.top = location
+from savers import StartScreen, EndScreen, Background
 
 
 def main():
@@ -31,7 +22,7 @@ def main():
     fps = 60
     img = Loader.load_image('end_screen.png')
     img = pg.transform.scale(img, (760, 760))
-    backGround = Background(img, [0, 0])
+    bg = Background(img, [0, 0])
     screen.fill((50, 41, 88))
     while running:
         for event in pg.event.get():
@@ -51,7 +42,7 @@ def main():
                     if callback == 'end-screen':
                         EndScreen(hero, all_sprites)
                     clock.tick(fps)
-            field.render(screen, hero.get_moves(), hero.get_live(), backGround)
+            field.render(screen, hero.get_moves(), hero.get_live(), bg)
         if dice.is_rotating():
             dice.rotate()
         all_sprites.update()

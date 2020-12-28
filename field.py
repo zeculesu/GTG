@@ -110,7 +110,7 @@ class Field(pg.sprite.Sprite, Loader):
                             self.froze()
                             EndScreen(hero, self.group)
                             callback = None
-                    self.move_finish()
+                    self.move_finish(hero)
                     if callback == 'show-dice' and not self.at_finish():
                         self.show_dice(dice)
                 if self.at_finish():
@@ -120,13 +120,13 @@ class Field(pg.sprite.Sprite, Loader):
                     return 'end-screen'
             return None
 
-    def move_finish(self) -> None:
+    def move_finish(self, hero: Hero) -> None:
         if self.moving_finish < 3:
             if 'finish' in self.get_sibling_cells(self.current_cell[0], self.current_cell[1]):
                 i, j = choice([0, 11]), choice([0, 11])
                 while i == self.finish[0] and j == self.finish[1]:
                     i, j = choice([0, 11]), choice([0, 11])
-                self.cells[self.finish[0]][self.finish[1]] = "<class 'cell.Cell'>"
+                self.cells[self.finish[0]][self.finish[1]] = Cell(hero)
                 self.cells[i][j] = 'finish'
                 self.finish = [i, j]
                 self.moving_finish += 1
@@ -188,9 +188,13 @@ class Field(pg.sprite.Sprite, Loader):
                                                       self.top + self.cell_size * j,
                                                       self.cell_size, self.cell_size))
                 elif self.true_false_cell[i][j]:
-                    pg.draw.rect(self.screen, translate[self.cells[i][j].__class__],
-                                 (self.left + self.cell_size * i, self.top + self.cell_size * j,
-                                  self.cell_size, self.cell_size))
+                    try:
+                        pg.draw.rect(self.screen, translate[self.cells[i][j].__class__],
+                                     (self.left + self.cell_size * i, self.top + self.cell_size * j,
+                                      self.cell_size, self.cell_size))
+                    except KeyError as e:
+                        print('exception: %s' % e)
+                        print(self.true_false_cell[i][j])
                 pg.draw.rect(screen, '#0a2fa2', (self.left + self.cell_size * i, self.top + self.cell_size * j,
                                                  self.cell_size, self.cell_size), 2)
 
