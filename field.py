@@ -180,8 +180,9 @@ class Field(pg.sprite.Sprite, Loader):
                                         self.top + self.cell_size * j,
                                         self.cell_size, self.cell_size))
                 if str(self.cells[i][j]) == "finish":
-                    pg.draw.rect(screen, '#fe1f18', (self.left + self.cell_size * i, self.top + self.cell_size * j,
-                                                     self.cell_size, self.cell_size))
+                    pg.draw.rect(screen, '#fe1f18', (self.left + self.cell_size * i,
+                                                      self.top + self.cell_size * j,
+                                                      self.cell_size, self.cell_size))
                 elif str(self.cells[i][j]) == "way":
                     screen.fill(pg.Color('#92d4ec'), (self.left + self.cell_size * i,
                                                       self.top + self.cell_size * j,
