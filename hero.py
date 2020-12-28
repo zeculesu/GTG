@@ -19,7 +19,7 @@ class Hero(pg.sprite.Sprite, Loader):
         self.start(current_cell, indent)
 
     def start(self, current_cell, indent):
-        self.live = 3
+        self.live = 1
         self.size_hero = 50
         self.quantity = {'task': 0,
                          'health': 0,

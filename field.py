@@ -6,7 +6,6 @@ from loader import Loader
 from hero import Hero
 from dice import Dice
 from cell import Cell, Trap, Health, Task, Teleport
-from savers import EndScreen
 
 
 class Field(pg.sprite.Sprite, Loader):
@@ -23,6 +22,8 @@ class Field(pg.sprite.Sprite, Loader):
         self.frozen, self.finished, self.moving_finish = None, None, None
 
     def start(self, hero: Hero, dice: Dice) -> None:
+        if self.finish:
+            self.cells[self.finish[0]][self.finish[1]] = None
         self.true_false_cell = [[None] * 12 for _ in range(12)]
         self.distribution_of_cells(hero)
         self.current_cell = [0, 0]
@@ -34,8 +35,8 @@ class Field(pg.sprite.Sprite, Loader):
 
     def distribution_of_cells(self, hero: Hero) -> None:
         options = {Cell: [0, 58],
-                   Trap: [0, 30],
-                   Health: [0, 40],
+                   Trap: [0, 40],
+                   Health: [0, 20],
                    Task: [0, 100],
                    Teleport: [0, 60]}
         for i in range(12):
@@ -105,11 +106,11 @@ class Field(pg.sprite.Sprite, Loader):
                 if move_allowed:
                     callback = hero.move_hero(self.current_cell, (self.left, self.top))
                     if hero.get_moves() == 0:
-                        self.paint()
+                        self.paint(hero)
                         if hero.get_live() == 0:
                             self.froze()
-                            EndScreen(hero, self.group)
-                            callback = None
+                            self.finished = True
+                            return 'end-screen'
                     self.move_finish(hero)
                     if callback == 'show-dice' and not self.at_finish():
                         self.show_dice(dice)
@@ -131,7 +132,7 @@ class Field(pg.sprite.Sprite, Loader):
                 self.finish = [i, j]
                 self.moving_finish += 1
 
-    def paint(self):
+    def paint(self, hero: Hero):
         i, j = self.current_cell
         self.true_false_cell[i][j] = True
         cell = self.cells[i][j]
@@ -140,6 +141,8 @@ class Field(pg.sprite.Sprite, Loader):
             if new_coords:
                 i_new, j_new = new_coords
                 self.current_cell = [i_new, j_new]
+                hero.add_moves(1)
+                hero.move_hero(self.current_cell, (self.left, self.top))
         elif isinstance(cell, Health):
             cell.add_health()
         elif isinstance(cell, Trap):

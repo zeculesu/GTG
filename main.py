@@ -30,7 +30,7 @@ def main():
                 running = False
             elif event.type == pg.KEYDOWN:
                 if event.key == pg.K_SPACE:
-                    if hero.get_moves() == 0:
+                    if hero.get_moves() == 0 and not field.is_finished():
                         field.show_dice(dice)
                         moves = dice.handle_rotating()
                         if moves:
