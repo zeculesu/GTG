@@ -164,8 +164,8 @@ class Field(pg.sprite.Sprite, Loader):
         screen.blit(backGround.image, backGround.rect)
         pg.font.init()
         font = self.load_font('Special Elite.ttf', 36)
-        move = font.render('Moves - %d' % moves, True, pg.Color('#92d4ec'))
-        live = font.render('Lives - %d' % lives, True, pg.Color('#92d4ec'))
+        move = font.render('Moves - %d' % moves, True, pg.Color('#ebebeb'))
+        live = font.render('Lives - %d' % lives, True, pg.Color('#ebebeb'))
         screen.blit(move, (self.left, 50))
         screen.blit(live, (self.left + font.size('Количество ходов - %d' % moves)[0] + 170, 50))
         translate = {Task: 'yellow',
