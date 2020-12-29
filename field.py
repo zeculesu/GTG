@@ -94,11 +94,15 @@ class Field(pg.sprite.Sprite, Loader):
                         self.be_way(i, j)
                         self.current_cell[1] += 1
                 elif event.key == pg.K_LEFT or event.key == pg.K_a:
+                    if hero.get_side() != 'left':
+                        hero.change_side('left')
                     if self.current_cell[0] != 0:
                         move_allowed = True
                         self.be_way(i, j)
                         self.current_cell[0] -= 1
                 elif event.key == pg.K_RIGHT or event.key == pg.K_d:
+                    if hero.get_side() != 'right':
+                        hero.change_side('right')
                     if self.current_cell[0] != len(self.cells) - 1:
                         move_allowed = True
                         self.be_way(i, j)
