@@ -114,6 +114,8 @@ class Field(pg.sprite.Sprite, Loader):
                         if hero.get_live() == 0:
                             self.froze()
                             self.finished = True
+                            if hero.get_side() != 'right':
+                                hero.change_side('right')
                             return 'end-screen'
                     self.move_finish(hero)
                     if callback == 'show-dice' and not self.at_finish():
@@ -121,7 +123,8 @@ class Field(pg.sprite.Sprite, Loader):
                 if self.at_finish():
                     self.froze()
                     self.finished = True
-                    print(hero.get_quantity())
+                    if hero.get_side() != 'right':
+                        hero.change_side('right')
                     return 'end-screen'
             return None
 
