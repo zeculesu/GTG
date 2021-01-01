@@ -19,7 +19,6 @@ def main():
     field.start(hero, dice)
     running = True
     clock = pg.time.Clock()
-    fps = 60
     img = Loader.load_image('end_screen.png')
     img = pg.transform.scale(img, (760, 760))
     bg = Background(img, [0, 0])
@@ -50,8 +49,11 @@ def main():
             all_sprites.draw(screen)
         if dice.is_rotating():
             dice.rotate()
+            fps = 10
+        else:
+            fps = 60
         pg.display.flip()
-        clock.tick(10)
+        clock.tick(fps)
     pg.quit()
 
 
