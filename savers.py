@@ -13,13 +13,20 @@ class StartScreen(Loader):
         fon = Loader.load_image('fon.png')
         screen.blit(fon, (0, 0))
         pg.display.flip()
-        while True:
+
+    @staticmethod
+    def show() -> bool:
+        running = True
+        proceeded = False
+        while running:
             for event in pg.event.get():
                 if event.type == pg.QUIT:
-                    pg.quit()
+                    running = False
                 elif event.type == pg.KEYDOWN:
-                    pg.quit()
-                    return
+                    running = False
+                    proceeded = True
+        pg.quit()
+        return proceeded
 
 
 class EndScreen(pg.sprite.Sprite):

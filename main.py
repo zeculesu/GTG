@@ -7,7 +7,10 @@ from savers import StartScreen, EndScreen, Background
 
 
 def main():
-    StartScreen()
+    start_screen = StartScreen()
+    proceeded = start_screen.show()
+    if not proceeded:
+        return
     pg.init()
     size = 760, 760
     screen = pg.display.set_mode(size)
