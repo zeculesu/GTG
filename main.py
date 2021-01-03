@@ -26,6 +26,7 @@ def main():
     img = pg.transform.scale(img, (760, 760))
     bg = Background(img, [0, 0])
     screen.fill((50, 41, 88))
+    pg.display.set_icon(Loader.load_image('icon.png'))
     while running:
         for event in pg.event.get():
             if event.type == pg.QUIT:

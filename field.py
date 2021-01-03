@@ -182,7 +182,7 @@ class Field(pg.sprite.Sprite, Loader):
                      Teleport: 'purple',
                      Health: 'green',
                      Trap: 'orange',
-                     Cell: 'black'}
+                     Cell: '#ff4573'}
         for i in range(12):
             for j in range(12):
                 # b4e9ff
