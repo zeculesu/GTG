@@ -20,6 +20,7 @@ class Field(pg.sprite.Sprite, Loader):
         self.top = screen_height // 2 - len(self.cells) * self.cell_size // 2.25
         self.true_false_cell, self.current_cell, self.finish = None, None, None
         self.frozen, self.finished, self.moving_finish = None, None, None
+        self.language = None
 
     def start(self, hero: Hero, dice: Dice) -> None:
         if self.finish:
@@ -27,6 +28,7 @@ class Field(pg.sprite.Sprite, Loader):
         self.true_false_cell = [[None] * 12 for _ in range(12)]
         self.distribution_of_cells(hero)
         self.current_cell = [0, 0]
+        self.language = 'en'
         self.frozen = True
         self.finished = False
         self.moving_finish = 0
@@ -174,18 +176,25 @@ class Field(pg.sprite.Sprite, Loader):
         screen.blit(backGround.image, backGround.rect)
         pg.font.init()
         font = self.load_font('Special Elite.ttf', 36)
-        move = font.render('Moves - %d' % moves, True, pg.Color('#ebebeb'))
-        live = font.render('Lives - %d' % lives, True, pg.Color('#ebebeb'))
+        if self.language == 'en':
+            move = font.render('Moves - %d' % moves, True, pg.Color('#ebebeb'))
+            live = font.render('Lives - %d' % lives, True, pg.Color('#ebebeb'))
+        else:
+            move = font.render('Ходы - %d' % moves, True, pg.Color('#ebebeb'))
+            live = font.render('Жизни - %d' % lives, True, pg.Color('#ebebeb'))
         screen.blit(move, (self.left, 50))
-        screen.blit(live, (self.left + font.size('Количество ходов - %d' % moves)[0] + 170, 50))
+        screen.blit(live, (510, 50))
         translate = {Task: 'yellow',
                      Teleport: 'purple',
                      Health: 'green',
                      Trap: 'orange',
                      Cell: '#ff4573'}
+        image_translate = Loader.load_image('language.png')
+        screen.blit(image_translate, image_translate.get_rect(
+            bottomright=(40, 40)))
         for i in range(12):
             for j in range(12):
-                # b4e9ff
+                # 92d4ec
                 screen.fill('#ebebeb', (self.left + self.cell_size * i,
                                         self.top + self.cell_size * j,
                                         self.cell_size, self.cell_size))
@@ -194,7 +203,7 @@ class Field(pg.sprite.Sprite, Loader):
                                                       self.top + self.cell_size * j,
                                                       self.cell_size, self.cell_size))
                 elif str(self.cells[i][j]) == "way":
-                    screen.fill(pg.Color('#92d4ec'), (self.left + self.cell_size * i,
+                    screen.fill(pg.Color('#b4e9ff'), (self.left + self.cell_size * i,
                                                       self.top + self.cell_size * j,
                                                       self.cell_size, self.cell_size))
                 elif self.true_false_cell[i][j]:
@@ -221,3 +230,12 @@ class Field(pg.sprite.Sprite, Loader):
         self.froze()
         dice.visibled()
         dice.rotating = True
+
+    def change_language(self):
+        if self.language == 'en':
+            self.language = 'ru'
+        else:
+            self.language = 'en'
+
+    def get_language(self):
+        return self.language

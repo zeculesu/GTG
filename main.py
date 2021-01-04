@@ -27,10 +27,21 @@ def main():
     bg = Background(img, [0, 0])
     screen.fill((50, 41, 88))
     pg.display.set_icon(Loader.load_image('icon.png'))
+    arrow = pg.sprite.Sprite(all_sprites)
+    arrow.image = Loader.load_image('arrow.png')
+    arrow.rect = arrow.image.get_rect()
+    pg.mouse.set_visible(False)
+    all_sprites.add(arrow)
     while running:
         for event in pg.event.get():
             if event.type == pg.QUIT:
                 running = False
+            if event.type == pg.MOUSEBUTTONDOWN:
+                x, y = event.pos
+                if x <= 40 and y <= 40:
+                    field.change_language()
+            if event.type == pg.MOUSEMOTION:
+                arrow.rect.x, arrow.rect.y = pg.mouse.get_pos()
             elif event.type == pg.KEYDOWN:
                 if event.key == pg.K_SPACE:
                     if hero.get_moves() == 0 and not field.is_finished():
@@ -46,7 +57,7 @@ def main():
                         field.render(screen, hero.get_moves(), hero.get_live(), bg)
                         all_sprites.update()
                         all_sprites.draw(screen)
-                        EndScreen(screen, hero, all_sprites)
+                        EndScreen(screen, hero, all_sprites, field.get_language())
         if not field.is_finished():
             field.render(screen, hero.get_moves(), hero.get_live(), bg)
             all_sprites.update()

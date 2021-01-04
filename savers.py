@@ -31,9 +31,10 @@ class StartScreen(Loader):
 
 
 class EndScreen(pg.sprite.Sprite):
-    def __init__(self, screen: pg.Surface, hero, group):
+    def __init__(self, screen: pg.Surface, hero, group, language):
         # super(EndScreen, self).__init__(group)
         self.hero = hero
+        self.language = language
         in_path = os.path.join('data', 'temp.png')
         out_path = os.path.join('data', 'temp2.png')
         pg.image.save(screen, in_path)
@@ -58,17 +59,32 @@ class EndScreen(pg.sprite.Sprite):
         font = Loader.load_font('Special Elite.ttf', 60)
         font_text = Loader.load_font('Special Elite.ttf', 40)
         font_text_2 = Loader.load_font('Special Elite.ttf', 30)
-        game_over = font.render('GAME OVER', True, pg.Color('#000000'))
-        passed = font_text.render('You passed %d cells' % self.hero.get_passed_cells(), True, pg.Color('#000000'))
-        cells = self.hero.get_quantity()
-        task = font_text.render('Task - %d' % cells['task'], True, pg.Color('#000000'))
-        health = font_text.render('Health - %d' % cells['health'], True, pg.Color('#000000'))
-        trap = font_text.render('Trap - %d' % cells['trap'], True, pg.Color('#000000'))
-        teleport = font_text.render('Teleport - %d' % cells['teleport'], True, pg.Color('#000000'))
-        cell = font_text.render('Ordinary Cell - %d' % cells['cell'], True, pg.Color('#000000'))
-        message_1 = font_text_2.render('To start again press', True, pg.Color('#000000'))
-        message_2 = font_text_2.render('the space bar', True, pg.Color('#000000'))
-        self.screen.blit(game_over, (230, 125))
+        if self.language == 'en':
+            game_over = font.render('GAME OVER', True, pg.Color('#141b47'))
+            passed = font_text.render('You passed %d cells' % self.hero.get_passed_cells(), True, pg.Color('#141b47'))
+            cells = self.hero.get_quantity()
+            task = font_text.render('Task - %d' % cells['task'], True, pg.Color('#141b47'))
+            health = font_text.render('Health - %d' % cells['health'], True, pg.Color('#141b47'))
+            trap = font_text.render('Trap - %d' % cells['trap'], True, pg.Color('#141b47'))
+            teleport = font_text.render('Teleport - %d' % cells['teleport'], True, pg.Color('#141b47'))
+            cell = font_text.render('Ordinary Cell - %d' % cells['cell'], True, pg.Color('#141b47'))
+            message_1 = font_text_2.render('To start again press', True, pg.Color('#141b47'))
+            message_2 = font_text_2.render('the space bar', True, pg.Color('#141b47'))
+            self.screen.blit(game_over, (230, 125))
+            self.screen.blit(message_2, (275, 610))
+        else:
+            game_over = font.render('ИГРА ОКОНЧЕНА', True, pg.Color('#141b47'))
+            passed = font_text.render('Вы прошли %d клеток' % self.hero.get_passed_cells(), True, pg.Color('#141b47'))
+            cells = self.hero.get_quantity()
+            task = font_text.render('Задания - %d' % cells['task'], True, pg.Color('#141b47'))
+            health = font_text.render('Здоровье - %d' % cells['health'], True, pg.Color('#141b47'))
+            trap = font_text.render('Капканы - %d' % cells['trap'], True, pg.Color('#141b47'))
+            teleport = font_text.render('Телепорты - %d' % cells['teleport'], True, pg.Color('#141b47'))
+            cell = font_text.render('Обычные клетки - %d' % cells['cell'], True, pg.Color('#141b47'))
+            message_1 = font_text_2.render('Чтобы начать заново', True, pg.Color('#141b47'))
+            message_2 = font_text_2.render('нажмите пробел', True, pg.Color('#141b47'))
+            self.screen.blit(game_over, (150, 115))
+            self.screen.blit(message_2, (255, 610))
         self.screen.blit(passed, (90, 200))
         self.screen.blit(task, (90, 260))
         self.screen.blit(health, (90, 320))
@@ -76,7 +92,6 @@ class EndScreen(pg.sprite.Sprite):
         self.screen.blit(teleport, (90, 440))
         self.screen.blit(cell, (90, 500))
         self.screen.blit(message_1, (225, 580))
-        self.screen.blit(message_2, (275, 610))
 
 
 class Background(pg.sprite.Sprite):
