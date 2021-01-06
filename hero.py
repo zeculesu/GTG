@@ -58,7 +58,7 @@ class Hero(pg.sprite.Sprite, Loader):
             left, top = indent
             self.rect = self.image.get_rect(
                 bottomright=(left + self.size_hero * (current_cell[0] + 1),
-                            top + self.size_hero * (current_cell[1] + 1)))
+                             top + self.size_hero * (current_cell[1] + 1)))
             return 'show-dice' if self.moves == 0 else None
 
     def get_moves(self) -> int:

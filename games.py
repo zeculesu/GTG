@@ -2,10 +2,11 @@ import pygame as pg
 from random import randint
 
 from hero import Hero
+from savers import Background
 # from field import Field
 
 
-class StarFall:
+class MiniGame:
     def __init__(self, hero: Hero, field, surface: pg.Surface):
         self.hero = hero
         self.field = field
@@ -17,6 +18,9 @@ class StarFall:
 
     def loop(self):
         callback = None
+        # all_sprites = pg.sprite.Group()
+        # bg = Background('')
+        # all_sprites.add()
         while self.running:
             for event in pg.event.get():
                 if event.type == pg.QUIT:
@@ -29,3 +33,8 @@ class StarFall:
                 self.screen.fill('black')
                 pg.display.flip()
         return callback
+
+
+class StarFall(MiniGame):
+    def handle_move(self):
+        pass

@@ -21,9 +21,7 @@ def main():
     field.start(hero, dice)
     running = True
     clock = pg.time.Clock()
-    img = Loader.load_image('end_screen.png')
-    img = pg.transform.scale(img, (760, 760))
-    bg = Background(img, [0, 0])
+    bg = Background('end_screen.png', [0, 0], size=(760, 760))
     screen.fill((50, 41, 88))
     pg.display.set_icon(Loader.load_image('icon.png'))
     arrow = pg.sprite.Sprite(all_sprites)
