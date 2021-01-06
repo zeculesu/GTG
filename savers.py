@@ -93,9 +93,12 @@ class EndScreen(pg.sprite.Sprite):
         self.screen.blit(message_1, (225, 580))
 
 
-class Background(pg.sprite.Sprite):
-    def __init__(self, image_file, location):
+class Background(pg.sprite.Sprite, Loader):
+    def __init__(self, image_filename, position, size=None):
         pg.sprite.Sprite.__init__(self)   # call Sprite initializer
-        self.image = image_file
+        img = self.load_image(image_filename)
+        if size:
+            img = pg.transform.scale(img, size)
+        self.image = img
         self.rect = self.image.get_rect()
-        self.rect.left, self.rect.top = location
+        self.rect.left, self.rect.top = position
