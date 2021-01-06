@@ -69,13 +69,15 @@ class Hero(pg.sprite.Sprite, Loader):
 
     def handle_game_move(self, event, screen_width):
         if event.key == pg.K_LEFT or event.key == pg.K_a:
-            if self.get_side() != 'left':
-                self.change_side('left')
-            self.rect.x = (self.rect.x - self.step) % (screen_width - int(self.image.get_width() * 0.25))
+            if self.rect.x - self.step >= self.image.get_width() * 0.1:
+                self.rect.x -= self.step
+                if self.get_side() != 'left':
+                    self.change_side('left')
         elif event.key == pg.K_RIGHT or event.key == pg.K_d:
-            if self.get_side() != 'right':
-                self.change_side('right')
-            self.rect.x = (self.rect.x + self.step) % (screen_width - self.image.get_width())
+            if self.rect.x + self.step <= screen_width - self.image.get_width():
+                self.rect.x += self.step
+                if self.get_side() != 'right':
+                    self.change_side('right')
 
     def get_moves(self) -> int:
         return self.moves

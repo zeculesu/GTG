@@ -3,6 +3,7 @@ from random import randint
 
 from hero import Hero
 from savers import Background
+from tiles import Comet
 # from main import SCREEN_SIZE
 # from field import Field
 
@@ -34,17 +35,31 @@ class StarFall(MiniGame):
         self.hero.rect.y = int(height * 0.8)
         self.hero.set_step(10)
         all_sprites.add(bg, self.hero)
+        stars = pg.sprite.Group()
+        groups = [all_sprites, stars]
+        for _ in range(15):
+            Comet(stars, screen_size)
+        fps = 60
+        clock = pg.time.Clock()
+        tick = 0
         while self.running:
             for event in pg.event.get():
                 if event.type == pg.QUIT:
                     callback = 'closeEvent'
                     self.running = False
                 elif event.type == pg.KEYDOWN:
-                    # if event.key == pg.K_ESCAPE:
-                    #     callback = 'gameOver'
-                    #     self.running = False
+                    if event.key == pg.K_ESCAPE:
+                        callback = 'gameOver'
+                        self.running = False
                     self.hero.handle_game_move(event, width)
-                all_sprites.update()
-                all_sprites.draw(self.screen)
-                pg.display.flip()
+            for group in groups:
+                group.update()
+                group.draw(self.screen)
+            tick += 1
+            if tick == 200:
+                tick = 0
+                for _ in range(10):
+                    Comet(stars, screen_size)
+            clock.tick(fps)
+            pg.display.flip()
         return callback
