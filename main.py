@@ -32,6 +32,8 @@ def main():
     arrow.rect = arrow.image.get_rect()
     pg.mouse.set_visible(False)
     all_sprites.add(arrow)
+    fps = 60
+    dice_tick = 0
     while running:
         for event in pg.event.get():
             if event.type == pg.QUIT:
@@ -63,10 +65,10 @@ def main():
             all_sprites.update()
             all_sprites.draw(screen)
         if dice.is_rotating():
-            dice.rotate()
-            fps = 10
-        else:
-            fps = 60
+            dice_tick += 1
+            rotation = dice.rotate(dice_tick)
+            if rotation:
+                dice_tick = 0
         pg.display.flip()
         clock.tick(fps)
     pg.quit()

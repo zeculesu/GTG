@@ -39,8 +39,10 @@ class Dice(pg.sprite.Sprite, Loader):
         self.rotating = not self.rotating
         return self.images.index(self.image) + 1 if not self.is_rotating() else None
 
-    def rotate(self):
-        if self.is_rotating():
+    def rotate(self, tick: int) -> bool:
+        if self.is_rotating() and tick > 5:
             prev_image = self.image
             while self.image == prev_image:
                 self.image = choice(self.images)
+            return True
+        return False
