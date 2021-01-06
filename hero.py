@@ -6,9 +6,8 @@ class Hero(pg.sprite.Sprite, Loader):
     img_filename = 'hero_3.png'
 
     def __init__(self, current_cell, indent, group: pg.sprite.AbstractGroup):
-        self.image = self.load_image(Hero.img_filename)
-        self.image = pg.transform.scale(self.image, (50, 50))
-        self.image.set_colorkey((255, 255, 255))
+        self.image = None
+        self.resize(50, 50)  # Загружаем картинку и растягиваем под нужный размер
         self.side = None
         super(Hero, self).__init__(group)
         self.live, self.size_hero, self.moves, self.cells_passed = None, None, None, None
@@ -19,7 +18,10 @@ class Hero(pg.sprite.Sprite, Loader):
                          'cell': None}
         self.start(current_cell, indent)
 
-    def get_side(self):
+    def resize(self, width: int, height: int) -> None:
+        self.image = pg.transform.scale(self.load_image(Hero.img_filename), (width, height))
+
+    def get_side(self) -> str:
         return self.side
 
     def start(self, current_cell, indent):
@@ -33,7 +35,7 @@ class Hero(pg.sprite.Sprite, Loader):
                          'cell': 0}
         self.moves = 1  # герой вступает на поле
         self.cells_passed = -1
-        self.move_hero(current_cell, indent)
+        self.move_hero_at_field(current_cell, indent)
 
     def get_quantity(self):
         return self.quantity
@@ -51,7 +53,7 @@ class Hero(pg.sprite.Sprite, Loader):
         self.side = side
         self.image = pg.transform.flip(self.image, True, False)
 
-    def move_hero(self, current_cell, indent):
+    def move_hero_at_field(self, current_cell, indent):
         if self.moves != 0:
             self.moves -= 1
             self.cells_passed += 1

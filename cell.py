@@ -67,7 +67,7 @@ class Teleport(Cell):
             i_new, j_new = randint(1, 11), randint(1, 10)
             while randint(1, 11) == self.i and randint(1, 10) == self.j:
                 i_new, j_new = randint(1, 11), randint(1, 10)
-            self.hero.move_hero([i_new, j_new], (self.left, self.top))
+            self.hero.move_hero_at_field([i_new, j_new], (self.left, self.top))
             self.number_of_special_cells('teleport')
             self.disable()
             return [i_new, j_new]

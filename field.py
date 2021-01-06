@@ -117,7 +117,7 @@ class Field(pg.sprite.Sprite, Loader):
                         self.be_way(i, j)
                         self.current_cell[0] += 1
                 if move_allowed:
-                    callback = hero.move_hero(self.current_cell, (self.left, self.top))
+                    callback = hero.move_hero_at_field(self.current_cell, (self.left, self.top))
                     if hero.get_moves() == 0:
                         self.paint(hero)
                         if hero.get_live() == 0:
@@ -158,7 +158,7 @@ class Field(pg.sprite.Sprite, Loader):
                 i_new, j_new = new_coords
                 self.current_cell = [i_new, j_new]
                 hero.add_moves(1)
-                hero.move_hero(self.current_cell, (self.left, self.top))
+                hero.move_hero_at_field(self.current_cell, (self.left, self.top))
         elif isinstance(cell, Health):
             cell.add_health()
         elif isinstance(cell, Trap):

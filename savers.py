@@ -98,7 +98,7 @@ class Background(pg.sprite.Sprite, Loader):
         pg.sprite.Sprite.__init__(self)   # call Sprite initializer
         img = self.load_image(image_filename)
         if size:
-            img = pg.transform.scale(img, size)
+            img = pg.transform.smoothscale(img, size)
         self.image = img
         self.rect = self.image.get_rect()
         self.rect.left, self.rect.top = position

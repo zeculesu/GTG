@@ -5,14 +5,15 @@ from dice import Dice
 from loader import Loader
 from savers import StartScreen, EndScreen, Background
 
+SCREEN_SIZE = 760, 760
+
 
 def main():
     proceeded = StartScreen.show()
     if not proceeded:
         return
     pg.init()
-    size = 760, 760
-    screen = pg.display.set_mode(size)
+    screen = pg.display.set_mode(SCREEN_SIZE)
     pg.display.set_caption('Goof the Game')
     all_sprites = pg.sprite.Group()
     field = Field(screen, all_sprites)
@@ -21,7 +22,7 @@ def main():
     field.start(hero, dice)
     running = True
     clock = pg.time.Clock()
-    bg = Background('end_screen.png', [0, 0], size=(760, 760))
+    bg = Background('end_screen.png', [0, 0], size=SCREEN_SIZE)
     screen.fill((50, 41, 88))
     pg.display.set_icon(Loader.load_image('icon.png'))
     arrow = pg.sprite.Sprite(all_sprites)
@@ -33,7 +34,7 @@ def main():
     dice_tick = 0
     while running:
         if field.task_is_active():
-            callback = field.current_game.loop()
+            callback = field.current_game.loop(SCREEN_SIZE)
             if callback == 'closeEvent':
                 running = False
             elif callback == 'gameOver':
