@@ -1,0 +1,66 @@
+body{
+    width:80%;
+    margin:30px auto;
+    background-color: #120f20;
+    padding-top:30px;
+    color: #ebebeb;
+    font-size: 20px;
+}
+
+span, div, h1, button{
+    color: #ebebeb;
+    font-size: 20px;
+}
+
+p, h2, h4{
+    margin-left: 10%;
+}
+
+header{height: 60px;
+    border-radius: 5px;
+    width: 80%;
+    top:0;
+    z-index:1000;
+    background: #190f44 url(data/image/ico.png) no-repeat 5% 1%;
+    text-align: center;
+    position: fixed;}
+    header h1,header h2, header h3{
+        font-family: Arial, Helvetica, sans-serif; color:#ebebeb;
+        font-size: 100px;
+        }
+    header h1{
+        margin-top:5px;
+        }   
+button{
+    width: 140px;
+    height: 60px;
+    position: absolute;
+    top: 0;
+    outline: none;
+    background-color: #190f44;
+    border-radius: 5px;
+    border: none;
+    outline: none;
+}
+button:hover {
+    background-color: #120f20;
+    } 
+.button1{
+    right: 280px;
+    }
+.button2{
+    right: 140px;
+    }
+.button3{
+    right: 0px;
+    }
+.title{
+    font-size: 36px;
+    padding-top: 10px;
+    text-align: center;
+    }
+
+.cell{
+    margin-right: 80%;
+    float: right;
+}
