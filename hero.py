@@ -16,6 +16,7 @@ class Hero(pg.sprite.Sprite, Loader):
                          'trap': None,
                          'teleport': None,
                          'cell': None}
+        self.step = None
         self.start(current_cell, indent)
 
     def resize(self, width: int, height: int) -> None:
@@ -49,6 +50,9 @@ class Hero(pg.sprite.Sprite, Loader):
     def get_live(self) -> int:
         return self.live
 
+    def set_step(self, step: int):
+        self.step = step
+
     def change_side(self, side):
         self.side = side
         self.image = pg.transform.flip(self.image, True, False)
@@ -62,6 +66,16 @@ class Hero(pg.sprite.Sprite, Loader):
                 bottomright=(left + self.size_hero * (current_cell[0] + 1),
                              top + self.size_hero * (current_cell[1] + 1)))
             return 'show-dice' if self.moves == 0 else None
+
+    def handle_game_move(self, event, screen_width):
+        if event.key == pg.K_LEFT or event.key == pg.K_a:
+            if self.get_side() != 'left':
+                self.change_side('left')
+            self.rect.x = (self.rect.x - self.step) % (screen_width - int(self.image.get_width() * 0.25))
+        elif event.key == pg.K_RIGHT or event.key == pg.K_d:
+            if self.get_side() != 'right':
+                self.change_side('right')
+            self.rect.x = (self.rect.x + self.step) % (screen_width - self.image.get_width())
 
     def get_moves(self) -> int:
         return self.moves

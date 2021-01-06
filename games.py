@@ -32,6 +32,7 @@ class StarFall(MiniGame):
         width, height = screen_size
         self.hero.rect.x = width // 2 - self.hero.image.get_width() // 2
         self.hero.rect.y = int(height * 0.8)
+        self.hero.set_step(10)
         all_sprites.add(bg, self.hero)
         while self.running:
             for event in pg.event.get():
@@ -39,9 +40,10 @@ class StarFall(MiniGame):
                     callback = 'closeEvent'
                     self.running = False
                 elif event.type == pg.KEYDOWN:
-                    if event.key == pg.K_ESCAPE:
-                        callback = 'gameOver'
-                        self.running = False
+                    # if event.key == pg.K_ESCAPE:
+                    #     callback = 'gameOver'
+                    #     self.running = False
+                    self.hero.handle_game_move(event, width)
                 all_sprites.update()
                 all_sprites.draw(self.screen)
                 pg.display.flip()
