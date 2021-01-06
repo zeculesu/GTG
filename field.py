@@ -21,7 +21,9 @@ class Field(pg.sprite.Sprite, Loader):
         self.true_false_cell, self.current_cell, self.finish = None, None, None
         self.frozen, self.finished, self.moving_finish = None, None, None
         self.language = None
+        self.current_game = None
         self.last_game = None
+        self.task_active = False
 
     def start(self, hero: Hero, dice: Dice) -> None:
         if self.finish:
@@ -37,11 +39,12 @@ class Field(pg.sprite.Sprite, Loader):
         dice.start()
 
     def distribution_of_cells(self, hero: Hero) -> None:
-        options = {Cell: [0, 58],
-                   Trap: [0, 40],
-                   Health: [0, 20],
-                   Task: [0, 100],
-                   Teleport: [0, 60]}
+        # options = {Cell: [0, 58],
+        #            Trap: [0, 40],
+        #            Health: [0, 20],
+        #            Task: [0, 100],
+        #            Teleport: [0, 60]}
+        options = {Task: [0, 144]}
         for i in range(12):
             for j in range(12):
                 if i == 0 and j == 0:
@@ -80,6 +83,9 @@ class Field(pg.sprite.Sprite, Loader):
 
     def is_finished(self) -> bool:
         return self.finished
+
+    def task_is_active(self) -> bool:
+        return self.task_active
 
     def handle_move(self, event: pg.event.Event, hero: Hero, dice: Dice) -> Union[str, None]:
         if not self.frozen:
@@ -159,7 +165,9 @@ class Field(pg.sprite.Sprite, Loader):
             cell.minus_health()
         elif isinstance(cell, Task):
             cell.number_of_special_cells('task')
-            cell.start_game(self.last_game)
+            self.current_game = cell.start_game(self.screen, hero, self, self.last_game)
+            self.last_game = self.current_game.__class__
+            self.task_active = True
         elif isinstance(cell, Cell):
             cell.number_of_special_cells('cell')
 
@@ -202,8 +210,8 @@ class Field(pg.sprite.Sprite, Loader):
                                         self.cell_size, self.cell_size))
                 if str(self.cells[i][j]) == "finish":
                     pg.draw.rect(screen, '#fe1f18', (self.left + self.cell_size * i,
-                                                      self.top + self.cell_size * j,
-                                                      self.cell_size, self.cell_size))
+                                                     self.top + self.cell_size * j,
+                                                     self.cell_size, self.cell_size))
                 elif str(self.cells[i][j]) == "way":
                     screen.fill(pg.Color('#b4e9ff'), (self.left + self.cell_size * i,
                                                       self.top + self.cell_size * j,
@@ -241,3 +249,6 @@ class Field(pg.sprite.Sprite, Loader):
 
     def get_language(self):
         return self.language
+
+    def disable_task(self):
+        self.task_active = False

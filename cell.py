@@ -1,6 +1,10 @@
-from random import randint
+from pygame import Surface
+from random import randint, choice
 from games import StarFall
 from typing import Union
+
+from hero import Hero
+# from field import Field
 
 
 GAMES = [StarFall]
@@ -39,12 +43,15 @@ class Health(Cell):
 
 
 class Task(Cell):
-    def start_game(self, last_game: Union[StarFall]):
-        if last_game:
-            last_game_idx = GAMES.index(last_game)
-            games = GAMES[:last_game_idx] + GAMES[last_game_idx + 1:]
-        else:
-            games = GAMES[:]
+    def start_game(self, surface: Surface, hero: Hero, field, last_game: Union[StarFall]):
+        # if last_game:
+        #     last_game_idx = GAMES.index(last_game)
+        #     games = GAMES[:last_game_idx] + GAMES[last_game_idx + 1:]
+        # else:
+        games = GAMES[:]
+        game = choice(games)(hero, field, surface)  # initialization of a game
+        game.start()
+        return game
 
 
 class Teleport(Cell):
