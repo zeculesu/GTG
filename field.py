@@ -3,7 +3,7 @@ import pygame as pg
 from typing import Union
 
 from loader import Loader
-from hero import Hero
+from hero import FieldHero
 from dice import Dice
 from cell import Cell, Trap, Health, Task, Teleport
 
@@ -25,7 +25,7 @@ class Field(pg.sprite.Sprite, Loader):
         self.last_game = None
         self.task_active = False
 
-    def start(self, hero: Hero, dice: Dice) -> None:
+    def start(self, hero: FieldHero, dice: Dice) -> None:
         if self.finish:
             self.cells[self.finish[0]][self.finish[1]] = None
         self.true_false_cell = [[None] * 12 for _ in range(12)]
@@ -38,7 +38,7 @@ class Field(pg.sprite.Sprite, Loader):
         hero.start(self.current_cell, (self.left, self.top))
         dice.start()
 
-    def distribution_of_cells(self, hero: Hero) -> None:
+    def distribution_of_cells(self, hero: FieldHero) -> None:
         # options = {Cell: [0, 58],
         #            Trap: [0, 40],
         #            Health: [0, 20],
@@ -87,7 +87,7 @@ class Field(pg.sprite.Sprite, Loader):
     def task_is_active(self) -> bool:
         return self.task_active
 
-    def handle_move(self, event: pg.event.Event, hero: Hero, dice: Dice) -> Union[str, None]:
+    def handle_move(self, event: pg.event.Event, hero: FieldHero, dice: Dice) -> Union[str, None]:
         if not self.frozen:
             i, j = self.current_cell
             move_allowed = False
@@ -117,7 +117,7 @@ class Field(pg.sprite.Sprite, Loader):
                         self.be_way(i, j)
                         self.current_cell[0] += 1
                 if move_allowed:
-                    callback = hero.move_hero_at_field(self.current_cell, (self.left, self.top))
+                    callback = hero.move_hero(self.current_cell, (self.left, self.top))
                     if hero.get_moves() == 0:
                         self.paint(hero)
                         if hero.get_live() == 0:
@@ -137,7 +137,7 @@ class Field(pg.sprite.Sprite, Loader):
                     return 'end-screen'
             return None
 
-    def move_finish(self, hero: Hero) -> None:
+    def move_finish(self, hero: FieldHero) -> None:
         if self.moving_finish < 3:
             if 'finish' in self.get_sibling_cells(self.current_cell[0], self.current_cell[1]):
                 i, j = choice([0, 11]), choice([0, 11])
@@ -148,7 +148,7 @@ class Field(pg.sprite.Sprite, Loader):
                 self.finish = [i, j]
                 self.moving_finish += 1
 
-    def paint(self, hero: Hero):
+    def paint(self, hero: FieldHero):
         i, j = self.current_cell
         self.true_false_cell[i][j] = True
         cell = self.cells[i][j]
@@ -158,14 +158,14 @@ class Field(pg.sprite.Sprite, Loader):
                 i_new, j_new = new_coords
                 self.current_cell = [i_new, j_new]
                 hero.add_moves(1)
-                hero.move_hero_at_field(self.current_cell, (self.left, self.top))
+                hero.move_hero(self.current_cell, (self.left, self.top))
         elif isinstance(cell, Health):
             cell.add_health()
         elif isinstance(cell, Trap):
             cell.minus_health()
         elif isinstance(cell, Task):
             cell.number_of_special_cells('task')
-            self.current_game = cell.start_game(self.screen, hero, self, self.last_game)
+            self.current_game = cell.start_game(self.screen, self, self.last_game)
             self.last_game = self.current_game.__class__
             self.task_active = True
         elif isinstance(cell, Cell):

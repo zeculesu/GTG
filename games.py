@@ -1,7 +1,7 @@
 import pygame as pg
 from random import randint
 
-from hero import Hero
+from hero import TaskHero
 from savers import Background
 from tiles import Comet
 # from main import SCREEN_SIZE
@@ -9,8 +9,8 @@ from tiles import Comet
 
 
 class MiniGame:
-    def __init__(self, hero: Hero, field, surface: pg.Surface):
-        self.hero = hero
+    def __init__(self, field, surface: pg.Surface):
+        self.hero = TaskHero()
         self.field = field
         self.screen = surface
         self.running = False
@@ -51,7 +51,7 @@ class StarFall(MiniGame):
                     if event.key == pg.K_ESCAPE:
                         callback = 'gameOver'
                         self.running = False
-                    self.hero.handle_game_move(event, width)
+                    self.hero.make_move(event, width)
             for group in groups:
                 group.update()
                 group.draw(self.screen)

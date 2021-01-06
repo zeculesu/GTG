@@ -3,7 +3,7 @@ from random import randint, choice
 from games import StarFall
 from typing import Union
 
-from hero import Hero
+from hero import FieldHero
 # from field import Field
 
 
@@ -43,13 +43,13 @@ class Health(Cell):
 
 
 class Task(Cell):
-    def start_game(self, surface: Surface, hero: Hero, field, last_game: Union[StarFall]):
+    def start_game(self, surface: Surface, field, last_game: Union[StarFall]):
         # if last_game:
         #     last_game_idx = GAMES.index(last_game)
         #     games = GAMES[:last_game_idx] + GAMES[last_game_idx + 1:]
         # else:
         games = GAMES[:]
-        game = choice(games)(hero, field, surface)  # initialization of a game
+        game = choice(games)(field, surface)  # initialization of a game
         game.start()
         return game
 
@@ -67,7 +67,7 @@ class Teleport(Cell):
             i_new, j_new = randint(1, 11), randint(1, 10)
             while randint(1, 11) == self.i and randint(1, 10) == self.j:
                 i_new, j_new = randint(1, 11), randint(1, 10)
-            self.hero.move_hero_at_field([i_new, j_new], (self.left, self.top))
+            self.hero.move_hero([i_new, j_new], (self.left, self.top))
             self.number_of_special_cells('teleport')
             self.disable()
             return [i_new, j_new]

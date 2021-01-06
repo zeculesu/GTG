@@ -1,6 +1,6 @@
 import pygame as pg
 from field import Field
-from hero import Hero
+from hero import FieldHero
 from dice import Dice
 from loader import Loader
 from savers import StartScreen, EndScreen, Background
@@ -17,7 +17,7 @@ def main():
     pg.display.set_caption('Goof the Game')
     all_sprites = pg.sprite.Group()
     field = Field(screen, all_sprites)
-    hero = Hero((0, 0), field.get_indent(), all_sprites)
+    hero = FieldHero((0, 0), field.get_indent(), all_sprites)
     dice = Dice(field.get_size(), field.get_indent(), all_sprites)
     field.start(hero, dice)
     running = True
