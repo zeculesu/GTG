@@ -21,6 +21,7 @@ class Field(pg.sprite.Sprite, Loader):
         self.true_false_cell, self.current_cell, self.finish = None, None, None
         self.frozen, self.finished, self.moving_finish = None, None, None
         self.language = None
+        self.last_game = None
 
     def start(self, hero: Hero, dice: Dice) -> None:
         if self.finish:
@@ -158,6 +159,7 @@ class Field(pg.sprite.Sprite, Loader):
             cell.minus_health()
         elif isinstance(cell, Task):
             cell.number_of_special_cells('task')
+            cell.start_game(self.last_game)
         elif isinstance(cell, Cell):
             cell.number_of_special_cells('cell')
 

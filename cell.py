@@ -1,5 +1,9 @@
-import pygame as pg
 from random import randint
+from games import StarFall
+from typing import Union
+
+
+GAMES = [StarFall]
 
 
 class Cell:
@@ -19,9 +23,6 @@ class Cell:
 
 
 class Trap(Cell):
-    def __init__(self, hero):
-        super(Trap, self).__init__(hero)
-
     def minus_health(self):
         if self.is_active():
             self.hero.add_live(-1)
@@ -30,9 +31,6 @@ class Trap(Cell):
 
 
 class Health(Cell):
-    def __init__(self, hero):
-        super(Health, self).__init__(hero)
-
     def add_health(self):
         if self.is_active():
             self.hero.add_live(1)
@@ -41,7 +39,12 @@ class Health(Cell):
 
 
 class Task(Cell):
-    pass
+    def start_game(self, last_game: Union[StarFall]):
+        if last_game:
+            last_game_idx = GAMES.index(last_game)
+            games = GAMES[:last_game_idx] + GAMES[last_game_idx + 1:]
+        else:
+            games = GAMES[:]
 
 
 class Teleport(Cell):
