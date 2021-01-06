@@ -7,8 +7,7 @@ from savers import StartScreen, EndScreen, Background
 
 
 def main():
-    start_screen = StartScreen()
-    proceeded = start_screen.show()
+    proceeded = StartScreen.show()
     if not proceeded:
         return
     pg.init()

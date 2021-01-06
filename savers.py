@@ -5,7 +5,8 @@ from PIL import Image, ImageFilter
 
 
 class StartScreen(Loader):
-    def __init__(self):
+    @staticmethod
+    def show() -> bool:
         pg.init()
         size = 700, 436
         screen = pg.display.set_mode(size)
@@ -15,8 +16,6 @@ class StartScreen(Loader):
         screen.blit(fon, (0, 0))
         pg.display.flip()
 
-    @staticmethod
-    def show() -> bool:
         running = True
         proceeded = False
         while running:
