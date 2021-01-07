@@ -20,7 +20,7 @@ class Field(pg.sprite.Sprite, Loader):
         self.top = screen_height // 2 - len(self.cells) * self.cell_size // 2.25
         self.true_false_cell, self.current_cell, self.finish = None, None, None
         self.frozen, self.finished, self.moving_finish = None, None, None
-        self.language = None
+        self.language = 'en'
         self.current_game = None
         self.last_game = None
         self.task_active = False
@@ -31,7 +31,6 @@ class Field(pg.sprite.Sprite, Loader):
         self.true_false_cell = [[None] * 12 for _ in range(12)]
         self.distribution_of_cells(hero)
         self.current_cell = [0, 0]
-        self.language = 'en'
         self.frozen = True
         self.finished = False
         self.moving_finish = 0
@@ -242,10 +241,7 @@ class Field(pg.sprite.Sprite, Loader):
         dice.rotating = True
 
     def change_language(self):
-        if self.language == 'en':
-            self.language = 'ru'
-        else:
-            self.language = 'en'
+        self.language = 'ru' if self.language == 'en' else 'en'
 
     def get_language(self):
         return self.language
