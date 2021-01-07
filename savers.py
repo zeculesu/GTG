@@ -34,6 +34,13 @@ class EndScreen(pg.sprite.Sprite):
         # super(EndScreen, self).__init__(group)
         self.hero = hero
         self.language = language
+        self.screen = screen
+        self.blur_surf(screen)
+        self.clear_temp_files()
+        self.update()
+
+    @staticmethod
+    def blur_surf(screen: pg.Surface):
         in_path = os.path.join('data', 'temp.png')
         out_path = os.path.join('data', 'temp2.png')
         pg.image.save(screen, in_path)
@@ -41,9 +48,6 @@ class EndScreen(pg.sprite.Sprite):
         pil_img = pil_img.filter(ImageFilter.GaussianBlur(radius=6))
         pil_img.save(out_path)
         screen.blit(pg.image.load(out_path), screen.get_rect())
-        self.screen = screen
-        self.clear_temp_files()
-        self.update()
 
     @staticmethod
     def clear_temp_files():

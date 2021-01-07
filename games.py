@@ -4,7 +4,7 @@ from PIL import Image, ImageFilter
 from random import randint
 from loader import Loader
 from hero import TaskHero
-from savers import Background
+from savers import Background, EndScreen
 from tiles import Comet, Star
 
 
@@ -64,14 +64,10 @@ class StarFall(MiniGame):
                 elif event.type == pg.KEYDOWN:
                     if event.key == pg.K_SPACE:
                         state = not state
-                        in_path = os.path.join('data', 'temp.png')
-                        out_path = os.path.join('data', 'temp2.png')
-                        pg.image.save(self.screen, in_path)
-                        pil_img = Image.open(in_path)
-                        pil_img = pil_img.filter(ImageFilter.GaussianBlur(radius=6))
-                        pil_img.save(out_path)
-                        self.screen.blit(pg.image.load(out_path), self.screen.get_rect())
-                        self.screen.blit(font.render('PAUSE', True, pg.Color('#ebebeb')),
+                        EndScreen.blur_surf(self.screen)
+                        EndScreen.clear_temp_files()
+                        text = 'PAUSE' if self.field.get_language() == 'en' else 'ПАУЗА'
+                        self.screen.blit(font.render(text, True, pg.Color('#ebebeb')),
                                          (self.screen.get_width() // 2 - font.size('PAUSE')[0] * 0.5,
                                           self.screen.get_height() // 2.5))
                     if not state:
