@@ -86,6 +86,7 @@ class TaskHero(Hero):
         self.resize(110, 110)
         self.rect = self.image.get_rect()
         self.step = None
+        self.mask = pg.mask.from_surface(self.image)
 
     def make_move(self, event, screen_width):
         if event.key == pg.K_LEFT or event.key == pg.K_a:

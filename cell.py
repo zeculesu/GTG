@@ -49,7 +49,7 @@ class Task(Cell):
         #     games = GAMES[:last_game_idx] + GAMES[last_game_idx + 1:]
         # else:
         games = GAMES[:]
-        game = choice(games)(field, surface)  # initialization of a game
+        game = choice(games)(field, surface, self.hero.get_live())  # initialization of a game
         game.start()
         return game
 
