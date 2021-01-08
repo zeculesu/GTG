@@ -31,11 +31,37 @@ class MiniGame:
         self.running = True
 
 
+class RunningInForest(MiniGame):
+    background_img = 'forest_long.png'
+    background_img_reverse = 'forest_long_reverse.png'
+
+    def loop(self, screen_size: tuple):
+        callback = None
+        width, height = screen_size
+        all_sprites = pg.sprite.Group()
+        bg_1 = Background(RunningInForest.background_img, [0, 0])
+        bg_2 = Background(RunningInForest.background_img_reverse, [bg_1.image.get_width(), 0])
+        self.hero.resize(100, 100)
+        self.hero.rect.x = width * 0.1
+        self.hero.rect.y = int(height * 0.8)
+        all_sprites.add(bg_1, bg_2, self.hero)
+        running = True
+        fps = 60
+        clock = pg.time.Clock()
+        while running:
+            for event in pg.event.get():
+                if event.type == pg.QUIT:
+                    callback = 'closeEvent'
+                    running = False
+            all_sprites.update()
+            all_sprites.draw(self.screen)
+            pg.display.flip()
+            clock.tick(fps)
+        return callback
+
+
 class StarFall(MiniGame):
     background_img = 'forest.jpg'
-
-    def handle_move(self):
-        pass
 
     def end_game(self, font, state: str) -> None:
         EndScreen.blur_surf(self.screen)

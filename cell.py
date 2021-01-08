@@ -1,13 +1,13 @@
 from pygame import Surface
 from random import randint, choice
-from games import StarFall
+from games import StarFall, RunningInForest
 from typing import Union
 
 from hero import FieldHero
 # from field import Field
 
 
-GAMES = [StarFall]
+GAMES = [RunningInForest]
 
 
 class Cell:

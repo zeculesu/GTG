@@ -104,10 +104,16 @@ class EndScreen:
 
 class Background(pg.sprite.Sprite, Loader):
     def __init__(self, image_filename, position, size=None):
-        pg.sprite.Sprite.__init__(self)   # call Sprite initializer
+        pg.sprite.Sprite.__init__(self)  # call Sprite initializer
         img = self.load_image(image_filename)
         if size:
             img = pg.transform.smoothscale(img, size)
         self.image = img
         self.rect = self.image.get_rect()
         self.rect.left, self.rect.top = position
+        self.position = position
+
+    def update(self):
+        self.rect.x -= 3
+        if self.rect.x <= -self.image.get_width():
+            self.rect.x = self.image.get_width()
