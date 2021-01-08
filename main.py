@@ -8,15 +8,16 @@ from savers import StartScreen, EndScreen, Background
 SCREEN_SIZE = 760, 760
 
 
-def restart(screen: pg.Surface, field: Field, hero: FieldHero,
-            all_sprites: pg.sprite.AbstractGroup, bg: Background):
+def finish(screen: pg.Surface, field: Field, hero: FieldHero,
+           all_sprites: pg.sprite.AbstractGroup, bg: Background,
+           state: str) -> None:
     field.render(screen, hero.get_moves(), hero.get_live(), bg)
     if not field.is_frozen():
         field.froze()
     field.finished = True
     all_sprites.update()
     all_sprites.draw(screen)
-    EndScreen(screen, hero, all_sprites, field.get_language())
+    EndScreen(screen, hero, state, field.get_language())
 
 
 def main():
@@ -56,7 +57,7 @@ def main():
                 field.disable_task()
                 if hero.get_live() == 0:
                     dice.visibled()
-                    restart(screen, field, hero, all_sprites, bg)
+                    finish(screen, field, hero, all_sprites, bg, callback)
         else:
             for event in pg.event.get():
                 if event.type == pg.QUIT:
@@ -78,8 +79,8 @@ def main():
                             field.start(hero, dice)
                     else:
                         callback = field.handle_move(event, hero, dice)
-                        if callback == 'end-screen':
-                            restart(screen, field, hero, all_sprites, bg)
+                        if callback == 'victory' or callback == 'loss':
+                            finish(screen, field, hero, all_sprites, bg, callback)
             if not field.is_finished():
                 field.render(screen, hero.get_moves(), hero.get_live(), bg)
                 all_sprites.update()

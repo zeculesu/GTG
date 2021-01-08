@@ -38,12 +38,12 @@ class Field(pg.sprite.Sprite, Loader):
         dice.start()
 
     def distribution_of_cells(self, hero: FieldHero) -> None:
-        # options = {Cell: [0, 58],
-        #            Trap: [0, 40],
-        #            Health: [0, 20],
-        #            Task: [0, 100],
-        #            Teleport: [0, 60]}
-        options = {Task: [0, 144]}
+        options = {Cell: [0, 58],
+                   Trap: [0, 40],
+                   Health: [0, 20],
+                   Task: [0, 100],
+                   Teleport: [0, 60]}
+        # options = {Task: [0, 144]}
         for i in range(12):
             for j in range(12):
                 if i == 0 and j == 0:
@@ -124,7 +124,7 @@ class Field(pg.sprite.Sprite, Loader):
                             self.finished = True
                             if hero.get_side() != 'right':
                                 hero.change_side('right')
-                            return 'end-screen'
+                            return 'loss'
                     self.move_finish(hero)
                     if callback == 'show-dice' and not self.at_finish():
                         self.show_dice(dice)
@@ -133,7 +133,7 @@ class Field(pg.sprite.Sprite, Loader):
                     self.finished = True
                     if hero.get_side() != 'right':
                         hero.change_side('right')
-                    return 'end-screen'
+                    return 'victory'
             return None
 
     def move_finish(self, hero: FieldHero) -> None:

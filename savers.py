@@ -3,6 +3,8 @@ from loader import Loader
 import pygame as pg
 from PIL import Image, ImageFilter
 
+from hero import Hero
+
 
 class StartScreen(Loader):
     @staticmethod
@@ -29,10 +31,10 @@ class StartScreen(Loader):
         return proceeded
 
 
-class EndScreen(pg.sprite.Sprite):
-    def __init__(self, screen: pg.Surface, hero, group, language):
-        # super(EndScreen, self).__init__(group)
+class EndScreen:
+    def __init__(self, screen: pg.Surface, hero: Hero, state: str, language: str):
         self.hero = hero
+        self.state = state
         self.language = language
         self.screen = screen
         self.blur_surf(screen)
@@ -63,7 +65,7 @@ class EndScreen(pg.sprite.Sprite):
         font_text = Loader.load_font('Special Elite.ttf', 40)
         font_text_2 = Loader.load_font('Special Elite.ttf', 30)
         if self.language == 'en':
-            game_over = font.render('GAME OVER', True, pg.Color('#141b47'))
+            game_over = font.render(self.state.upper(), True, pg.Color('#141b47'))
             passed = font_text.render('You passed %d cells' % self.hero.get_passed_cells(), True, pg.Color('#141b47'))
             cells = self.hero.get_quantity()
             task = font_text.render('Task - %d' % cells['task'], True, pg.Color('#141b47'))
@@ -73,10 +75,13 @@ class EndScreen(pg.sprite.Sprite):
             cell = font_text.render('Ordinary Cell - %d' % cells['cell'], True, pg.Color('#141b47'))
             message_1 = font_text_2.render('To start again press', True, pg.Color('#141b47'))
             message_2 = font_text_2.render('the space bar', True, pg.Color('#141b47'))
-            self.screen.blit(game_over, (230, 125))
+            self.screen.blit(game_over, (self.screen.get_width() // 2 - game_over.get_width() // 2,
+                                         125))
+            # self.screen.blit(game_over, (230, 125))
             self.screen.blit(message_2, (275, 610))
         else:
-            game_over = font.render('ИГРА ОКОНЧЕНА', True, pg.Color('#141b47'))
+            state_text = 'ПОБЕДА' if self.state == 'victory' else 'ВЫ ПРОИГРАЛИ'
+            game_over = font.render(state_text, True, pg.Color('#141b47'))
             passed = font_text.render('Вы прошли %d клеток' % self.hero.get_passed_cells(), True, pg.Color('#141b47'))
             cells = self.hero.get_quantity()
             task = font_text.render('Задания - %d' % cells['task'], True, pg.Color('#141b47'))
