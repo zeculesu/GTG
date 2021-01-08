@@ -17,12 +17,14 @@ class MiniGame:
                                  'lives': 'Lives',
                                  'pause': 'Pause',
                                  'victory': ('Victory', 'You have received 1 life'),
-                                 'loss': ('Loss', 'You have lost 1 life')},
+                                 'loss': ('Loss', 'You have lost 1 life'),
+                                 'score': 'Score'},
                           'ru': {'stars': 'Звёзды',
                                  'lives': 'Жизни',
                                  'pause': 'Пауза',
                                  'victory': ('Победа', 'Мы даруем Вам 1 жизнь'),
-                                 'loss': ('Поражение', 'Мы забираем 1 Вашу бренную жизнь')}}
+                                 'loss': ('Поражение', 'Мы забираем 1 Вашу бренную жизнь'),
+                                 'счёт': 'Счёт'}}
         self.language = self.field.get_language()
         self.running = False
         self.game_over = ''
@@ -46,16 +48,46 @@ class RunningInForest(MiniGame):
         self.hero.rect.y = int(height * 0.8)
         all_sprites.add(bg_1, bg_2, self.hero)
         running = True
-        fps = 60
+        fps = 80
         clock = pg.time.Clock()
+        shrubs = pg.sprite.Group()
+        groups = [all_sprites, shrubs]
+        font = Loader.load_font('Special Elite.ttf', 60)
+        score = 0
+        goal = choice([15000, 20000, 25000])
+        score_text = font.render('%s - %d/%d' % (self.translate[self.language]['score'],
+                                                 score, goal), True, '#ebebeb')
+        self.screen.blit(score_text, (90, 200))
+        # for _ in range(3):
+        #     Comet(stars, screen_size)
+        state = False
         while running:
             for event in pg.event.get():
                 if event.type == pg.QUIT:
                     callback = 'closeEvent'
                     running = False
-            all_sprites.update()
-            all_sprites.draw(self.screen)
-            pg.display.flip()
+                elif event.type == pg.KEYDOWN:
+                    if event.key == pg.K_SPACE:
+                        state = not state
+                        EndScreen.blur_surf(self.screen)
+                        EndScreen.clear_temp_files()
+                        text = 'PAUSE' if self.field.get_language() == 'en' else 'ПАУЗА'
+                        self.screen.blit(font.render(text, True, pg.Color('#ebebeb')),
+                                         (self.screen.get_width() // 2 - font.size('PAUSE')[0] * 0.5,
+                                          self.screen.get_height() // 2.5))
+            if state:
+                continue
+            for group in groups:
+                group.update()
+                group.draw(self.screen)
+            score += 6
+            score_text = font.render('%s - %d /%d' % (self.translate[self.language]['score'],
+                                                     score, goal), True, '#ebebeb')
+            self.screen.blit(score_text, (10, 5))
+            if score == goal:
+                callback = 'victory'
+                running = False
+            pg.display.update()
             clock.tick(fps)
         return callback
 

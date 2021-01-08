@@ -114,6 +114,6 @@ class Background(pg.sprite.Sprite, Loader):
         self.position = position
 
     def update(self):
-        self.rect.x -= 3
+        self.rect.x -= 6
         if self.rect.x <= -self.image.get_width():
             self.rect.x = self.image.get_width()
