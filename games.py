@@ -1,15 +1,8 @@
 import pygame as pg
-import os
-from PIL import Image, ImageFilter
-from random import randint
 from loader import Loader
 from hero import TaskHero
 from savers import Background, EndScreen
 from tiles import Comet, Star
-
-
-# from main import SCREEN_SIZE
-# from field import Field
 
 
 class MiniGame:
@@ -50,8 +43,16 @@ class StarFall(MiniGame):
         clock = pg.time.Clock()
         tick = 0
         stars_caught = 0
+        translate = {'en': {'stars': 'Stars',
+                            'lives': 'Lives',
+                            'pause': 'Pause'},
+                     'ru': {'stars': 'Звёзды',
+                            'lives': 'Жизни',
+                            'pause': 'Пауза'}}
+        language = self.field.get_language()
         font = Loader.load_font('Special Elite.ttf', 60)
-        lives = font.render('Lives - %d' % self.lives, True, pg.Color('#ebebeb'))
+        lives = font.render('%s - %d' % (translate[language]['lives'], self.lives),
+                            True, pg.Color('#ebebeb'))
         stars_caught_text = font.render('Stars - %d' % stars_caught, True, pg.Color('#ebebeb'))
         self.screen.blit(lives, (90, 200))
         self.screen.blit(stars_caught_text, (90, 200))
@@ -87,8 +88,11 @@ class StarFall(MiniGame):
                     elif elem.get_callback() == '+':
                         stars_caught += 1
                         elem.kill()
-                lives = font.render('Lives - %d' % self.lives, True, pg.Color('#ebebeb'))
-                stars_caught_text = font.render('Stars - %d' % stars_caught, True, pg.Color('#ebebeb'))
+                lives = font.render('%s - %d' % (translate[language]['lives'], self.lives),
+                                    True, pg.Color('#ebebeb'))
+                stars_caught_text = font.render('%s - %d' % (translate[language]['stars'],
+                                                             stars_caught),
+                                                True, pg.Color('#ebebeb'))
                 self.screen.blit(lives, (10, 5))
                 self.screen.blit(stars_caught_text, (10, 55))
                 tick += 1

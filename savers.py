@@ -40,7 +40,7 @@ class EndScreen(pg.sprite.Sprite):
         self.update()
 
     @staticmethod
-    def blur_surf(screen: pg.Surface):
+    def blur_surf(screen: pg.Surface) -> None:
         in_path = os.path.join('data', 'temp.png')
         out_path = os.path.join('data', 'temp2.png')
         pg.image.save(screen, in_path)
@@ -50,7 +50,7 @@ class EndScreen(pg.sprite.Sprite):
         screen.blit(pg.image.load(out_path), screen.get_rect())
 
     @staticmethod
-    def clear_temp_files():
+    def clear_temp_files() -> None:
         env = os.listdir(os.path.join('data'))
         for filename in ('temp.png', 'temp2.png'):
             if filename in env:

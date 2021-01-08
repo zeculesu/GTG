@@ -1,6 +1,7 @@
 import pygame as pg
 from random import choice
 from loader import Loader
+import time
 
 
 class Dice(pg.sprite.Sprite, Loader):
@@ -28,10 +29,12 @@ class Dice(pg.sprite.Sprite, Loader):
 
     def visibled(self):
         self.visible = not self.visible
+
         if self.visible:
             self.rect.x = self.field_indent[0] + self.field_size[0] // 2 - self.img_width // 2
             self.rect.y = self.field_indent[1] + self.field_size[1] // 2 - self.img_height // 2
         else:
+            time.sleep(0.5)
             self.rect.x = -1000
             self.rect.y = -1000
 
@@ -40,7 +43,7 @@ class Dice(pg.sprite.Sprite, Loader):
         return self.images.index(self.image) + 1 if not self.is_rotating() else None
 
     def rotate(self, tick: int) -> bool:
-        if self.is_rotating() and tick > 5:
+        if self.is_rotating() and tick == 5:
             prev_image = self.image
             while self.image == prev_image:
                 self.image = choice(self.images)
