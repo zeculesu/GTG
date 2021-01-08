@@ -1,3 +1,5 @@
+from random import randint, choice
+
 import pygame as pg
 from loader import Loader
 from hero import TaskHero
@@ -11,7 +13,19 @@ class MiniGame:
         self.hero = TaskHero()
         self.field = field
         self.screen = surface
+        self.translate = {'en': {'stars': 'Stars',
+                                 'lives': 'Lives',
+                                 'pause': 'Pause',
+                                 'victory': ('Victory', 'You have received 1 life'),
+                                 'loss': ('Loss', 'You have lost 1 life')},
+                          'ru': {'stars': 'Звёзды',
+                                 'lives': 'Жизни',
+                                 'pause': 'Пауза',
+                                 'victory': ('Победа', 'Мы даруем Вам 1 жизнь'),
+                                 'loss': ('Поражение', 'Мы забираем 1 Вашу бренную жизнь')}}
+        self.language = self.field.get_language()
         self.running = False
+        self.game_over = ''
 
     def start(self):
         self.running = True
@@ -22,6 +36,20 @@ class StarFall(MiniGame):
 
     def handle_move(self):
         pass
+
+    def end_game(self, font, state: str) -> None:
+        EndScreen.blur_surf(self.screen)
+        EndScreen.clear_temp_files()
+        self.game_over = state
+        game_over_1 = font.render(self.translate[self.language][state][0],
+                                  True, pg.Color('#ebebeb'))
+        game_over_2 = font.render(self.translate[self.language][state][1],
+                                  True, pg.Color('#ebebeb'))
+        self.screen.blit(game_over_1, (self.screen.get_width() // 2 - game_over_1.get_width() * 0.5,
+                                       self.screen.get_height() // 2.5))
+        self.screen.blit(game_over_2, (self.screen.get_width() // 2 - game_over_2.get_width() * 0.5,
+                                       self.screen.get_height() * 0.5))
+        pg.display.flip()
 
     def loop(self, screen_size: tuple):
         callback = None
@@ -43,21 +71,17 @@ class StarFall(MiniGame):
         clock = pg.time.Clock()
         tick = 0
         stars_caught = 0
-        translate = {'en': {'stars': 'Stars',
-                            'lives': 'Lives',
-                            'pause': 'Pause'},
-                     'ru': {'stars': 'Звёзды',
-                            'lives': 'Жизни',
-                            'pause': 'Пауза'}}
-        language = self.field.get_language()
         font = Loader.load_font('Special Elite.ttf', 60)
-        lives = font.render('%s - %d' % (translate[language]['lives'], self.lives),
+        lives = font.render('%s - %d' % (self.translate[self.language]['lives'], self.lives),
                             True, pg.Color('#ebebeb'))
-        stars_caught_text = font.render('Stars - %d' % stars_caught, True, pg.Color('#ebebeb'))
+        goal = choice([10, 15, 20])
+        stars_caught_text = font.render('%s - %d/%d' % (self.translate[self.language]['stars'],
+                                                        stars_caught, goal),
+                                        True, pg.Color('#ebebeb'))
         self.screen.blit(lives, (90, 200))
         self.screen.blit(stars_caught_text, (90, 200))
         state = False
-        while self.running:
+        while self.running and not self.game_over:
             for event in pg.event.get():
                 if event.type == pg.QUIT:
                     callback = 'closeEvent'
@@ -85,13 +109,22 @@ class StarFall(MiniGame):
                     if elem.get_callback() == '-':
                         self.lives -= 1
                         elem.kill()
+                        if self.lives == 0:
+                            self.end_game(font, 'loss')
+                            break
                     elif elem.get_callback() == '+':
                         stars_caught += 1
                         elem.kill()
-                lives = font.render('%s - %d' % (translate[language]['lives'], self.lives),
+                        if stars_caught == goal:
+                            self.end_game(font, 'victory')
+                            break
+                if self.game_over:
+                    continue
+                lives = font.render('%s - %d' % (self.translate[self.language]['lives'], self.lives),
                                     True, pg.Color('#ebebeb'))
-                stars_caught_text = font.render('%s - %d' % (translate[language]['stars'],
-                                                             stars_caught),
+                stars_caught_text = font.render('%s - %d/%d' %
+                                                (self.translate[self.language]['stars'],
+                                                 stars_caught, goal),
                                                 True, pg.Color('#ebebeb'))
                 self.screen.blit(lives, (10, 5))
                 self.screen.blit(stars_caught_text, (10, 55))
@@ -105,4 +138,13 @@ class StarFall(MiniGame):
             clock.tick(fps)
             pg.event.pump()
             pg.display.flip()
+        while self.running and self.game_over:
+            for event in pg.event.get():
+                if event.type == pg.QUIT:
+                    callback = 'closeEvent'
+                    self.running = False
+                elif event.type == pg.KEYDOWN:
+                    if event.key == pg.K_SPACE:
+                        callback = self.game_over
+                        self.running = False
         return callback

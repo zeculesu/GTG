@@ -8,6 +8,17 @@ from savers import StartScreen, EndScreen, Background
 SCREEN_SIZE = 760, 760
 
 
+def restart(screen: pg.Surface, field: Field, hero: FieldHero,
+            all_sprites: pg.sprite.AbstractGroup, bg: Background):
+    field.render(screen, hero.get_moves(), hero.get_live(), bg)
+    if not field.is_frozen():
+        field.froze()
+    field.finished = True
+    all_sprites.update()
+    all_sprites.draw(screen)
+    EndScreen(screen, hero, all_sprites, field.get_language())
+
+
 def main():
     proceeded = StartScreen.show()
     if not proceeded:
@@ -37,8 +48,15 @@ def main():
             callback = field.current_game.loop(SCREEN_SIZE)
             if callback == 'closeEvent':
                 running = False
-            elif callback == 'gameOver':
+            elif callback == 'victory':
+                hero.add_live(1)
                 field.disable_task()
+            elif callback == 'loss':
+                hero.add_live(-1)
+                field.disable_task()
+                if hero.get_live() == 0:
+                    dice.visibled()
+                    restart(screen, field, hero, all_sprites, bg)
         else:
             for event in pg.event.get():
                 if event.type == pg.QUIT:
@@ -61,10 +79,7 @@ def main():
                     else:
                         callback = field.handle_move(event, hero, dice)
                         if callback == 'end-screen':
-                            field.render(screen, hero.get_moves(), hero.get_live(), bg)
-                            all_sprites.update()
-                            all_sprites.draw(screen)
-                            EndScreen(screen, hero, all_sprites, field.get_language())
+                            restart(screen, field, hero, all_sprites, bg)
             if not field.is_finished():
                 field.render(screen, hero.get_moves(), hero.get_live(), bg)
                 all_sprites.update()
