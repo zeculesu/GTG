@@ -96,11 +96,7 @@ class StarFall(MiniGame):
                                          (self.screen.get_width() // 2 - font.size('PAUSE')[0] * 0.5,
                                           self.screen.get_height() // 2.5))
                     if not state:
-                        if event.key == pg.K_ESCAPE:
-                            callback = 'gameOver'
-                            self.running = False
-                        else:
-                            self.hero.make_move(event, width)
+                        self.hero.make_move(event, width)
             if not state:
                 for group in groups:
                     group.update(self.hero)
