@@ -50,9 +50,9 @@ class MiniGame:
         EndScreen.clear_temp_files()
         self.game_over = state
         game_over_1 = font.render(self.translate[self.language][state][0],
-                                  True, pg.Color('#ebebeb'))
+                                  True, pg.Color('#f9c084'))
         game_over_2 = font.render(self.translate[self.language][state][1],
-                                  True, pg.Color('#ebebeb'))
+                                  True, pg.Color('#f9c084'))
         self.screen.blit(game_over_1, (self.screen.get_width() // 2 - game_over_1.get_width() * 0.5,
                                        self.screen.get_height() // 2.5))
         self.screen.blit(game_over_2, (self.screen.get_width() // 2 - game_over_2.get_width() * 0.5,
