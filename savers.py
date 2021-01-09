@@ -102,7 +102,7 @@ class EndScreen:
         self.screen.blit(message_1, (225, 580))
 
 
-class Background(pg.sprite.Sprite, Loader):
+class StaticBackground(pg.sprite.Sprite, Loader):
     def __init__(self, image_filename, position, size=None):
         pg.sprite.Sprite.__init__(self)  # call Sprite initializer
         img = self.load_image(image_filename)
@@ -110,9 +110,10 @@ class Background(pg.sprite.Sprite, Loader):
             img = pg.transform.smoothscale(img, size)
         self.image = img
         self.rect = self.image.get_rect()
-        self.rect.left, self.rect.top = position
-        self.position = position
+        self.rect.x, self.rect.y = position
 
+
+class DynamicBackground(StaticBackground):
     def update(self):
         self.rect.x -= 6
         if self.rect.x <= -self.image.get_width():

@@ -1,16 +1,16 @@
-from random import randint, choice
+from random import choice
 
 import pygame as pg
 from loader import Loader
-from hero import TaskHero
-from savers import Background, EndScreen
+from hero import StarFallHero, RunningInForestHero
+from savers import StaticBackground, DynamicBackground, EndScreen
 from tiles import Comet, Star, ParticlesForRunninfInForest
 
 
 class MiniGame:
     def __init__(self, field, surface: pg.Surface, live):
         self.lives = live
-        self.hero = TaskHero()
+        self.hero = None
         self.field = field
         self.screen = surface
         self.translate = {'en': {'stars': 'Stars',
@@ -37,12 +37,16 @@ class RunningInForest(MiniGame):
     background_img = 'forest_long.png'
     background_img_reverse = 'forest_long_reverse.png'
 
+    def __init__(self, field, surface: pg.Surface, lives: int):
+        super(RunningInForest, self).__init__(field, surface, lives)
+        self.hero = RunningInForestHero()
+
     def loop(self, screen_size: tuple):
         callback = None
         width, height = screen_size
         all_sprites = pg.sprite.Group()
-        bg_1 = Background(RunningInForest.background_img, [0, 0])
-        bg_2 = Background(RunningInForest.background_img_reverse, [bg_1.image.get_width(), 0])
+        bg_1 = DynamicBackground(RunningInForest.background_img, [0, 0])
+        bg_2 = DynamicBackground(RunningInForest.background_img_reverse, [bg_1.image.get_width(), 0])
         self.hero.resize(100, 100)
         self.hero.rect.x = int(width * 0.1)
         self.hero.rect.y = int(height * 0.8)
@@ -60,8 +64,6 @@ class RunningInForest(MiniGame):
         score_text = font.render('%s - %d/%d' % (self.translate[self.language]['score'],
                                                  score, goal), True, '#ebebeb')
         self.screen.blit(score_text, (90, 200))
-        # for _ in range(3):
-        #     Comet(stars, screen_size)
         state = False
         while running:
             for event in pg.event.get():
@@ -100,6 +102,10 @@ class RunningInForest(MiniGame):
 class StarFall(MiniGame):
     background_img = 'forest.jpg'
 
+    def __init__(self, field, surface: pg.Surface, lives: int):
+        super(StarFall, self).__init__(field, surface, lives)
+        self.hero = StarFallHero()
+
     def end_game(self, font, state: str) -> None:
         EndScreen.blur_surf(self.screen)
         EndScreen.clear_temp_files()
@@ -117,7 +123,7 @@ class StarFall(MiniGame):
     def loop(self, screen_size: tuple):
         callback = None
         all_sprites = pg.sprite.Group()
-        bg = Background(StarFall.background_img, [0, 0], size=(760, 760))
+        bg = StaticBackground(StarFall.background_img, [0, 0], size=(760, 760))
         self.hero.resize(110, 110)
         width, height = screen_size
         self.hero.rect.x = width // 2 - self.hero.image.get_width() // 2
@@ -125,7 +131,6 @@ class StarFall(MiniGame):
         self.hero.set_step(10)
         all_sprites.add(bg, self.hero)
         stars = pg.sprite.Group()
-        groups = [all_sprites, stars]
         for _ in range(3):
             Comet(stars, screen_size)
         for _ in range(1):
@@ -161,9 +166,10 @@ class StarFall(MiniGame):
                     if not state:
                         self.hero.make_move(event, width)
             if not state:
-                for group in groups:
-                    group.update(self.hero)
-                    group.draw(self.screen)
+                all_sprites.update()
+                all_sprites.draw(self.screen)
+                stars.update(self.hero)
+                stars.draw(self.screen)
                 for elem in stars:
                     if elem.get_callback() == '-':
                         self.lives -= 1

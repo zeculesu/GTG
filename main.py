@@ -3,13 +3,13 @@ from field import Field
 from hero import FieldHero
 from dice import Dice
 from loader import Loader
-from savers import StartScreen, EndScreen, Background
+from savers import StartScreen, EndScreen, StaticBackground
 
 SCREEN_SIZE = 760, 760
 
 
 def finish(screen: pg.Surface, field: Field, hero: FieldHero,
-           all_sprites: pg.sprite.AbstractGroup, bg: Background,
+           all_sprites: pg.sprite.AbstractGroup, bg: StaticBackground,
            state: str) -> None:
     field.render(screen, hero.get_moves(), hero.get_live(), bg)
     if not field.is_frozen():
@@ -34,7 +34,7 @@ def main():
     field.start(hero, dice)
     running = True
     clock = pg.time.Clock()
-    bg = Background('end_screen.png', [0, 0], size=SCREEN_SIZE)
+    bg = StaticBackground('end_screen.png', [0, 0], size=SCREEN_SIZE)
     screen.fill((50, 41, 88))
     pg.display.set_icon(Loader.load_image('icon.png'))
     arrow = pg.sprite.Sprite(all_sprites)
