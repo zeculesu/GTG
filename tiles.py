@@ -21,10 +21,16 @@ class ParticlesForRunningInForest(pg.sprite.Sprite):
         self.rect.x = x
         self.velocity = velocity
         self.mask = pg.mask.from_surface(self.image)
+        self.callback = None
         group.add(self)
 
-    def update(self):
+    def get_callback(self):
+        return self.callback
+
+    def update(self, hero):
         self.rect.x -= self.velocity
+        if pg.sprite.collide_mask(self, hero):
+            self.callback = 'loss'
         if self.rect.x < -self.image.get_width():
             self.kill()
 

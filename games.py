@@ -96,14 +96,20 @@ class RunningInForest(MiniGame):
                 ParticlesForRunningInForest(tile_velocity, shrubs, screen_size)
             if state:
                 continue
-            for group in groups:
-                group.update()
-                group.draw(self.screen)
+            all_sprites.update()
+            all_sprites.draw(self.screen)
+            shrubs.update(self.hero)
+            shrubs.draw(self.screen)
+            for elem in shrubs:
+                if elem.get_callback() == 'loss':
+                    callback = 'loss'
+                    running = False
+                    continue
             score += 6
             score_text = font.render('%s - %d /%d' % (self.translate[self.language]['score'],
                                                       score, goal), True, '#ebebeb')
             self.screen.blit(score_text, (10, 5))
-            if score == goal:
+            if score >= goal:
                 callback = 'victory'
                 running = False
             pg.display.update()
