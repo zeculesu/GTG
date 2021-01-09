@@ -22,15 +22,42 @@ class MiniGame:
                           'ru': {'stars': 'Звёзды',
                                  'lives': 'Жизни',
                                  'pause': 'Пауза',
-                                 'victory': ('Победа', 'Мы даруем Вам 1 жизнь'),
-                                 'loss': ('Поражение', 'Мы забираем 1 Вашу бренную жизнь'),
-                                 'счёт': 'Счёт'}}
+                                 'victory': ('Победа', 'Вы получили 1 жизнь'),
+                                 'loss': ('Поражение', 'Вы потеряли 1 жизнь'),
+                                 'score': 'Счёт'}}
         self.language = self.field.get_language()
         self.running = False
         self.game_over = ''
 
     def start(self):
         self.running = True
+
+    def end_loop(self) -> str:
+        callback = None
+        while self.running and self.game_over:
+            for event in pg.event.get():
+                if event.type == pg.QUIT:
+                    callback = 'closeEvent'
+                    self.running = False
+                elif event.type == pg.KEYDOWN:
+                    if event.key == pg.K_SPACE:
+                        callback = self.game_over
+                        self.running = False
+        return callback
+
+    def end_game(self, font, state: str) -> None:
+        EndScreen.blur_surf(self.screen)
+        EndScreen.clear_temp_files()
+        self.game_over = state
+        game_over_1 = font.render(self.translate[self.language][state][0],
+                                  True, pg.Color('#ebebeb'))
+        game_over_2 = font.render(self.translate[self.language][state][1],
+                                  True, pg.Color('#ebebeb'))
+        self.screen.blit(game_over_1, (self.screen.get_width() // 2 - game_over_1.get_width() * 0.5,
+                                       self.screen.get_height() // 2.5))
+        self.screen.blit(game_over_2, (self.screen.get_width() // 2 - game_over_2.get_width() * 0.5,
+                                       self.screen.get_height() * 0.5))
+        pg.display.flip()
 
 
 class RunningInForest(MiniGame):
@@ -68,8 +95,9 @@ class RunningInForest(MiniGame):
         velocity_tick = 0
         spawn_tick = 0
         while running:
-            velocity_tick += 1
-            spawn_tick += 1
+            if not state:
+                velocity_tick += 1
+                spawn_tick += 1
             for event in pg.event.get():
                 if event.type == pg.QUIT:
                     callback = 'closeEvent'
@@ -86,6 +114,8 @@ class RunningInForest(MiniGame):
                         pg.display.update()
                     if not state:
                         self.hero.make_move(event)
+            if state:
+                continue
             if velocity_tick == fps * 10:
                 velocity_tick = 0
                 bg_1.velocity += 1
@@ -94,8 +124,6 @@ class RunningInForest(MiniGame):
             if spawn_tick == fps * 2.5:
                 spawn_tick = 0
                 ParticlesForRunningInForest(tile_velocity, shrubs, screen_size)
-            if state:
-                continue
             all_sprites.update()
             all_sprites.draw(self.screen)
             shrubs.update(self.hero)
@@ -103,17 +131,20 @@ class RunningInForest(MiniGame):
             for elem in shrubs:
                 if elem.get_callback() == 'loss':
                     callback = 'loss'
+                    self.end_game(font, callback)
                     running = False
-                    continue
+                    break
             score += 6
             score_text = font.render('%s - %d /%d' % (self.translate[self.language]['score'],
                                                       score, goal), True, '#ebebeb')
             self.screen.blit(score_text, (10, 5))
             if score >= goal:
                 callback = 'victory'
+                self.end_game(font, callback)
                 running = False
             pg.display.update()
             clock.tick(fps)
+        callback = self.end_loop()
         return callback
 
 
@@ -124,22 +155,7 @@ class StarFall(MiniGame):
         super(StarFall, self).__init__(field, surface, lives)
         self.hero = StarFallHero()
 
-    def end_game(self, font, state: str) -> None:
-        EndScreen.blur_surf(self.screen)
-        EndScreen.clear_temp_files()
-        self.game_over = state
-        game_over_1 = font.render(self.translate[self.language][state][0],
-                                  True, pg.Color('#ebebeb'))
-        game_over_2 = font.render(self.translate[self.language][state][1],
-                                  True, pg.Color('#ebebeb'))
-        self.screen.blit(game_over_1, (self.screen.get_width() // 2 - game_over_1.get_width() * 0.5,
-                                       self.screen.get_height() // 2.5))
-        self.screen.blit(game_over_2, (self.screen.get_width() // 2 - game_over_2.get_width() * 0.5,
-                                       self.screen.get_height() * 0.5))
-        pg.display.flip()
-
     def loop(self, screen_size: tuple):
-        callback = None
         all_sprites = pg.sprite.Group()
         bg = StaticBackground(StarFall.background_img, [0, 0], size=(760, 760))
         self.hero.resize(110, 110)
@@ -221,13 +237,5 @@ class StarFall(MiniGame):
             clock.tick(fps)
             pg.event.pump()
             pg.display.flip()
-        while self.running and self.game_over:
-            for event in pg.event.get():
-                if event.type == pg.QUIT:
-                    callback = 'closeEvent'
-                    self.running = False
-                elif event.type == pg.KEYDOWN:
-                    if event.key == pg.K_SPACE:
-                        callback = self.game_over
-                        self.running = False
+        callback = self.end_loop()
         return callback
