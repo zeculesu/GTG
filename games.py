@@ -100,8 +100,7 @@ class RunningInForest(MiniGame):
                 spawn_tick += 1
             for event in pg.event.get():
                 if event.type == pg.QUIT:
-                    callback = 'closeEvent'
-                    running = False
+                    return 'closeEvent'
                 elif event.type == pg.KEYDOWN:
                     if event.key == pg.K_SPACE:
                         state = not state
@@ -186,8 +185,7 @@ class StarFall(MiniGame):
         while self.running and not self.game_over:
             for event in pg.event.get():
                 if event.type == pg.QUIT:
-                    callback = 'closeEvent'
-                    self.running = False
+                    return 'closeEvent'
                 elif event.type == pg.KEYDOWN:
                     if event.key == pg.K_SPACE:
                         state = not state
