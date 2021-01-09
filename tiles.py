@@ -14,10 +14,11 @@ class ParticlesForRunningInForest(pg.sprite.Sprite):
         self.rect = self.image.get_rect()
         self.rect.y = int(self.screen_width * 0.8) - self.image.get_height() // 2
         other_sprites = group.sprites()
-        length = velocity * 10
-        self.rect.x = randint(self.screen_width * 1.25, self.screen_width * 4)
-        while any(map(lambda spr: abs(spr.rect.x - self.rect.x) < length, other_sprites)):
-            self.rect.x = randint(self.screen_width * 1.25, self.screen_width * 4)
+        length = velocity * 15
+        x = None
+        while not x or any(map(lambda spr: abs(spr.rect.x - x) < length, other_sprites)):
+            x = randint(self.screen_width * 1.25, self.screen_width * 4)
+        self.rect.x = x
         self.velocity = velocity
         self.mask = pg.mask.from_surface(self.image)
         group.add(self)
@@ -36,7 +37,6 @@ class ParticlesForStarFall(pg.sprite.Sprite):
         self.aktiv = True
         screen_width, screen_height = screen_size
         self.velocity = randint(2, 5)
-        # while pg.sprite.spritecollideany(self, group):
         self.rect.y = -randint(self.image.get_height(),
                                self.image.get_height() * 4)
         self.rect.x = randint(0, screen_width - self.image.get_width() // 2)
@@ -68,7 +68,7 @@ class Comet(Loader, ParticlesForStarFall):
 
     def __init__(self, group: pg.sprite.AbstractGroup, screen_size: tuple):
         image = choice([Comet.image, Comet.image_2, Comet.image_3, Comet.image_4])
-        super().__init__(self.image.get_rect(), screen_size, image)
+        super(Comet, self).__init__(self.image.get_rect(), screen_size, image)
         group.add(self)
 
 
@@ -78,5 +78,5 @@ class Star(Loader, ParticlesForStarFall):
 
     def __init__(self, group: pg.sprite.AbstractGroup, screen_size: tuple):
         image = choice([Star.image, Star.image_2])
-        super().__init__(self.image.get_rect(), screen_size, image)
+        super(Star, self).__init__(self.image.get_rect(), screen_size, image)
         group.add(self)
