@@ -4,7 +4,7 @@ import pygame as pg
 from loader import Loader
 from hero import StarFallHero, RunningInForestHero
 from savers import StaticBackground, DynamicBackground, EndScreen
-from tiles import Comet, Star, ParticlesForRunninfInForest
+from tiles import Comet, Star, ParticlesForRunningInForest
 
 
 class MiniGame:
@@ -55,8 +55,8 @@ class RunningInForest(MiniGame):
         fps = 80
         clock = pg.time.Clock()
         shrubs = pg.sprite.Group()
-        for _ in range(3):
-            ParticlesForRunninfInForest(shrubs, screen_size)
+        tile_velocity = 10
+        ParticlesForRunningInForest(tile_velocity, shrubs, screen_size)
         groups = [all_sprites, shrubs]
         font = Loader.load_font('Special Elite.ttf', 60)
         score = 0
@@ -65,9 +65,11 @@ class RunningInForest(MiniGame):
                                                  score, goal), True, '#ebebeb')
         self.screen.blit(score_text, (90, 200))
         state = False
-        velocity_increasing = pg.USEREVENT + 1
-        pg.time.set_timer(velocity_increasing, 10000)
+        velocity_tick = 0
+        spawn_tick = 0
         while running:
+            velocity_tick += 1
+            spawn_tick += 1
             for event in pg.event.get():
                 if event.type == pg.QUIT:
                     callback = 'closeEvent'
@@ -84,9 +86,14 @@ class RunningInForest(MiniGame):
                         pg.display.update()
                     if not state:
                         self.hero.make_move(event)
-                elif event.type == velocity_increasing:
-                    bg_1.velocity += 1
-                    bg_2.velocity += 1
+            if velocity_tick == fps * 10:
+                velocity_tick = 0
+                bg_1.velocity += 1
+                bg_2.velocity += 1
+                tile_velocity += 1
+            if spawn_tick == fps * 2.5:
+                spawn_tick = 0
+                ParticlesForRunningInForest(tile_velocity, shrubs, screen_size)
             if state:
                 continue
             for group in groups:

@@ -4,22 +4,28 @@ from random import randint, choice
 from loader import Loader
 
 
-class ParticlesForRunninfInForest(pg.sprite.Sprite):
-    schrub = pg.transform.smoothscale(Loader.load_image('schrub.png'), (130, 210))
+class ParticlesForRunningInForest(pg.sprite.Sprite):
+    schrub = pg.transform.smoothscale(Loader.load_image('fire.png'), (130, 210))
 
-    def __init__(self, group: pg.sprite.AbstractGroup, screen_size: tuple):
-        super(ParticlesForRunninfInForest, self).__init__()
-        screen_width, screen_height = screen_size
-        self.image = ParticlesForRunninfInForest.schrub
+    def __init__(self, velocity: int, group: pg.sprite.AbstractGroup, screen_size: tuple):
+        super(ParticlesForRunningInForest, self).__init__()
+        self.screen_width, self.screen_height = screen_size
+        self.image = ParticlesForRunningInForest.schrub
         self.rect = self.image.get_rect()
-        self.rect.y = int(screen_width * 0.8) - self.image.get_height() // 2
-        self.rect.x = randint(screen_width * 1.5, screen_width * 2)
-        self.velocity = 10
+        self.rect.y = int(self.screen_width * 0.8) - self.image.get_height() // 2
+        other_sprites = group.sprites()
+        length = velocity * 10
+        self.rect.x = randint(self.screen_width * 1.25, self.screen_width * 4)
+        while any(map(lambda spr: abs(spr.rect.x - self.rect.x) < length, other_sprites)):
+            self.rect.x = randint(self.screen_width * 1.25, self.screen_width * 4)
+        self.velocity = velocity
         self.mask = pg.mask.from_surface(self.image)
         group.add(self)
 
     def update(self):
         self.rect.x -= self.velocity
+        if self.rect.x < -self.image.get_width():
+            self.kill()
 
 
 class ParticlesForStarFall(pg.sprite.Sprite):
