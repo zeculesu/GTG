@@ -88,17 +88,29 @@ class TaskHero(Hero):
         self.step = None
         self.mask = pg.mask.from_surface(self.image)
 
-    def make_move(self, event, screen_width):
-        if event.key == pg.K_LEFT or event.key == pg.K_a:
-            if self.rect.x - self.step >= self.image.get_width() * 0.1:
-                self.rect.x -= self.step
-                if self.get_side() != 'left':
-                    self.change_side('left')
-        elif event.key == pg.K_RIGHT or event.key == pg.K_d:
-            if self.rect.x + self.step <= screen_width - self.image.get_width():
-                self.rect.x += self.step
-                if self.get_side() != 'right':
-                    self.change_side('right')
+    def make_move(self, event, screen_width, y=None):
+        if y:
+            if event.key == pg.K_UP or event.key == pg.K_w:
+                if not self.step:
+                    self.rect.y -= 250
+                    self.step = True
+        else:
+            if event.key == pg.K_LEFT or event.key == pg.K_a:
+                if self.rect.x - self.step >= self.image.get_width() * 0.1:
+                    self.rect.x -= self.step
+                    if self.get_side() != 'left':
+                        self.change_side('left')
+            elif event.key == pg.K_RIGHT or event.key == pg.K_d:
+                if self.rect.x + self.step <= screen_width - self.image.get_width():
+                    self.rect.x += self.step
+                    if self.get_side() != 'right':
+                        self.change_side('right')
 
     def set_step(self, step: int):
         self.step = step
+
+    def update(self):
+        if self.step and self.rect.y <= 608:
+            self.rect.y += 5
+        else:
+            self.step = False

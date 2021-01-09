@@ -4,9 +4,27 @@ from random import randint, choice
 from loader import Loader
 
 
-class Particles(pg.sprite.Sprite):
+class ParticlesForRunninfInForest(pg.sprite.Sprite):
+    schrub = pg.transform.smoothscale(Loader.load_image('schrub.png'), (130, 210))
+
+    def __init__(self, group: pg.sprite.AbstractGroup, screen_size: tuple):
+        super(ParticlesForRunninfInForest, self).__init__()
+        screen_width, screen_height = screen_size
+        self.image = ParticlesForRunninfInForest.schrub
+        self.rect = self.image.get_rect()
+        self.rect.y = int(screen_width * 0.8) - self.image.get_height() // 2
+        self.rect.x = randint(screen_width * 1.5, screen_width * 2)
+        self.velocity = 10
+        self.mask = pg.mask.from_surface(self.image)
+        group.add(self)
+
+    def update(self):
+        self.rect.x -= self.velocity
+
+
+class ParticlesForStarFall(pg.sprite.Sprite):
     def __init__(self, rect, screen_size: tuple, image):
-        super(Particles, self).__init__()
+        super(ParticlesForStarFall, self).__init__()
         self.image = image
         self.rect = rect
         self.aktiv = True
@@ -36,7 +54,7 @@ class Particles(pg.sprite.Sprite):
         return self.callback
 
 
-class Comet(Loader, Particles):
+class Comet(Loader, ParticlesForStarFall):
     image = pg.transform.smoothscale(Loader.load_image('comet.png'), (200, 200))
     image_2 = pg.transform.smoothscale(Loader.load_image('comet.png'), (100, 100))
     image_3 = pg.transform.smoothscale(Loader.load_image('comet_2.png'), (200, 200))
@@ -48,7 +66,7 @@ class Comet(Loader, Particles):
         group.add(self)
 
 
-class Star(Loader, Particles):
+class Star(Loader, ParticlesForStarFall):
     image = pg.transform.smoothscale(Loader.load_image('star.png'), (100, 100))
     image_2 = pg.transform.smoothscale(Loader.load_image('star.png'), (70, 70))
 

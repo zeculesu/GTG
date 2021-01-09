@@ -4,7 +4,7 @@ import pygame as pg
 from loader import Loader
 from hero import TaskHero
 from savers import Background, EndScreen
-from tiles import Comet, Star
+from tiles import Comet, Star, ParticlesForRunninfInForest
 
 
 class MiniGame:
@@ -44,13 +44,15 @@ class RunningInForest(MiniGame):
         bg_1 = Background(RunningInForest.background_img, [0, 0])
         bg_2 = Background(RunningInForest.background_img_reverse, [bg_1.image.get_width(), 0])
         self.hero.resize(100, 100)
-        self.hero.rect.x = width * 0.1
+        self.hero.rect.x = int(width * 0.1)
         self.hero.rect.y = int(height * 0.8)
         all_sprites.add(bg_1, bg_2, self.hero)
         running = True
         fps = 80
         clock = pg.time.Clock()
         shrubs = pg.sprite.Group()
+        for _ in range(3):
+            ParticlesForRunninfInForest(shrubs, screen_size)
         groups = [all_sprites, shrubs]
         font = Loader.load_font('Special Elite.ttf', 60)
         score = 0
@@ -75,6 +77,9 @@ class RunningInForest(MiniGame):
                         self.screen.blit(font.render(text, True, pg.Color('#ebebeb')),
                                          (self.screen.get_width() // 2 - font.size('PAUSE')[0] * 0.5,
                                           self.screen.get_height() // 2.5))
+                        pg.display.update()
+                    if not state:
+                        self.hero.make_move(event, screen_size ,True)
             if state:
                 continue
             for group in groups:
