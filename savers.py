@@ -114,7 +114,11 @@ class StaticBackground(pg.sprite.Sprite, Loader):
 
 
 class DynamicBackground(StaticBackground):
+    def __init__(self, image_filename, position, size=None):
+        super(DynamicBackground, self).__init__(image_filename, position, size)
+        self.velocity = 6
+
     def update(self):
-        self.rect.x -= 6
+        self.rect.x -= self.velocity
         if self.rect.x <= -self.image.get_width():
             self.rect.x = self.image.get_width()

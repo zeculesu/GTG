@@ -109,19 +109,31 @@ class StarFallHero(TaskHero):
 
 
 class RunningInForestHero(TaskHero):
-    falls = False
-
-    def is_falling(self):
-        return self.falls
+    def __init__(self):
+        super(RunningInForestHero, self).__init__()
+        self.is_falling = False
+        self.is_jumping = False
+        self.flying = 0
 
     def make_move(self, event: pg.event.Event):
         if event.key == pg.K_UP or event.key == pg.K_w:
-            if not self.is_falling():
-                self.rect.y -= 250
-                self.falls = True
+            if not self.is_falling:
+                self.is_jumping = True
+                self.rect.y -= 25
+                # self.falls = True
 
     def update(self):
-        if self.is_falling() and self.rect.y <= 608:
+        if self.is_jumping:
+            self.rect.y -= 10
+            if self.rect.y <= 358:
+                self.is_jumping = False
+                self.flying += 1
+        if self.flying > 0:
+            self.flying += 1
+            if self.flying == 15:
+                self.flying = 0
+                self.is_falling = True
+        if self.is_falling:
             self.rect.y += 5
-        else:
-            self.falls = False
+            if self.rect.y >= 608:
+                self.is_falling = False

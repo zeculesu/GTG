@@ -65,6 +65,8 @@ class RunningInForest(MiniGame):
                                                  score, goal), True, '#ebebeb')
         self.screen.blit(score_text, (90, 200))
         state = False
+        velocity_increasing = pg.USEREVENT + 1
+        pg.time.set_timer(velocity_increasing, 10000)
         while running:
             for event in pg.event.get():
                 if event.type == pg.QUIT:
@@ -81,7 +83,10 @@ class RunningInForest(MiniGame):
                                           self.screen.get_height() // 2.5))
                         pg.display.update()
                     if not state:
-                        self.hero.make_move(event, screen_size ,True)
+                        self.hero.make_move(event)
+                elif event.type == velocity_increasing:
+                    bg_1.velocity += 1
+                    bg_2.velocity += 1
             if state:
                 continue
             for group in groups:
@@ -89,7 +94,7 @@ class RunningInForest(MiniGame):
                 group.draw(self.screen)
             score += 6
             score_text = font.render('%s - %d /%d' % (self.translate[self.language]['score'],
-                                                     score, goal), True, '#ebebeb')
+                                                      score, goal), True, '#ebebeb')
             self.screen.blit(score_text, (10, 5))
             if score == goal:
                 callback = 'victory'
