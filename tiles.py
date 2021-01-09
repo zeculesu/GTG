@@ -14,7 +14,7 @@ class ParticlesForRunningInForest(pg.sprite.Sprite):
         self.rect = self.image.get_rect()
         self.rect.y = int(self.screen_width * 0.8) - self.image.get_height() // 2
         other_sprites = group.sprites()
-        length = velocity * 30
+        length = velocity * 50
         x = None
         while not x or any(map(lambda spr: abs(spr.rect.x - x) < length, other_sprites)):
             x = randint(self.screen_width * 1.25, self.screen_width * 4)
