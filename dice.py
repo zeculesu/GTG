@@ -10,7 +10,7 @@ class Dice(pg.sprite.Sprite, Loader):
     pg.mixer.init()
     # roll_sound = Loader.load_sound('dice-roll.wav')
     drop_sound = Loader.load_sound('dice-stop.wav')
-    drop_sound.set_volume(0.25)
+    drop_sound.set_volume(0.20)
 
     def __init__(self, field_size, field_indent, group):
         super(Dice, self).__init__(group)

@@ -38,7 +38,8 @@ class FieldHero(Hero):
     def start(self, current_cell, indent):
         self.live = 1
         self.size_hero = 50
-        self.side = 'right'
+        if self.side != 'right':
+            self.change_side('right')
         self.quantity = {'task': 0,
                          'health': 0,
                          'trap': 0,
