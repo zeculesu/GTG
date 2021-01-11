@@ -40,6 +40,8 @@ def main():
     arrow = pg.sprite.Sprite(all_sprites)
     arrow.image = Loader.load_image('arrow.png')
     arrow.rect = arrow.image.get_rect()
+    click_sound = Loader.load_sound('COOL CLICK.wav')
+    click_sound.set_volume(0.5)
     pg.mouse.set_visible(False)
     all_sprites.add(arrow)
     fps = 60
@@ -63,6 +65,7 @@ def main():
                 if event.type == pg.QUIT:
                     running = False
                 if event.type == pg.MOUSEBUTTONDOWN:
+                    click_sound.play()
                     x, y = event.pos
                     if x <= 40 and y <= 40:
                         field.change_language()
