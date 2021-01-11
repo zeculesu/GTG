@@ -38,12 +38,11 @@ class Field(pg.sprite.Sprite, Loader):
         dice.start()
 
     def distribution_of_cells(self, hero: FieldHero) -> None:
-        # options = {Cell: [0, 58],
-        #            Trap: [0, 40],
-        #            Health: [0, 20],
-        #            Task: [0, 100],
-        #            Teleport: [0, 60]}
-        options = {Task: [0, 144]}
+        options = {Cell: [0, 58],
+                   Trap: [0, 40],
+                   Health: [0, 20],
+                   Task: [0, 100],
+                   Teleport: [0, 60]}
         for i in range(12):
             for j in range(12):
                 if i == 0 and j == 0:
@@ -137,7 +136,7 @@ class Field(pg.sprite.Sprite, Loader):
             return None
 
     def move_finish(self, hero: FieldHero) -> None:
-        if self.moving_finish < 3:
+        if self.moving_finish < 2:
             if 'finish' in self.get_sibling_cells(self.current_cell[0], self.current_cell[1]):
                 i, j = choice([0, 11]), choice([0, 11])
                 while i == self.finish[0] and j == self.finish[1]:
