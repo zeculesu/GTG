@@ -4,3 +4,7 @@ class ImageNotFoundError(FileNotFoundError):
 
 class FontNotFoundError(FileNotFoundError):
     pass
+
+
+class MusicNotFoundError(FileNotFoundError):
+    pass

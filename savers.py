@@ -14,19 +14,43 @@ class StartScreen(Loader):
         screen = pg.display.set_mode(size)
         pg.display.set_caption('Goof the Game')
         fon = Loader.load_image('fon.png')
+        in_alpha = 0
+        out_alpha = None
+        fon.set_alpha(in_alpha)
         pg.display.set_icon(Loader.load_image('icon.png'))
         screen.blit(fon, (0, 0))
         pg.display.flip()
+        pg.mixer.init()
+        start_music = Loader.load_sound('start.wav')
+        start_music.play(10000, fade_ms=1500)
+        start_music.set_volume(200)
 
         running = True
         proceeded = False
+        clock = pg.time.Clock()
+        fps = 20
         while running:
             for event in pg.event.get():
                 if event.type == pg.QUIT:
                     running = False
                 elif event.type == pg.KEYDOWN:
+                    out_alpha = in_alpha
+                    fon = Loader.load_image('fon.png')
+                    start_music.fadeout(int(out_alpha / fps) * 1000)
+            if out_alpha and out_alpha > 0:
+                out_alpha -= 1
+                fon.set_alpha(out_alpha)
+                screen.blit(fon, (0, 0))
+                if out_alpha == 0:
                     running = False
                     proceeded = True
+            elif in_alpha < 100:
+                in_alpha += 1
+                fon.set_alpha(in_alpha)
+                screen.blit(fon, (0, 0))
+            pg.display.flip()
+            clock.tick(fps)
+        start_music.stop()
         pg.quit()
         return proceeded
 

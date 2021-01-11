@@ -1,11 +1,11 @@
 import os
 import pygame as pg
-from exceptions import ImageNotFoundError, FontNotFoundError
+from exceptions import ImageNotFoundError, FontNotFoundError, MusicNotFoundError
 
 
 class Loader:
     @staticmethod
-    def load_image(filename):
+    def load_image(filename: str) -> pg.Surface:
         try:
             image = pg.image.load(os.path.join('data', 'img', filename))
         except FileNotFoundError:
@@ -13,9 +13,17 @@ class Loader:
         return image
 
     @staticmethod
-    def load_font(fontname, size):
+    def load_font(fontname: str, size: int) -> pg.font.Font:
         try:
             font = pg.font.Font(os.path.join('data', 'font', fontname), size)
         except FileNotFoundError:
             raise FontNotFoundError('Не удалось загрузить файл шрифта %s' % fontname)
         return font
+
+    @staticmethod
+    def load_sound(filename):
+        try:
+            sound = pg.mixer.Sound(os.path.join('data', 'music', filename))
+        except FileNotFoundError:
+            raise MusicNotFoundError('Не удалось загрузить звуковой файл %s' % filename)
+        return sound
