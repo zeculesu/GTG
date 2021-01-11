@@ -1,8 +1,8 @@
 import pygame as pg
+from loader import Loader
 from field import Field
 from hero import FieldHero
 from dice import Dice
-from loader import Loader
 from savers import StartScreen, EndScreen, StaticBackground
 
 SCREEN_SIZE = 760, 760

@@ -19,7 +19,6 @@ class StartScreen(Loader):
         pg.display.set_icon(Loader.load_image('icon.png'))
         screen.blit(fon, (0, 0))
         pg.display.flip()
-        pg.mixer.init()
         start_music = Loader.load_sound('start.wav')
         start_music.play(10000, fade_ms=1500)
         start_music.set_volume(200)

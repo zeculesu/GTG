@@ -7,8 +7,6 @@ import time
 class Dice(pg.sprite.Sprite, Loader):
     img_names = ['dice_1.png', 'dice_2.png', 'dice_3.png',
                  'dice_4.png', 'dice_5.png', 'dice_6.png']
-    pg.mixer.init()
-    # roll_sound = Loader.load_sound('dice-roll.wav')
     drop_sound = Loader.load_sound('dice-stop.wav')
     drop_sound.set_volume(0.20)
 

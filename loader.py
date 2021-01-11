@@ -4,6 +4,8 @@ from exceptions import ImageNotFoundError, FontNotFoundError, MusicNotFoundError
 
 
 class Loader:
+    pg.mixer.init()
+
     @staticmethod
     def load_image(filename: str) -> pg.Surface:
         try:
