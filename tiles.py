@@ -6,6 +6,8 @@ from loader import Loader
 
 class ParticlesForRunningInForest(pg.sprite.Sprite):
     schrub = pg.transform.smoothscale(Loader.load_image('fire.png'), (130, 210))
+    fire_sound = Loader.load_sound('fire.wav')
+    fire_sound.set_volume(0.05)
 
     def __init__(self, velocity: int, group: pg.sprite.AbstractGroup, screen_size: tuple):
         super(ParticlesForRunningInForest, self).__init__()
@@ -30,12 +32,18 @@ class ParticlesForRunningInForest(pg.sprite.Sprite):
     def update(self, hero):
         self.rect.x -= self.velocity
         if pg.sprite.collide_mask(self, hero):
+            ParticlesForRunningInForest.fire_sound.play()
             self.callback = 'loss'
         if self.rect.x < -self.image.get_width():
             self.kill()
 
 
 class ParticlesForStarFall(pg.sprite.Sprite):
+    stars_sound = Loader.load_sound('stars.wav')
+    comet_sound = Loader.load_sound('comet.wav')
+    comet_sound.set_volume(0.05)
+    stars_sound.set_volume(0.05)
+
     def __init__(self, rect, screen_size: tuple, image):
         super(ParticlesForStarFall, self).__init__()
         self.image = image
@@ -54,8 +62,10 @@ class ParticlesForStarFall(pg.sprite.Sprite):
             self.aktiv = not self.aktiv
             if isinstance(self, Comet):
                 self.callback = '-'
+                ParticlesForStarFall.comet_sound.play()
             else:
                 self.callback = '+'
+                ParticlesForStarFall.stars_sound.play()
         else:
             self.callback = None
             self.rect.y += self.velocity

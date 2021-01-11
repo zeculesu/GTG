@@ -76,15 +76,6 @@ class Field(pg.sprite.Sprite, Loader):
                 continue
         return square
 
-    def at_finish(self) -> bool:
-        return self.current_cell == self.finish
-
-    def is_finished(self) -> bool:
-        return self.finished
-
-    def task_is_active(self) -> bool:
-        return self.task_active
-
     def handle_move(self, event: pg.event.Event, hero: FieldHero, dice: Dice) -> Union[str, None]:
         if not self.frozen:
             i, j = self.current_cell
@@ -117,7 +108,7 @@ class Field(pg.sprite.Sprite, Loader):
                 if move_allowed:
                     callback = hero.move_hero(self.current_cell, (self.left, self.top))
                     if hero.get_moves() == 0:
-                        self.paint(hero)
+                        self.paint_special_cell(hero)
                         if hero.get_live() == 0:
                             self.froze()
                             self.finished = True
@@ -134,50 +125,6 @@ class Field(pg.sprite.Sprite, Loader):
                         hero.change_side('right')
                     return 'victory'
             return None
-
-    def move_finish(self, hero: FieldHero) -> None:
-        if self.moving_finish < 2:
-            if 'finish' in self.get_sibling_cells(self.current_cell[0], self.current_cell[1]):
-                i, j = choice([0, 11]), choice([0, 11])
-                while i == self.finish[0] and j == self.finish[1]:
-                    i, j = choice([0, 11]), choice([0, 11])
-                self.cells[self.finish[0]][self.finish[1]] = Cell(hero)
-                self.cells[i][j] = 'finish'
-                self.finish = [i, j]
-                self.moving_finish += 1
-
-    def paint(self, hero: FieldHero):
-        i, j = self.current_cell
-        self.true_false_cell[i][j] = True
-        cell = self.cells[i][j]
-        if isinstance(cell, Teleport):
-            new_coords = cell.teleportation()
-            if new_coords:
-                i_new, j_new = new_coords
-                self.current_cell = [i_new, j_new]
-                hero.add_moves(1)
-                hero.move_hero(self.current_cell, (self.left, self.top))
-        elif isinstance(cell, Health):
-            cell.add_health()
-        elif isinstance(cell, Trap):
-            cell.minus_health()
-        elif isinstance(cell, Task):
-            cell.number_of_special_cells('task')
-            self.current_game = cell.start_game(self.screen, self, self.last_game)
-            self.last_game = self.current_game.__class__
-            self.task_active = True
-        elif isinstance(cell, Cell):
-            cell.number_of_special_cells('cell')
-
-    def be_way(self, i, j) -> None:
-        if str(self.cells[i][j]) != "finish" and not self.true_false_cell[i][j]:
-            self.cells[i][j] = 'way'
-
-    def get_size(self) -> tuple:
-        return self.cell_size * len(self.cells[0]), self.cell_size * len(self.cells)
-
-    def get_indent(self) -> tuple:
-        return self.left, self.top
 
     def render(self, screen: pg.Surface, moves: int, lives: int, backGround) -> None:
         screen.fill([255, 255, 255])
@@ -225,9 +172,59 @@ class Field(pg.sprite.Sprite, Loader):
                 pg.draw.rect(screen, '#0a2fa2', (self.left + self.cell_size * i, self.top + self.cell_size * j,
                                                  self.cell_size, self.cell_size), 2)
 
-    def get_current_cell(self) -> list:
-        return self.current_cell
+    # return bool
+    def at_finish(self) -> bool:
+        return self.current_cell == self.finish
 
+    def is_finished(self) -> bool:
+        return self.finished
+
+    def task_is_active(self) -> bool:
+        return self.task_active
+
+    # cell
+    def paint_special_cell(self, hero: FieldHero) -> None:
+        i, j = self.current_cell
+        self.true_false_cell[i][j] = True
+        cell = self.cells[i][j]
+        if isinstance(cell, Teleport):
+            new_coords = cell.teleportation()
+            if new_coords:
+                i_new, j_new = new_coords
+                self.current_cell = [i_new, j_new]
+                hero.add_moves(1)
+                hero.move_hero(self.current_cell, (self.left, self.top))
+        elif isinstance(cell, Health):
+            cell.add_health()
+        elif isinstance(cell, Trap):
+            cell.minus_health()
+        elif isinstance(cell, Task):
+            cell.number_of_special_cells('task')
+            self.current_game = cell.start_game(self.screen, self, self.last_game)
+            self.last_game = self.current_game.__class__
+            self.task_active = True
+        elif isinstance(cell, Cell):
+            cell.number_of_special_cells('cell')
+
+    def be_way(self, i: int, j: int) -> None:
+        if str(self.cells[i][j]) != "finish" and not self.true_false_cell[i][j]:
+            self.cells[i][j] = 'way'
+
+    def move_finish(self, hero: FieldHero) -> None:
+        if self.moving_finish < 2:
+            if 'finish' in self.get_sibling_cells(self.current_cell[0], self.current_cell[1]):
+                i, j = choice([0, 11]), choice([0, 11])
+                while i == self.finish[0] and j == self.finish[1]:
+                    i, j = choice([0, 11]), choice([0, 11])
+                self.cells[self.finish[0]][self.finish[1]] = Cell(hero)
+                self.cells[i][j] = 'finish'
+                self.finish = [i, j]
+                self.moving_finish += 1
+
+    def disable_task(self) -> None:
+        self.task_active = False
+
+    # dice
     def froze(self) -> None:
         self.frozen = not self.frozen
 
@@ -239,11 +236,19 @@ class Field(pg.sprite.Sprite, Loader):
         dice.visibled()
         dice.rotating = True
 
-    def change_language(self):
+    # get
+    def get_size(self) -> tuple:
+        return self.cell_size * len(self.cells[0]), self.cell_size * len(self.cells)
+
+    def get_indent(self) -> tuple:
+        return self.left, self.top
+
+    def get_current_cell(self) -> list:
+        return self.current_cell
+
+    # language
+    def change_language(self) -> None:
         self.language = 'ru' if self.language == 'en' else 'en'
 
-    def get_language(self):
+    def get_language(self) -> str:
         return self.language
-
-    def disable_task(self):
-        self.task_active = False
