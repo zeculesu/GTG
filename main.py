@@ -41,7 +41,7 @@ def main():
     arrow.image = Loader.load_image('arrow.png')
     arrow.rect = arrow.image.get_rect()
     click_sound = Loader.load_sound('COOL CLICK.wav')
-    click_sound.set_volume(0.5)
+    click_sound.set_volume(0.25)
     pg.mouse.set_visible(False)
     all_sprites.add(arrow)
     fps = 60
@@ -58,7 +58,7 @@ def main():
                 hero.add_live(-1)
                 field.disable_task()
                 if hero.get_live() == 0:
-                    dice.visibled()
+                    dice.visibled(sound=False)
                     finish(screen, field, hero, all_sprites, bg, callback)
         else:
             for event in pg.event.get():

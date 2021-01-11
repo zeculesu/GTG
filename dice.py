@@ -7,6 +7,10 @@ import time
 class Dice(pg.sprite.Sprite, Loader):
     img_names = ['dice_1.png', 'dice_2.png', 'dice_3.png',
                  'dice_4.png', 'dice_5.png', 'dice_6.png']
+    pg.mixer.init()
+    # roll_sound = Loader.load_sound('dice-roll.wav')
+    drop_sound = Loader.load_sound('dice-stop.wav')
+    drop_sound.set_volume(0.25)
 
     def __init__(self, field_size, field_indent, group):
         super(Dice, self).__init__(group)
@@ -27,13 +31,15 @@ class Dice(pg.sprite.Sprite, Loader):
     def is_rotating(self) -> bool:
         return self.rotating
 
-    def visibled(self):
+    def visibled(self, sound=True):
         self.visible = not self.visible
 
         if self.visible:
             self.rect.x = self.field_indent[0] + self.field_size[0] // 2 - self.img_width // 2
             self.rect.y = self.field_indent[1] + self.field_size[1] // 2 - self.img_height // 2
         else:
+            if sound:
+                Dice.drop_sound.play()
             time.sleep(0.5)
             self.rect.x = -1000
             self.rect.y = -1000
