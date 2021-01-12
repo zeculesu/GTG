@@ -40,7 +40,7 @@ class ParticlesForRunningInForest(pg.sprite.Sprite):
 
 class ParticlesForStarFall(pg.sprite.Sprite):
     stars_sound = Loader.load_sound('stars.wav')
-    comet_sound = Loader.load_sound('comet.wav')
+    comet_sound = Loader.load_sound('comet_2.wav')
     comet_sound.set_volume(0.05)
     stars_sound.set_volume(0.05)
 
