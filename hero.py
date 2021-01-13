@@ -118,7 +118,7 @@ class RunningInForestHero(TaskHero):
 
     def make_move(self, event: pg.event.Event):
         if event.key == pg.K_UP or event.key == pg.K_w:
-            if not self.is_falling:
+            if not self.is_falling and not self.is_jumping and self.rect.y >= 358:
                 self.is_jumping = True
                 self.rect.y -= 25
                 # self.falls = True
