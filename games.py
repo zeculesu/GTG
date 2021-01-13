@@ -50,14 +50,33 @@ class MiniGame:
         EndScreen.clear_temp_files()
         self.game_over = state
         game_over_1 = font.render(self.translate[self.language][state][0],
-                                  True, pg.Color('#f9c084'))
+                                  True, pg.Color('#ff4573'))
         game_over_2 = font.render(self.translate[self.language][state][1],
-                                  True, pg.Color('#f9c084'))
+                                  True, pg.Color('#ff4573'))
         self.screen.blit(game_over_1, (self.screen.get_width() // 2 - game_over_1.get_width() * 0.5,
                                        self.screen.get_height() // 2.5))
         self.screen.blit(game_over_2, (self.screen.get_width() // 2 - game_over_2.get_width() * 0.5,
                                        self.screen.get_height() * 0.5))
         pg.display.flip()
+
+    def start_loop(self, title, width):
+        sprites = pg.sprite.Group()
+        bg = StaticBackground('mini_game.jpg', [0, 0], size=(760, 760))
+        sprites.add(bg)
+        font = Loader.load_font('Special Elite.ttf', width)
+        title = font.render(title, True, pg.Color('#ebebeb'))
+        while True:
+            for event in pg.event.get():
+                if event.type == pg.QUIT:
+                    return 'closeEvent'
+                elif event.type == pg.KEYDOWN:
+                    if event.key == pg.K_SPACE:
+                        return True
+            sprites.update()
+            sprites.draw(self.screen)
+            self.screen.blit(title, (self.screen.get_width() // 2 - title.get_width() * 0.5,
+                                     self.screen.get_height() // 2.5))
+            pg.display.flip()
 
 
 class RunningInForest(MiniGame):
@@ -69,6 +88,8 @@ class RunningInForest(MiniGame):
         self.hero = RunningInForestHero()
 
     def loop(self, screen_size: tuple):
+        if self.start_loop('RunningInForest', 70) == 'closeEvent':
+            return 'closeEvent'
         callback = None
         width, height = screen_size
         all_sprites = pg.sprite.Group()
@@ -155,6 +176,8 @@ class StarFall(MiniGame):
         self.hero = StarFallHero()
 
     def loop(self, screen_size: tuple):
+        if self.start_loop('StarFall', 120) == 'closeEvent':
+            return 'closeEvent'
         all_sprites = pg.sprite.Group()
         bg = StaticBackground(StarFall.background_img, [0, 0], size=(760, 760))
         self.hero.resize(110, 110)
