@@ -19,37 +19,38 @@ class Dice(pg.sprite.Sprite, Loader):
         self.field_size = field_size
         self.field_indent = field_indent
         self.visible, self.rotating = False, True
-        self.start()
+        self.show()
 
-    def start(self):
-        self.visible = False
-        self.visibled()
-        self.rotating = True
+    # def start(sel/f):
+    #     self.visible = False
+    #     self.show()
+    #     self.rotating = True
 
     def is_rotating(self) -> bool:
         return self.rotating
 
-    def visibled(self, sound=True):
-        self.visible = not self.visible
+    def show(self):
+        self.visible = True
+        self.rotating = True
+        self.rect.x = self.field_indent[0] + self.field_size[0] // 2 - self.img_width // 2
+        self.rect.y = self.field_indent[1] + self.field_size[1] // 2 - self.img_height // 2
 
-        if self.visible:
-            self.rect.x = self.field_indent[0] + self.field_size[0] // 2 - self.img_width // 2
-            self.rect.y = self.field_indent[1] + self.field_size[1] // 2 - self.img_height // 2
-        else:
-            if sound:
-                Dice.drop_sound.play()
-            time.sleep(0.5)
-            self.rect.x = -1000
-            self.rect.y = -1000
+    def hide(self):
+        self.visible = False
+        self.rotating = False
+        time.sleep(0.5)
+        self.rect.x = -1000
+        self.rect.y = -1000
 
     def handle_rotating(self):
-        self.rotating = not self.rotating
-        return self.images.index(self.image) + 1 if not self.is_rotating() else None
+        self.hide()
+        return self.images.index(self.image) + 1
 
     def rotate(self, tick: int) -> bool:
         if self.is_rotating() and tick == 5:
             prev_image = self.image
             while self.image == prev_image:
                 self.image = choice(self.images)
+            print(self.images.index(self.image) + 1)
             return True
         return False

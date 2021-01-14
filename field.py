@@ -35,14 +35,15 @@ class Field(pg.sprite.Sprite, Loader):
         self.finished = False
         self.moving_finish = 0
         hero.start(self.current_cell, (self.left, self.top))
-        dice.start()
+        dice.show()
 
     def distribution_of_cells(self, hero: FieldHero) -> None:
-        options = {Cell: [0, 58],
-                   Trap: [0, 40],
-                   Health: [0, 20],
-                   Task: [0, 100],
-                   Teleport: [0, 60]}
+        # options = {Cell: [0, 58],
+        #            Trap: [0, 40],
+        #            Health: [0, 20],
+        #            Task: [0, 100],
+        #            Teleport: [0, 60]}
+        options = {Cell: [0, 144]}
         for i in range(12):
             for j in range(12):
                 if i == 0 and j == 0:
@@ -110,7 +111,7 @@ class Field(pg.sprite.Sprite, Loader):
                     if hero.get_moves() == 0:
                         self.paint_special_cell(hero)
                         if hero.get_live() == 0:
-                            self.froze()
+                            self.freeze()
                             self.finished = True
                             if hero.get_side() != 'right':
                                 hero.change_side('right')
@@ -119,7 +120,7 @@ class Field(pg.sprite.Sprite, Loader):
                     if callback == 'show-dice' and not self.at_finish():
                         self.show_dice(dice)
                 if self.at_finish():
-                    self.froze()
+                    self.freeze()
                     self.finished = True
                     if hero.get_side() != 'right':
                         hero.change_side('right')
@@ -225,16 +226,15 @@ class Field(pg.sprite.Sprite, Loader):
         self.task_active = False
 
     # dice
-    def froze(self) -> None:
+    def freeze(self) -> None:
         self.frozen = not self.frozen
 
     def is_frozen(self) -> bool:
         return self.frozen
 
     def show_dice(self, dice: Dice) -> None:
-        self.froze()
-        dice.visibled()
-        dice.rotating = True
+        self.freeze()
+        dice.show()
 
     # get
     def get_size(self) -> tuple:
