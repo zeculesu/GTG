@@ -21,11 +21,6 @@ class Dice(pg.sprite.Sprite, Loader):
         self.visible, self.rotating = False, True
         self.show()
 
-    # def start(sel/f):
-    #     self.visible = False
-    #     self.show()
-    #     self.rotating = True
-
     def is_rotating(self) -> bool:
         return self.rotating
 
@@ -47,10 +42,8 @@ class Dice(pg.sprite.Sprite, Loader):
         return self.images.index(self.image) + 1
 
     def rotate(self, tick: int) -> bool:
-        if self.is_rotating() and tick == 5:
-            prev_image = self.image
-            while self.image == prev_image:
-                self.image = choice(self.images)
-            print(self.images.index(self.image) + 1)
+        if self.rotating and tick == 5:
+            idx = self.images.index(self.image)
+            self.image = choice(self.images[:idx] + self.images[idx + 1:])
             return True
         return False

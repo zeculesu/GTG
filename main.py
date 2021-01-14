@@ -74,7 +74,7 @@ def main():
                 elif event.type == pg.KEYDOWN:
                     if event.key == pg.K_SPACE:
                         if hero.get_moves() == 0 and not field.is_finished():
-                            field.show_dice(dice)
+                            field.freeze()
                             moves = dice.handle_rotating()
                             hero.add_moves(moves)
                         elif field.is_finished():
@@ -83,15 +83,15 @@ def main():
                         callback = field.handle_move(event, hero, dice)
                         if callback == 'victory' or callback == 'loss':
                             finish(screen, field, hero, all_sprites, bg, callback)
-            if not field.is_finished():
-                field.render(screen, hero.get_moves(), hero.get_live(), bg)
-                all_sprites.update()
-                all_sprites.draw(screen)
             if dice.is_rotating():
                 dice_tick += 1
                 rotation = dice.rotate(dice_tick)
                 if rotation:
                     dice_tick = 0
+            if not field.is_finished():
+                field.render(screen, hero.get_moves(), hero.get_live(), bg)
+                all_sprites.update()
+                all_sprites.draw(screen)
             pg.display.flip()
             clock.tick(fps)
     pg.quit()
