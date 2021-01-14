@@ -13,7 +13,7 @@ def finish(screen: pg.Surface, field: Field, hero: FieldHero,
            state: str) -> None:
     field.render(screen, hero.get_moves(), hero.get_live(), bg)
     if not field.is_frozen():
-        field.froze()
+        field.freeze()
     field.finished = True
     all_sprites.update()
     all_sprites.draw(screen)
@@ -58,7 +58,7 @@ def main():
                 hero.add_live(-1)
                 field.disable_task()
                 if hero.get_live() == 0:
-                    dice.visibled(sound=False)
+                    dice.show()
                     finish(screen, field, hero, all_sprites, bg, callback)
         else:
             for event in pg.event.get():
@@ -76,8 +76,7 @@ def main():
                         if hero.get_moves() == 0 and not field.is_finished():
                             field.show_dice(dice)
                             moves = dice.handle_rotating()
-                            if moves:
-                                hero.add_moves(moves)
+                            hero.add_moves(moves)
                         elif field.is_finished():
                             field.start(hero, dice)
                     else:
