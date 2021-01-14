@@ -7,9 +7,7 @@ from hero import FieldHero
 # from field import Field
 
 
-# GAMES = [StarFall, RunningInForest]
-GAMES = [MagicMaze]
-
+GAMES = [StarFall, RunningInForest, MagicMaze]
 
 class Cell:
     def __init__(self, hero):
@@ -45,12 +43,13 @@ class Health(Cell):
 
 class Task(Cell):
     def start_game(self, surface: Surface, field, last_game: Union[StarFall.__class__,
-                                                                   RunningInForest.__class__]):
-        # if last_game:
-        #     last_game_idx = GAMES.index(last_game)
-        #     games = GAMES[:last_game_idx] + GAMES[last_game_idx + 1:]
-        # else:
-        games = GAMES[:]
+                                                                   RunningInForest.__class__,
+                                                                   MagicMaze.__class__]):
+        if last_game:
+            last_game_idx = GAMES.index(last_game)
+            games = GAMES[:last_game_idx] + GAMES[last_game_idx + 1:]
+        else:
+            games = GAMES[:]
         game = choice(games)(field, surface, self.hero.get_live())  # initialization of a game
         game.start()
         return game

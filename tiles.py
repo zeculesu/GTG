@@ -4,32 +4,11 @@ from random import randint, choice
 from loader import Loader
 
 
-def load_level(filename):
-    filename = "data/" + filename
-    with open(filename, 'r') as mapFile:
-        level_map = [line.strip() for line in mapFile]
-    return list(level_map)
-
-
-class Camera:
-    def __init__(self):
-        self.dx = 0
-        self.dy = 0
-
-    def apply(self, obj):
-        obj.rect.x += self.dx
-        obj.rect.y += self.dy
-
-    def update(self, target):
-        self.dx = -(target.rect.x + target.rect.w // 2 - 760 // 2)
-        self.dy = -(target.rect.y + target.rect.h // 2 - 760 // 2)
-
-
 class Tile(pg.sprite.Sprite):
     tile_images = {
         'wall': pg.transform.smoothscale(Loader.load_image('tile.png'), (80, 80)),
         'empty': pg.transform.smoothscale(Loader.load_image('pol.jpg'), (80, 80)),
-        'finish': pg.transform.smoothscale(Loader.load_image('itachi.jpg'), (80, 80))
+        'finish': pg.transform.smoothscale(Loader.load_image('finish.png'), (80, 80))
     }
 
     def __init__(self, tile_type, pos_x, pos_y, all_sprites, tiles_group):
@@ -52,10 +31,11 @@ class FieldMagicMaze:
     def __init__(self, all_sprites, tiles_group, hero):
         self.images = []
         self.player = None
-        self.current_cell = [1, 1]
+        self.current_cell = [4, 4]
         self.hero = hero
         self.lambd = [0, 0]
-        self.generate_level(load_level('map.txt'), all_sprites, tiles_group)
+        self.callback = None
+        self.generate_level(Loader.load_level('map_1.txt'), all_sprites, tiles_group)
 
     def generate_level(self, level, all_sprites, tiles_group):
         for x in range(len(level)):
@@ -91,6 +71,8 @@ class FieldMagicMaze:
                 self.current_cell[1] += 1
                 self.lambd[1] -= 1
             self.shift_tiles(*self.lambd)
+            if self.images[x][y].tile_type == 'finish':
+                self.callback = 'finish'
 
     def shift_tiles(self, pos_x, pos_y):
         self.lambd = [0, 0]

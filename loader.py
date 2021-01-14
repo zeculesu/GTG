@@ -29,3 +29,10 @@ class Loader:
         except FileNotFoundError:
             raise MusicNotFoundError('Не удалось загрузить звуковой файл %s' % filename)
         return sound
+
+    @staticmethod
+    def load_level(filename):
+        filename = "data/map/" + filename
+        with open(filename, 'r') as mapFile:
+            level_map = [line.strip() for line in mapFile]
+        return list(level_map)
