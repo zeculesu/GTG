@@ -4,6 +4,80 @@ from random import randint, choice
 from loader import Loader
 
 
+class Tile(pg.sprite.Sprite):
+    tile_images = {
+        'wall': pg.transform.smoothscale(Loader.load_image('tile.png'), (80, 80)),
+        'empty': pg.transform.smoothscale(Loader.load_image('pol.jpg'), (80, 80)),
+        'finish': pg.transform.smoothscale(Loader.load_image('finish.png'), (80, 80))
+    }
+
+    def __init__(self, tile_type, pos_x, pos_y, all_sprites, tiles_group):
+        super().__init__(tiles_group, all_sprites)
+        self.tile_type = tile_type
+        self.pos_x, self.pos_y = pos_x, pos_y
+        self.image = Tile.tile_images[tile_type]
+        self.rect = self.image.get_rect().move(
+            80 * self.pos_x, 80 * self.pos_y)
+
+    def shift_tile(self, pos_x: int, pos_y: int) -> None:
+        self.pos_x += pos_x
+        self.pos_y += pos_y
+        self.rect = self.image.get_rect(
+            bottomright=(80 * (self.pos_x + 1),
+                         80 * (self.pos_y + 1)))
+
+
+class FieldMagicMaze:
+    def __init__(self, all_sprites, tiles_group, hero):
+        self.images = []
+        self.current_cell, self.lambd = [4, 4], [0, 0]
+        self.hero = hero
+        self.callback = None
+        self.generate_level(Loader.load_level('map_1.txt'), all_sprites, tiles_group)
+
+    def generate_level(self, level, all_sprites, tiles_group) -> None:
+        for x in range(len(level)):
+            self.images.append([])
+            for y in range(len(level[x])):
+                if level[x][y] == '.':
+                    self.images[x].append(Tile('empty', x, y, all_sprites, tiles_group))
+                elif level[x][y] == '#':
+                    self.images[x].append(Tile('wall', x, y, all_sprites, tiles_group))
+                elif level[x][y] == '@':
+                    self.images[x].append(Tile('finish', x, y, all_sprites, tiles_group))
+
+    def move(self, event) -> None:
+        x, y = self.current_cell[0], self.current_cell[1]
+        if event.type == pg.KEYDOWN:
+            if event.key == pg.K_LEFT:
+                if self.hero.get_side() != 'left':
+                    self.hero.change_side('left')
+                if self.images[x - 1][y].tile_type != 'wall':
+                    self.current_cell[0] -= 1
+                    self.lambd[0] += 1
+            elif event.key == pg.K_RIGHT:
+                if self.hero.get_side() != 'right':
+                    self.hero.change_side('right')
+                if self.images[x + 1][y].tile_type != 'wall':
+                    self.current_cell[0] += 1
+                    self.lambd[0] -= 1
+            elif event.key == pg.K_UP and self.images[x][y - 1].tile_type != 'wall':
+                self.current_cell[1] -= 1
+                self.lambd[1] += 1
+            elif event.key == pg.K_DOWN and self.images[x][y + 1].tile_type != 'wall':
+                self.current_cell[1] += 1
+                self.lambd[1] -= 1
+            self.shift_tiles(*self.lambd)
+            if self.images[x][y].tile_type == 'finish':
+                self.callback = 'finish'
+
+    def shift_tiles(self, pos_x: int, pos_y: int) -> None:
+        self.lambd = [0, 0]
+        for line in self.images:
+            for tile in line:
+                tile.shift_tile(pos_x, pos_y)
+
+
 class ParticlesForRunningInForest(pg.sprite.Sprite):
     schrub = pg.transform.smoothscale(Loader.load_image('fire.png'), (130, 210))
     fire_sound = Loader.load_sound('fire.wav')

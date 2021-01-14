@@ -2,9 +2,9 @@ from random import choice
 
 import pygame as pg
 from loader import Loader
-from hero import StarFallHero, RunningInForestHero
+from hero import StarFallHero, RunningInForestHero, Hero
 from savers import StaticBackground, DynamicBackground, EndScreen
-from tiles import Comet, Star, ParticlesForRunningInForest
+from tiles import Comet, Star, ParticlesForRunningInForest, FieldMagicMaze
 
 
 class MiniGame:
@@ -48,14 +48,14 @@ class MiniGame:
                         self.running = False
         return callback
 
-    def end_game(self, font, state: str) -> None:
+    def end_game(self, font, state: str, color='#ff4573') -> None:
         EndScreen.blur_surf(self.screen)
         EndScreen.clear_temp_files()
         self.game_over = state
         game_over_1 = font.render(self.translate[self.language][state][0],
-                                  True, pg.Color('#ff4573'))
+                                  True, pg.Color(color))
         game_over_2 = font.render(self.translate[self.language][state][1],
-                                  True, pg.Color('#ff4573'))
+                                  True, pg.Color(color))
         self.screen.blit(game_over_1, (self.screen.get_width() // 2 - game_over_1.get_width() * 0.5,
                                        self.screen.get_height() // 2.5))
         self.screen.blit(game_over_2, (self.screen.get_width() // 2 - game_over_2.get_width() * 0.5,
@@ -81,6 +81,45 @@ class MiniGame:
             self.screen.blit(title, (self.screen.get_width() // 2 - title.get_width() * 0.5,
                                      self.screen.get_height() // 2.5))
             pg.display.flip()
+
+
+class MagicMaze(MiniGame):
+    def __init__(self, field, surface: pg.Surface, lives: int):
+        super(MagicMaze, self).__init__(field, surface, lives)
+        self.hero = Hero()
+
+    def loop(self, screen_size: tuple):
+        if self.start_loop('MagicMaze', 100) == 'closeEvent':
+            return 'closeEvent'
+        all_sprites = pg.sprite.Group()
+        tiles_group = pg.sprite.Group()
+        hero_group = pg.sprite.Group()
+        self.hero.resize(80, 80)
+        self.hero.rect = self.hero.image.get_rect(
+            bottomright=(80 * 5,
+                         80 * 5))
+        hero_group.add(self.hero)
+        maze = FieldMagicMaze(all_sprites, tiles_group, self.hero)
+        groups = [tiles_group, hero_group]
+        clock = pg.time.Clock()
+        fps = 60
+        running = True
+        callback = None
+        while running:
+            for event in pg.event.get():
+                if event.type == pg.QUIT:
+                    return 'closeEvent'
+                maze.move(event)
+            for group in groups:
+                group.update()
+                group.draw(self.screen)
+            if maze.callback == 'finish':
+                running = False
+                self.end_game(Loader.load_font('Special Elite.ttf', 60), 'victory', '#ebebeb')
+            pg.display.flip()
+            clock.tick(fps)
+        callback = self.end_loop()
+        return callback
 
 
 class RunningInForest(MiniGame):
