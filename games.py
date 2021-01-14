@@ -2,9 +2,9 @@ from random import choice
 
 import pygame as pg
 from loader import Loader
-from hero import StarFallHero, RunningInForestHero
+from hero import StarFallHero, RunningInForestHero, Hero
 from savers import StaticBackground, DynamicBackground, EndScreen
-from tiles import Comet, Star, ParticlesForRunningInForest
+from tiles import Comet, Star, ParticlesForRunningInForest, FieldMagicMaze, Camera
 
 
 class MiniGame:
@@ -77,6 +77,39 @@ class MiniGame:
             self.screen.blit(title, (self.screen.get_width() // 2 - title.get_width() * 0.5,
                                      self.screen.get_height() // 2.5))
             pg.display.flip()
+
+
+class MagicMaze(MiniGame):
+    def __init__(self, field, surface: pg.Surface, lives: int):
+        super(MagicMaze, self).__init__(field, surface, lives)
+        self.hero = Hero()
+
+    def loop(self, screen_size: tuple):
+        callback = None
+        all_sprites = pg.sprite.Group()
+        tiles_group = pg.sprite.Group()
+        hero_group = pg.sprite.Group()
+        self.hero.resize(80, 80)
+        self.hero.rect = self.hero.image.get_rect(
+            bottomright=(80 * 2,
+                         80 * 2))
+        width, height = screen_size
+        magic = FieldMagicMaze(all_sprites, tiles_group, self.hero)
+        hero_group.add(self.hero)
+        groups = [tiles_group, hero_group]
+        clock = pg.time.Clock()
+        running = True
+        while running:
+            for event in pg.event.get():
+                if event.type == pg.QUIT:
+                    return 'closeEvent'
+                magic.move(event)
+            for group in groups:
+                group.update()
+                group.draw(self.screen)
+            pg.display.flip()
+            clock.tick(50)
+        return callback
 
 
 class RunningInForest(MiniGame):
