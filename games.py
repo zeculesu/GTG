@@ -28,8 +28,11 @@ class MiniGame:
         self.language = self.field.get_language()
         self.running = False
         self.game_over = ''
+        self.music = Loader.load_sound('main.wav')
 
     def start(self):
+        self.music.play(1000, fade_ms=3000)
+        self.music.set_volume(0.125)
         self.running = True
 
     def end_loop(self) -> str:
@@ -58,6 +61,7 @@ class MiniGame:
         self.screen.blit(game_over_2, (self.screen.get_width() // 2 - game_over_2.get_width() * 0.5,
                                        self.screen.get_height() * 0.5))
         pg.display.flip()
+        self.music.stop()
 
     def start_loop(self, title, width):
         sprites = pg.sprite.Group()

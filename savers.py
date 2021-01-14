@@ -20,8 +20,8 @@ class StartScreen(Loader):
         screen.blit(fon, (0, 0))
         pg.display.flip()
         start_music = Loader.load_sound('start.wav')
-        start_music.play(10000, fade_ms=1500)
-        start_music.set_volume(200)
+        start_music.play(10000, fade_ms=3000)
+        start_music.set_volume(0.5)
 
         running = True
         proceeded = False

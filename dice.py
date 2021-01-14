@@ -33,6 +33,7 @@ class Dice(pg.sprite.Sprite, Loader):
     def hide(self):
         self.visible = False
         self.rotating = False
+        Dice.drop_sound.play()
         time.sleep(0.5)
         self.rect.x = -1000
         self.rect.y = -1000
