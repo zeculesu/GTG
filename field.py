@@ -43,7 +43,7 @@ class Field(pg.sprite.Sprite, Loader):
         #            Health: [0, 20],
         #            Task: [0, 100],
         #            Teleport: [0, 60]}
-        options = {Cell: [0, 144]}
+        options = {Task: [0, 144]}
         for i in range(12):
             for j in range(12):
                 if i == 0 and j == 0:

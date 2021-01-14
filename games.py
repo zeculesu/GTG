@@ -87,7 +87,6 @@ class MagicMaze(MiniGame):
     def loop(self, screen_size: tuple):
         if self.start_loop('MagicMaze', 100) == 'closeEvent':
             return 'closeEvent'
-        callback = None
         all_sprites = pg.sprite.Group()
         tiles_group = pg.sprite.Group()
         hero_group = pg.sprite.Group()
@@ -95,12 +94,13 @@ class MagicMaze(MiniGame):
         self.hero.rect = self.hero.image.get_rect(
             bottomright=(80 * 5,
                          80 * 5))
-        maze = FieldMagicMaze(all_sprites, tiles_group, self.hero)
         hero_group.add(self.hero)
+        maze = FieldMagicMaze(all_sprites, tiles_group, self.hero)
         groups = [tiles_group, hero_group]
         clock = pg.time.Clock()
         fps = 60
         running = True
+        callback = None
         while running:
             for event in pg.event.get():
                 if event.type == pg.QUIT:

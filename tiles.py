@@ -19,7 +19,7 @@ class Tile(pg.sprite.Sprite):
         self.rect = self.image.get_rect().move(
             80 * self.pos_x, 80 * self.pos_y)
 
-    def shift_tile(self, pos_x, pos_y):
+    def shift_tile(self, pos_x: int, pos_y: int) -> None:
         self.pos_x += pos_x
         self.pos_y += pos_y
         self.rect = self.image.get_rect(
@@ -30,26 +30,23 @@ class Tile(pg.sprite.Sprite):
 class FieldMagicMaze:
     def __init__(self, all_sprites, tiles_group, hero):
         self.images = []
-        self.player = None
-        self.current_cell = [4, 4]
+        self.current_cell, self.lambd = [4, 4], [0, 0]
         self.hero = hero
-        self.lambd = [0, 0]
         self.callback = None
         self.generate_level(Loader.load_level('map_1.txt'), all_sprites, tiles_group)
 
-    def generate_level(self, level, all_sprites, tiles_group):
+    def generate_level(self, level, all_sprites, tiles_group) -> None:
         for x in range(len(level)):
             self.images.append([])
             for y in range(len(level[x])):
                 if level[x][y] == '.':
-                    image = Tile('empty', x, y, all_sprites, tiles_group)
+                    self.images[x].append(Tile('empty', x, y, all_sprites, tiles_group))
                 elif level[x][y] == '#':
-                    image = Tile('wall', x, y, all_sprites, tiles_group)
+                    self.images[x].append(Tile('wall', x, y, all_sprites, tiles_group))
                 elif level[x][y] == '@':
-                    image = Tile('finish', x, y, all_sprites, tiles_group)
-                self.images[x].append(image)
+                    self.images[x].append(Tile('finish', x, y, all_sprites, tiles_group))
 
-    def move(self, event):
+    def move(self, event) -> None:
         x, y = self.current_cell[0], self.current_cell[1]
         if event.type == pg.KEYDOWN:
             if event.key == pg.K_LEFT:
@@ -74,7 +71,7 @@ class FieldMagicMaze:
             if self.images[x][y].tile_type == 'finish':
                 self.callback = 'finish'
 
-    def shift_tiles(self, pos_x, pos_y):
+    def shift_tiles(self, pos_x: int, pos_y: int) -> None:
         self.lambd = [0, 0]
         for line in self.images:
             for tile in line:
