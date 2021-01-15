@@ -31,6 +31,8 @@ class MiniGame:
         self.music = Loader.load_sound('main.wav')
 
     def start(self):
+        pg.mixer.music.queue('main.wav')
+        pg.mixer.music.queue()
         self.music.play(1000, fade_ms=3000)
         self.music.set_volume(0.125)
         self.running = True
@@ -133,7 +135,6 @@ class RunningInForest(MiniGame):
     def loop(self, screen_size: tuple):
         if self.start_loop('RunningInForest', 70) == 'closeEvent':
             return 'closeEvent'
-        callback = None
         width, height = screen_size
         all_sprites = pg.sprite.Group()
         bg_1 = DynamicBackground(RunningInForest.background_img, [0, 0])
