@@ -27,11 +27,7 @@ class FieldHero(Hero):
         group.add(self)
         self.resize(50, 50)  # Загружаем картинку и растягиваем под нужный размер
         self.live, self.size_hero, self.moves, self.cells_passed = None, None, None, None
-        self.quantity = {'task': None,
-                         'health': None,
-                         'trap': None,
-                         'teleport': None,
-                         'cell': None}
+        self.quantity = None
 
         self.start(current_cell, indent)
 
@@ -40,7 +36,8 @@ class FieldHero(Hero):
         self.size_hero = 50
         if self.side != 'right':
             self.change_side('right')
-        self.quantity = {'task': 0,
+        self.quantity = {'passed': 0,
+                         'task': 0,
                          'health': 0,
                          'trap': 0,
                          'teleport': 0,
@@ -64,7 +61,7 @@ class FieldHero(Hero):
     def move_hero(self, current_cell: list, indent: tuple):
         if self.moves != 0:
             self.moves -= 1
-            self.cells_passed += 1
+            self.quantity['passed'] += 1
             left, top = indent
             self.rect = self.image.get_rect(
                 bottomright=(left + self.size_hero * (current_cell[0] + 1),
@@ -78,7 +75,7 @@ class FieldHero(Hero):
         self.moves += moves
 
     def get_passed_cells(self) -> int:
-        return self.cells_passed
+        return self.quantity['passed']
 
 
 class TaskHero(Hero):

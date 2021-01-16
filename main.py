@@ -5,7 +5,7 @@ from hero import FieldHero
 from dice import Dice
 from savers import StartScreen, EndScreen, StaticBackground
 
-SCREEN_SIZE = 760, 760
+SCREEN_SIZE = 1920, 1080
 
 
 def finish(screen: pg.Surface, field: Field, hero: FieldHero,
@@ -18,7 +18,7 @@ def finish(screen: pg.Surface, field: Field, hero: FieldHero,
     field.finished = True
     all_sprites.update()
     all_sprites.draw(screen)
-    EndScreen(screen, hero, state, field.get_language())
+    EndScreen(screen, hero, field, state, field.get_language())
 
 
 def main():

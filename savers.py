@@ -47,11 +47,38 @@ class StartScreen(Loader):
 
 
 class EndScreen:
-    def __init__(self, screen: pg.Surface, hero: Hero, state: str, language: str):
+    fontname = 'Special Elite.ttf'
+
+    def __init__(self, screen: pg.Surface, hero: Hero, field, state: str, language: str):
+        self.screen = screen
         self.hero = hero
+        self.field_width, self.field_height = field.get_size()
+        self.field_x, self.field_y = map(int, (field.left, field.top))
         self.state = state
         self.language = language
-        self.screen = screen
+        self.font = Loader.load_font(EndScreen.fontname, 60)
+
+        self.translate = {'en': {'victory': ('VICTORY', 0.06, 'main'),
+                                 'loss': ('LOSS', 0.06, 'main'),
+                                 'passed': ('You passed %d cells', 0.2, 'first'),
+                                 'task': ('Task - %d', 0.3, 'first'),
+                                 'health': ('Health - %d', 0.4, 'first'),
+                                 'trap': ('Trap - %d', 0.5, 'first'),
+                                 'teleport': ('Teleport - %d', 0.6, 'first'),
+                                 'cell': ('Ordinary cell - %d', 0.7, 'first'),
+                                 'inscription': (('To start again press', 'the space bar'),
+                                                 (0.85, 0.9), 'second')},
+                          'ru': {'victory': ('ПОБЕДА', 0.06, 'main'),
+                                 'loss': ('ВЫ ПРОИГРАЛИ', 0.06, 'main'),
+                                 'passed': ('Вы прошли %d клеток', 0.2, 'first'),
+                                 'task': ('Задания - %d', 0.3, 'first'),
+                                 'health': ('Здоровье - %d', 0.4, 'first'),
+                                 'trap': ('Капканы - %d', 0.5, 'first'),
+                                 'teleport': ('Телепорты - %d', 0.6, 'first'),
+                                 'cell': ('Обычные лктеки - %d', 0.7, 'first'),
+                                 'inscription': (('Чтобы начать заново', 'нажмите пробел'),
+                                                 (0.85, 0.9), 'second')}}
+
         self.blur_surf(screen)
         self.clear_temp_files()
         self.update()
@@ -76,44 +103,27 @@ class EndScreen:
                 os.remove(del_path)
 
     def update(self):
-        font = Loader.load_font('Special Elite.ttf', 60)
-        font_text = Loader.load_font('Special Elite.ttf', 40)
-        font_text_2 = Loader.load_font('Special Elite.ttf', 30)
-        if self.language == 'en':
-            game_over = font.render(self.state.upper(), True, pg.Color('#141b47'))
-            passed = font_text.render('You passed %d cells' % self.hero.get_passed_cells(), True, pg.Color('#141b47'))
-            cells = self.hero.get_quantity()
-            task = font_text.render('Task - %d' % cells['task'], True, pg.Color('#141b47'))
-            health = font_text.render('Health - %d' % cells['health'], True, pg.Color('#141b47'))
-            trap = font_text.render('Trap - %d' % cells['trap'], True, pg.Color('#141b47'))
-            teleport = font_text.render('Teleport - %d' % cells['teleport'], True, pg.Color('#141b47'))
-            cell = font_text.render('Ordinary Cell - %d' % cells['cell'], True, pg.Color('#141b47'))
-            message_1 = font_text_2.render('To start again press', True, pg.Color('#141b47'))
-            message_2 = font_text_2.render('the space bar', True, pg.Color('#141b47'))
-            self.screen.blit(game_over, (self.screen.get_width() // 2 - game_over.get_width() // 2,
-                                         125))
-            self.screen.blit(message_2, (275, 610))
-        else:
-            state_text = 'ПОБЕДА' if self.state == 'victory' else 'ВЫ ПРОИГРАЛИ'
-            game_over = font.render(state_text, True, pg.Color('#141b47'))
-            passed = font_text.render('Вы прошли %d клеток' % self.hero.get_passed_cells(), True, pg.Color('#141b47'))
-            cells = self.hero.get_quantity()
-            task = font_text.render('Задания - %d' % cells['task'], True, pg.Color('#141b47'))
-            health = font_text.render('Здоровье - %d' % cells['health'], True, pg.Color('#141b47'))
-            trap = font_text.render('Капканы - %d' % cells['trap'], True, pg.Color('#141b47'))
-            teleport = font_text.render('Телепорты - %d' % cells['teleport'], True, pg.Color('#141b47'))
-            cell = font_text.render('Обычные клетки - %d' % cells['cell'], True, pg.Color('#141b47'))
-            message_1 = font_text_2.render('Чтобы начать заново', True, pg.Color('#141b47'))
-            message_2 = font_text_2.render('нажмите пробел', True, pg.Color('#141b47'))
-            self.screen.blit(game_over, (150, 115))
-            self.screen.blit(message_2, (255, 610))
-        self.screen.blit(passed, (90, 200))
-        self.screen.blit(task, (90, 260))
-        self.screen.blit(health, (90, 320))
-        self.screen.blit(trap, (90, 380))
-        self.screen.blit(teleport, (90, 440))
-        self.screen.blit(cell, (90, 500))
-        self.screen.blit(message_1, (225, 580))
+        cells = self.hero.get_quantity()
+        font_text = Loader.load_font(EndScreen.fontname, 40)
+        font_text_2 = Loader.load_font(EndScreen.fontname, 30)
+        fonts = {'main': self.font,
+                 'first': font_text,
+                 'second': font_text_2}
+        keys = list(self.translate[self.language].keys())
+        keys = keys[:1] + keys[2:] if self.state == 'victory' else keys[1:]
+        for i in range(len(keys)):
+            data = self.translate[self.language][keys[i]]
+            font = fonts[data[-1]]
+            raw_string = data[0]
+            inscriptions = (raw_string,) if isinstance(raw_string, str) else raw_string
+            for j, inscription in enumerate(inscriptions):
+                if keys[i] in cells.keys():
+                    inscription = inscription % cells[keys[i]]
+                text = font.render(inscription, True, pg.Color('#141b47'))
+                x = self.field_x + (self.field_width // 2 - text.get_width() // 2)
+                h = data[1][j] if isinstance(data[0], tuple) else data[1]
+                y = self.field_y + self.field_width * h
+                self.screen.blit(text, (x, y))
 
 
 class StaticBackground(pg.sprite.Sprite, Loader):
