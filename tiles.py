@@ -15,7 +15,7 @@ class Tile(pg.sprite.Sprite):
 
     def __init__(self, tile_type: str, pos_x: int, pos_y: int, all_sprites: pg.sprite.AbstractGroup,
                  tiles_group: pg.sprite.AbstractGroup):
-        super().__init__(tiles_group, all_sprites)
+        super(Tile, self).__init__(tiles_group, all_sprites)
         self.tile_type = tile_type
         self.pos_x, self.pos_y = pos_x, pos_y
         self.image = Tile.tile_images[tile_type]
@@ -34,9 +34,14 @@ class FieldMagicMaze:
     def __init__(self, all_sprites: pg.sprite.AbstractGroup,
                  tiles_group: pg.sprite.AbstractGroup, hero: Hero):
         self.images = []
-        self.current_cell, self.lambd = [4, 4], [0, 0]
         self.hero = hero
-        self.generate_level(Loader.load_level('map_1.txt'), all_sprites, tiles_group)
+        self.lambd = [0, 0]
+        self.current_map = choice(['map_1.txt', 'map_2.txt'])
+        self.current_cell = [4, 4] if self.current_map == 'map_1.txt' else [5, 5]
+        self.generate_level(Loader.load_level(self.current_map), all_sprites, tiles_group)
+
+    def get_current_map(self) -> str:
+        return self.current_map
 
     def generate_level(self, level: list, all_sprites: pg.sprite.AbstractGroup,
                        tiles_group: pg.sprite.AbstractGroup) -> None:

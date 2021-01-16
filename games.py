@@ -113,14 +113,14 @@ class MagicMaze(MiniGame):
         hero_group = pg.sprite.Group()
         hero_width, hero_height = 80, 80
         self.hero.resize(hero_width, hero_height)
-        self.hero.rect = self.hero.image.get_rect(
-            bottomright=(hero_width * 5,
-                         hero_height * 5))
         hero_group.add(self.hero)
         maze = FieldMagicMaze(all_sprites, tiles_group, self.hero)
+        self.hero.rect = self.hero.image.get_rect(
+            bottomright=(hero_width * (maze.current_cell[0] + 1),
+                         hero_height * (maze.current_cell[1] + 1)))
         groups = [tiles_group, hero_group]
         clock = pg.time.Clock()
-        fps = 10
+        fps = 20
         running = True
         while running:
             for event in pg.event.get():
