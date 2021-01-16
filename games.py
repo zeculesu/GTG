@@ -72,8 +72,20 @@ class MiniGame:
         sprites = pg.sprite.Group()
         bg = StaticBackground(MiniGame.start_img, [0, 0], size=(760, 760))
         sprites.add(bg)
-        font = Loader.load_font(MiniGame.fontname, width)
-        title = font.render(title, True, pg.Color('#ebebeb'))
+
+        screen_width, screen_height = self.screen.get_size()
+        title_font = Loader.load_font(MiniGame.fontname, width)
+        title = title_font.render(title, True, pg.Color('#ebebeb'))
+        title_pos = (screen_width // 2 - title.get_width() // 2,
+                     screen_height // 2.25)
+        inscription_font = Loader.load_font(MiniGame.fontname, int(width * 0.5))
+        inscription = inscription_font.render('Press Space', True, pg.Color('#ebebeb'))
+        inscription_pos = (screen_width // 2 - inscription.get_width() // 2,
+                           title_pos[1] + title.get_height() // 2 + screen_height // 10)
+
+        centering_indent = (inscription_pos[1] + inscription.get_height() - title_pos[1]) // 4
+        title_pos = (title_pos[0], title_pos[1] - centering_indent)
+        inscription_pos = (inscription_pos[0], inscription_pos[1] - centering_indent)
         while True:
             for event in pg.event.get():
                 if event.type == pg.QUIT:
@@ -83,8 +95,8 @@ class MiniGame:
                         return 'proceeded'
             sprites.update()
             sprites.draw(self.screen)
-            self.screen.blit(title, (self.screen.get_width() // 2 - title.get_width() * 0.5,
-                                     self.screen.get_height() // 2.5))
+            self.screen.blit(title, title_pos)
+            self.screen.blit(inscription, inscription_pos)
             pg.display.flip()
 
 

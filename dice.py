@@ -1,7 +1,6 @@
 import pygame as pg
 from random import choice
 from loader import Loader
-import time
 
 
 class Dice(pg.sprite.Sprite, Loader):
@@ -34,7 +33,7 @@ class Dice(pg.sprite.Sprite, Loader):
         self.visible = False
         self.rotating = False
         Dice.drop_sound.play()
-        time.sleep(0.5)
+        pg.time.wait(500)
         self.rect.x = -1000
         self.rect.y = -1000
 
