@@ -10,7 +10,8 @@ SCREEN_SIZE = 760, 760
 
 def finish(screen: pg.Surface, field: Field, hero: FieldHero,
            all_sprites: pg.sprite.AbstractGroup, bg: StaticBackground,
-           state: str) -> None:
+           state: str, sound: pg.mixer.Sound) -> None:
+    sound.play()
     field.render(screen, hero.get_moves(), hero.get_live(), bg)
     if not field.is_frozen():
         field.freeze()
@@ -42,6 +43,10 @@ def main():
     arrow.rect = arrow.image.get_rect()
     click_sound = Loader.load_sound('COOL CLICK.wav')
     click_sound.set_volume(0.25)
+    victory_sound = Loader.load_sound('victory.wav')
+    victory_sound.set_volume(0.1)
+    loss_sound = Loader.load_sound('loss.wav')
+    loss_sound.set_volume(0.1)
     pg.mouse.set_visible(False)
     all_sprites.add(arrow)
     fps = 60
@@ -81,8 +86,10 @@ def main():
                             field.start(hero, dice)
                     else:
                         callback = field.handle_move(event, hero, dice)
-                        if callback == 'victory' or callback == 'loss':
-                            finish(screen, field, hero, all_sprites, bg, callback)
+                        if callback == 'victory':
+                            finish(screen, field, hero, all_sprites, bg, callback, victory_sound)
+                        elif callback == 'loss':
+                            finish(screen, field, hero, all_sprites, bg, callback, loss_sound)
             if dice.is_rotating():
                 dice_tick += 1
                 rotation = dice.rotate(dice_tick)

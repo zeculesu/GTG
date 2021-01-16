@@ -32,16 +32,19 @@ class MiniGame:
         self.running = False
         self.game_over = ''
         self.music = None
+        self.victory_sound, self.loss_sound = None, None
         self.font = None
 
     def start(self):
         self.music = Loader.load_sound('main.wav')
         self.music.play(1000, fade_ms=3000)
         self.music.set_volume(0.025)
+        self.victory_sound = Loader.load_sound('victory.wav')
+        self.loss_sound = Loader.load_sound('loss.wav')
         self.font = Loader.load_font(MiniGame.fontname, 60)
         self.running = True
 
-    def end_loop(self) -> str:
+    def end_loop(self, sound: pg.mixer.Sound) -> str:
         callback = None
         while self.running and self.game_over:
             for event in pg.event.get():
@@ -50,11 +53,14 @@ class MiniGame:
                     self.running = False
                 elif event.type == pg.KEYDOWN:
                     if event.key == pg.K_SPACE:
+                        sound.stop()
                         callback = self.game_over
                         self.running = False
         return callback
 
-    def end_game(self, font: pg.font.Font, state: str, color: str = '#ff4573') -> None:
+    def end_game(self, font: pg.font.Font, state: str, color: str = '#ff4573') -> pg.mixer.Sound:
+        sound = self.victory_sound if state == 'victory' else self.loss_sound
+        sound.play()
         EndScreen.blur_surf(self.screen)
         self.game_over = state
         game_over_1 = font.render(self.translate[self.language][state][0],
@@ -67,6 +73,7 @@ class MiniGame:
                                        self.screen.get_height() * 0.5))
         pg.display.flip()
         self.music.stop()
+        return sound
 
     def start_loop(self, title: str, width: int) -> str:
         sprites = pg.sprite.Group()
@@ -134,8 +141,8 @@ class MagicMaze(MiniGame):
             pg.display.flip()
             clock.tick(fps)
             if not running:
-                self.end_game(self.font, 'victory', '#ebebeb')
-        return self.end_loop()
+                sound = self.end_game(self.font, 'victory', '#ebebeb')
+        return self.end_loop(sound)
 
 
 class RunningInForest(MiniGame):

@@ -7,7 +7,7 @@ from hero import FieldHero
 # from field import Field
 
 
-GAMES = [MagicMaze]
+GAMES = [StarFall, RunningInForest]
 
 
 class Cell:
