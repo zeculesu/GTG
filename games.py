@@ -16,6 +16,7 @@ class MiniGame:
         self.hero = None
         self.field = field
         self.screen = surface
+        self.screen_width, self.screen_height = surface.get_size()
 
         self.translate = {'en': {'stars': 'Stars',
                                  'lives': 'Lives',
@@ -42,7 +43,7 @@ class MiniGame:
                                  },
                                  'inscription': 'Нажмите пробел'}}
         self.music_data = {'minigame_1.wav': {'volume': 0.1},
-                           'minigame_2.wav': {'volume': 0.02}}
+                           'minigame_2.wav': {'volume': 0.05}}
 
         self.language = self.field.get_language()
         self.running = False
@@ -86,30 +87,30 @@ class MiniGame:
                                   True, pg.Color(color))
         game_over_2 = font.render(self.translate[self.language][state][1],
                                   True, pg.Color(color))
-        self.screen.blit(game_over_1, (self.screen.get_width() // 2 - game_over_1.get_width() * 0.5,
-                                       self.screen.get_height() // 2.5))
-        self.screen.blit(game_over_2, (self.screen.get_width() // 2 - game_over_2.get_width() * 0.5,
-                                       self.screen.get_height() * 0.5))
+        self.screen.blit(game_over_1, (self.screen_width // 2 - game_over_1.get_width() * 0.5,
+                                       self.screen_height // 2.5))
+        self.screen.blit(game_over_2, (self.screen_width // 2 - game_over_2.get_width() * 0.5,
+                                       self.screen_height * 0.5))
         pg.display.flip()
         self.music.stop()
         return sound
 
     def start_loop(self, game_name: str, width: int) -> str:
         sprites = pg.sprite.Group()
-        bg = StaticBackground(MiniGame.start_img, [0, 0], size=self.screen.get_size())
+        bg = StaticBackground(MiniGame.start_img, [0, 0],
+                              size=(self.screen_width, self.screen_height))
         sprites.add(bg)
 
-        screen_width, screen_height = self.screen.get_size()
         title_font = Loader.load_font(MiniGame.fontname, width)
         title = title_font.render(self.translate[self.language]['games'][game_name],
                                   True, pg.Color('#ebebeb'))
-        title_pos = (screen_width // 2 - title.get_width() // 2,
-                     screen_height // 2.25)
+        title_pos = (self.screen_width // 2 - title.get_width() // 2,
+                     self.screen_height // 2.25)
         inscription_font = Loader.load_font(MiniGame.fontname, int(width * 0.5))
         inscription = inscription_font.render(self.translate[self.language]['inscription'],
                                               True, pg.Color('#ebebeb'))
-        inscription_pos = (screen_width // 2 - inscription.get_width() // 2,
-                           title_pos[1] + title.get_height() // 2 + screen_height // 10)
+        inscription_pos = (self.screen_width // 2 - inscription.get_width() // 2,
+                           title_pos[1] + title.get_height() // 2 + self.screen_height // 10)
 
         centering_indent = (inscription_pos[1] + inscription.get_height() - title_pos[1]) // 4
         title_pos = (title_pos[0], title_pos[1] - centering_indent)
@@ -191,16 +192,13 @@ class RunningInForest(MiniGame):
         ParticlesForRunningInForest(tile_velocity, fires, screen_size)
         score = 0
         goal = choice([15000, 20000, 25000])
-        score_text = self.font.render('%s - %d/%d' % (self.translate[self.language]['score'],
-                                                      score, goal), True, pg.Color('#ebebeb'))
-        self.screen.blit(score_text, (90, 200))
         state = False
         sound = None
         velocity_tick = 0
         spawn_tick = 0
-        running = True
         fps = 80
         clock = pg.time.Clock()
+        running = True
         while running:
             if not state:
                 velocity_tick += 1
@@ -214,8 +212,8 @@ class RunningInForest(MiniGame):
                         EndScreen.blur_surf(self.screen)
                         text = 'PAUSE' if self.field.get_language() == 'en' else 'ПАУЗА'
                         self.screen.blit(self.font.render(text, True, pg.Color('#ebebeb')),
-                                         (self.screen.get_width() // 2 - self.font.size('PAUSE')[0] * 0.5,
-                                          self.screen.get_height() // 2.5))
+                                         (self.screen_width // 2 - self.font.size('PAUSE')[0] * 0.5,
+                                          self.screen_height // 2.5))
                         pg.display.update()
                     if not state:
                         self.hero.make_move(event)
@@ -244,7 +242,8 @@ class RunningInForest(MiniGame):
             score += 6
             score_text = self.font.render('%s - %d /%d' % (self.translate[self.language]['score'],
                                                            score, goal), True, pg.Color('#ebebeb'))
-            self.screen.blit(score_text, (10, 5))
+            self.screen.blit(score_text, (int(self.screen_width * 0.01),
+                                          int(self.screen_height * 0.005)))
             if score >= goal:
                 callback = 'victory'
                 sound = self.victory_sound
@@ -282,14 +281,7 @@ class StarFall(MiniGame):
         clock = pg.time.Clock()
         tick = 0
         stars_caught = 0
-        lives = self.font.render('%s - %d' % (self.translate[self.language]['lives'], self.lives),
-                                 True, pg.Color('#ebebeb'))
         goal = choice([10, 15, 20])
-        stars_caught_text = self.font.render('%s - %d/%d' % (self.translate[self.language]['stars'],
-                                                             stars_caught, goal),
-                                             True, pg.Color('#ebebeb'))
-        self.screen.blit(lives, (90, 200))
-        self.screen.blit(stars_caught_text, (90, 200))
         state = False
         sound = None
         while self.running and not self.game_over:
@@ -335,8 +327,10 @@ class StarFall(MiniGame):
                                                      (self.translate[self.language]['stars'],
                                                       stars_caught, goal),
                                                      True, pg.Color('#ebebeb'))
-                self.screen.blit(lives, (10, 5))
-                self.screen.blit(stars_caught_text, (10, 55))
+                self.screen.blit(lives, (int(self.screen_width) * 0.01,
+                                         int(self.screen_height * 0.0075)))
+                self.screen.blit(stars_caught_text, (int(self.screen_width * 0.01),
+                                                     int(self.screen_height * 0.075)))
                 tick += 1
                 if tick == 150:
                     tick = 0

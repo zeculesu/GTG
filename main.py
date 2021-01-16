@@ -5,7 +5,7 @@ from hero import FieldHero
 from dice import Dice
 from savers import StartScreen, EndScreen, StaticBackground
 
-SCREEN_SIZE = 1920, 1080
+SCREEN_SIZE = 760, 760
 
 
 def finish(screen: pg.Surface, field: Field, hero: FieldHero,
@@ -98,9 +98,11 @@ def main():
                     else:
                         callback = field.handle_move(event, hero, dice)
                         if callback == 'victory':
+                            music.set_volume(0)
                             current_sound = victory_sound
                             finish(screen, field, hero, all_sprites, bg, callback, victory_sound)
                         elif callback == 'loss':
+                            music.set_volume(0)
                             current_sound = loss_sound
                             finish(screen, field, hero, all_sprites, bg, callback, loss_sound)
             if dice.is_rotating():

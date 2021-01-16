@@ -9,21 +9,31 @@ from cell import Cell, Trap, Health, Task, Teleport
 
 
 class Field(pg.sprite.Sprite, Loader):
+    fontname = 'Special Elite.ttf'
+
     def __init__(self, screen: pg.Surface, group: pg.sprite.AbstractGroup):
         super(Field, self).__init__()
         self.group = group
         self.screen = screen
         self.cells = [[None] * 12 for _ in range(12)]
         self.cell_size = 50
-        screen_width, screen_height = screen.get_size()
-        self.left = screen_width // 2 - len(self.cells[0]) * self.cell_size // 2
-        self.top = screen_height // 2 - len(self.cells) * self.cell_size // 2.25
+
+        self.width = self.cell_size * len(self.cells[0])
+        self.height = self.cell_size * len(self.cells)
+
+        self.screen_width, self.screen_height = screen.get_size()
+        self.left = self.screen_width // 2 - len(self.cells[0]) * self.cell_size // 2
+        self.top = self.screen_height // 2 - len(self.cells) * self.cell_size // 2.25
         self.true_false_cell, self.current_cell, self.finish = None, None, None
         self.frozen, self.finished, self.moving_finish = None, None, None
+        self.current_game, self.last_game = None, None
+        self.task_active = None
+
         self.language = 'en'
-        self.current_game = None
-        self.last_game = None
-        self.task_active = False
+        self.translate = {'en': {'moves': 'Moves',
+                                 'lives': 'Lives'},
+                          'ru': {'moves': 'Ходы',
+                                 'lives': 'Жизни'}}
 
     def start(self, hero: FieldHero, dice: Dice) -> None:
         if self.finish:
@@ -130,16 +140,15 @@ class Field(pg.sprite.Sprite, Loader):
     def render(self, screen: pg.Surface, moves: int, lives: int, backGround) -> None:
         screen.fill([255, 255, 255])
         screen.blit(backGround.image, backGround.rect)
-        pg.font.init()
-        font = self.load_font('Special Elite.ttf', 36)
-        if self.language == 'en':
-            move = font.render('Moves - %d' % moves, True, pg.Color('#ebebeb'))
-            live = font.render('Lives - %d' % lives, True, pg.Color('#ebebeb'))
-        else:
-            move = font.render('Ходы - %d' % moves, True, pg.Color('#ebebeb'))
-            live = font.render('Жизни - %d' % lives, True, pg.Color('#ebebeb'))
-        screen.blit(move, (self.left, 50))
-        screen.blit(live, (510, 50))
+        font = self.load_font(Field.fontname, 36)
+        move = font.render('%s - %d' % (self.translate[self.language]['moves'], moves),
+                           True, pg.Color('#ebebeb'))
+        live = font.render('%s - %d' % (self.translate[self.language]['lives'], lives),
+                           True, pg.Color('#ebebeb'))
+        screen.blit(move, (self.left,
+                           self.top - int(move.get_height() * 1.5)))
+        screen.blit(live, ((self.left + self.width) - live.get_width(),
+                           self.top - int(live.get_height() * 1.5)))
         translate = {Task: 'yellow',
                      Teleport: 'purple',
                      Health: 'green',
@@ -147,10 +156,9 @@ class Field(pg.sprite.Sprite, Loader):
                      Cell: '#ff4573'}
         image_translate = Loader.load_image('language.png')
         screen.blit(image_translate, image_translate.get_rect(
-            bottomright=(40, 40)))
+            bottomright=image_translate.get_size()))
         for i in range(12):
             for j in range(12):
-                # 92d4ec
                 screen.fill('#ebebeb', (self.left + self.cell_size * i,
                                         self.top + self.cell_size * j,
                                         self.cell_size, self.cell_size))
@@ -163,13 +171,9 @@ class Field(pg.sprite.Sprite, Loader):
                                                       self.top + self.cell_size * j,
                                                       self.cell_size, self.cell_size))
                 elif self.true_false_cell[i][j]:
-                    try:
-                        pg.draw.rect(self.screen, translate[self.cells[i][j].__class__],
-                                     (self.left + self.cell_size * i, self.top + self.cell_size * j,
-                                      self.cell_size, self.cell_size))
-                    except KeyError as e:
-                        print('exception: %s' % e)
-                        print(self.true_false_cell[i][j])
+                    pg.draw.rect(self.screen, translate[self.cells[i][j].__class__],
+                                 (self.left + self.cell_size * i, self.top + self.cell_size * j,
+                                  self.cell_size, self.cell_size))
                 pg.draw.rect(screen, '#0a2fa2', (self.left + self.cell_size * i, self.top + self.cell_size * j,
                                                  self.cell_size, self.cell_size), 2)
 
@@ -238,7 +242,7 @@ class Field(pg.sprite.Sprite, Loader):
 
     # get
     def get_size(self) -> tuple:
-        return self.cell_size * len(self.cells[0]), self.cell_size * len(self.cells)
+        return self.width, self.height
 
     def get_indent(self) -> tuple:
         return self.left, self.top
