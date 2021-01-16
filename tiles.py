@@ -13,7 +13,8 @@ class Tile(pg.sprite.Sprite):
         'finish': pg.transform.smoothscale(Loader.load_image('finish.png'), (80, 80))
     }
 
-    def __init__(self, tile_type, pos_x, pos_y, all_sprites, tiles_group):
+    def __init__(self, tile_type: str, pos_x: int, pos_y: int, all_sprites: pg.sprite.AbstractGroup,
+                 tiles_group: pg.sprite.AbstractGroup):
         super().__init__(tiles_group, all_sprites)
         self.tile_type = tile_type
         self.pos_x, self.pos_y = pos_x, pos_y
@@ -37,7 +38,8 @@ class FieldMagicMaze:
         self.hero = hero
         self.generate_level(Loader.load_level('map_1.txt'), all_sprites, tiles_group)
 
-    def generate_level(self, level: str, all_sprites, tiles_group) -> None:
+    def generate_level(self, level: str, all_sprites: pg.sprite.AbstractGroup,
+                       tiles_group: pg.sprite.AbstractGroup) -> None:
         for x in range(len(level)):
             self.images.append([])
             for y in range(len(level[x])):

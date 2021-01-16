@@ -16,7 +16,7 @@ class Hero(pg.sprite.Sprite, Loader):
     def get_side(self) -> str:
         return self.side
 
-    def change_side(self, side):
+    def change_side(self, side: str) -> None:
         self.side = side
         self.image = pg.transform.flip(self.image, True, False)
 
@@ -35,7 +35,7 @@ class FieldHero(Hero):
 
         self.start(current_cell, indent)
 
-    def start(self, current_cell, indent):
+    def start(self, current_cell: list, indent: tuple) -> None:
         self.live = 1
         self.size_hero = 50
         if self.side != 'right':
@@ -49,10 +49,10 @@ class FieldHero(Hero):
         self.cells_passed = -1
         self.move_hero(current_cell, indent)
 
-    def get_quantity(self):
+    def get_quantity(self) -> dict:
         return self.quantity
 
-    def add_quantity(self, cell):
+    def add_quantity(self, cell: str) -> None:
         self.quantity[cell] += 1
 
     def add_live(self, live: int) -> None:
@@ -61,7 +61,7 @@ class FieldHero(Hero):
     def get_live(self) -> int:
         return self.live
 
-    def move_hero(self, current_cell, indent):
+    def move_hero(self, current_cell: list, indent: tuple):
         if self.moves != 0:
             self.moves -= 1
             self.cells_passed += 1
@@ -74,7 +74,7 @@ class FieldHero(Hero):
     def get_moves(self) -> int:
         return self.moves
 
-    def add_moves(self, moves) -> None:
+    def add_moves(self, moves: int) -> None:
         self.moves += moves
 
     def get_passed_cells(self) -> int:
@@ -112,18 +112,16 @@ class StarFallHero(TaskHero):
 class RunningInForestHero(TaskHero):
     def __init__(self):
         super(RunningInForestHero, self).__init__()
-        self.is_falling = False
-        self.is_jumping = False
+        self.is_falling, self.is_jumping = False, False
         self.flying = 0
 
-    def make_move(self, event: pg.event.Event):
+    def make_move(self, event: pg.event.Event) -> None:
         if event.key == pg.K_UP or event.key == pg.K_w:
             if not self.is_falling and not self.is_jumping and self.rect.y >= 358:
                 self.is_jumping = True
                 self.rect.y -= 25
-                # self.falls = True
 
-    def update(self):
+    def update(self) -> None:
         if self.is_jumping:
             self.rect.y -= 10
             if self.rect.y <= 358:

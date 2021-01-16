@@ -9,6 +9,7 @@ from hero import FieldHero
 
 GAMES = [StarFall, RunningInForest, MagicMaze]
 
+
 class Cell:
     def __init__(self, hero):
         self.hero = hero
