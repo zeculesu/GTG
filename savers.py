@@ -65,6 +65,7 @@ class EndScreen:
         pil_img = pil_img.filter(ImageFilter.GaussianBlur(radius=6))
         pil_img.save(out_path)
         screen.blit(pg.image.load(out_path), screen.get_rect())
+        EndScreen.clear_temp_files()
 
     @staticmethod
     def clear_temp_files() -> None:

@@ -23,7 +23,7 @@ class Loader:
         return font
 
     @staticmethod
-    def load_sound(filename):
+    def load_sound(filename: str) -> pg.mixer.Sound:
         try:
             sound = pg.mixer.Sound(os.path.join('data', 'music', filename))
         except FileNotFoundError:
@@ -31,7 +31,7 @@ class Loader:
         return sound
 
     @staticmethod
-    def load_level(filename):
+    def load_level(filename: str) -> list:
         filename = "data/map/" + filename
         with open(filename, 'r') as mapFile:
             level_map = [line.strip() for line in mapFile]

@@ -1,7 +1,9 @@
 import pygame as pg
+from typing import Union
 from random import randint, choice
 
 from loader import Loader
+from hero import Hero
 
 
 class Tile(pg.sprite.Sprite):
@@ -28,14 +30,14 @@ class Tile(pg.sprite.Sprite):
 
 
 class FieldMagicMaze:
-    def __init__(self, all_sprites, tiles_group, hero):
+    def __init__(self, all_sprites: pg.sprite.AbstractGroup,
+                 tiles_group: pg.sprite.AbstractGroup, hero: Hero):
         self.images = []
         self.current_cell, self.lambd = [4, 4], [0, 0]
         self.hero = hero
-        self.callback = None
         self.generate_level(Loader.load_level('map_1.txt'), all_sprites, tiles_group)
 
-    def generate_level(self, level, all_sprites, tiles_group) -> None:
+    def generate_level(self, level: str, all_sprites, tiles_group) -> None:
         for x in range(len(level)):
             self.images.append([])
             for y in range(len(level[x])):
@@ -46,7 +48,7 @@ class FieldMagicMaze:
                 elif level[x][y] == '@':
                     self.images[x].append(Tile('finish', x, y, all_sprites, tiles_group))
 
-    def move(self, event) -> None:
+    def move(self, event: pg.event.Event) -> Union[str, None]:
         x, y = self.current_cell[0], self.current_cell[1]
         if event.type == pg.KEYDOWN:
             if event.key == pg.K_LEFT:
@@ -69,7 +71,8 @@ class FieldMagicMaze:
                 self.lambd[1] -= 1
             self.shift_tiles(*self.lambd)
             if self.images[x][y].tile_type == 'finish':
-                self.callback = 'finish'
+                return 'finish'
+            return None
 
     def shift_tiles(self, pos_x: int, pos_y: int) -> None:
         self.lambd = [0, 0]
@@ -146,7 +149,7 @@ class ParticlesForStarFall(pg.sprite.Sprite):
             if self.rect.y < 0:
                 self.remove()
 
-    def get_callback(self):
+    def get_callback(self) -> bool:
         return self.callback
 
 

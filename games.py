@@ -31,8 +31,6 @@ class MiniGame:
         self.music = Loader.load_sound('main.wav')
 
     def start(self):
-        pg.mixer.music.queue('main.wav')
-        pg.mixer.music.queue()
         self.music.play(1000, fade_ms=3000)
         self.music.set_volume(0.125)
         self.running = True
@@ -52,7 +50,6 @@ class MiniGame:
 
     def end_game(self, font, state: str, color='#ff4573') -> None:
         EndScreen.blur_surf(self.screen)
-        EndScreen.clear_temp_files()
         self.game_over = state
         game_over_1 = font.render(self.translate[self.language][state][0],
                                   True, pg.Color(color))
@@ -90,34 +87,32 @@ class MagicMaze(MiniGame):
         super(MagicMaze, self).__init__(field, surface, lives)
         self.hero = Hero()
 
-    def loop(self, screen_size: tuple):
+    def loop(self):
         if self.start_loop('MagicMaze', 100) == 'closeEvent':
             return 'closeEvent'
         all_sprites = pg.sprite.Group()
         tiles_group = pg.sprite.Group()
         hero_group = pg.sprite.Group()
-        self.hero.resize(80, 80)
+        hero_width, hero_height = 80, 80
+        self.hero.resize(hero_width, hero_height)
         self.hero.rect = self.hero.image.get_rect(
-            bottomright=(80 * 5,
-                         80 * 5))
+            bottomright=(hero_width * 5,
+                         hero_height * 5))
         hero_group.add(self.hero)
         maze = FieldMagicMaze(all_sprites, tiles_group, self.hero)
         groups = [tiles_group, hero_group]
         clock = pg.time.Clock()
         fps = 60
         running = True
-        callback = None
         while running:
             for event in pg.event.get():
                 if event.type == pg.QUIT:
                     return 'closeEvent'
-                maze.move(event)
+                if maze.move(event) == 'finish':
+                    running = False
+                    self.end_game(Loader.load_font('Special Elite.ttf', 60), 'victory', '#ebebeb')
             for group in groups:
                 group.update()
-                group.draw(self.screen)
-            if maze.callback == 'finish':
-                running = False
-                self.end_game(Loader.load_font('Special Elite.ttf', 60), 'victory', '#ebebeb')
             pg.display.flip()
             clock.tick(fps)
         callback = self.end_loop()
@@ -146,15 +141,14 @@ class RunningInForest(MiniGame):
         running = True
         fps = 80
         clock = pg.time.Clock()
-        shrubs = pg.sprite.Group()
+        fires = pg.sprite.Group()
         tile_velocity = 10
-        ParticlesForRunningInForest(tile_velocity, shrubs, screen_size)
-        groups = [all_sprites, shrubs]
+        ParticlesForRunningInForest(tile_velocity, fires, screen_size)
         font = Loader.load_font('Special Elite.ttf', 60)
         score = 0
         goal = choice([15000, 20000, 25000])
         score_text = font.render('%s - %d/%d' % (self.translate[self.language]['score'],
-                                                 score, goal), True, '#ebebeb')
+                                                 score, goal), True, pg.Color('#ebebeb'))
         self.screen.blit(score_text, (90, 200))
         state = False
         velocity_tick = 0
@@ -170,7 +164,6 @@ class RunningInForest(MiniGame):
                     if event.key == pg.K_SPACE:
                         state = not state
                         EndScreen.blur_surf(self.screen)
-                        EndScreen.clear_temp_files()
                         text = 'PAUSE' if self.field.get_language() == 'en' else 'ПАУЗА'
                         self.screen.blit(font.render(text, True, pg.Color('#ebebeb')),
                                          (self.screen.get_width() // 2 - font.size('PAUSE')[0] * 0.5,
@@ -187,12 +180,12 @@ class RunningInForest(MiniGame):
                 tile_velocity += 1
             if spawn_tick == fps * 2.5:
                 spawn_tick = 0
-                ParticlesForRunningInForest(tile_velocity, shrubs, screen_size)
+                ParticlesForRunningInForest(tile_velocity, fires, screen_size)
             all_sprites.update()
             all_sprites.draw(self.screen)
-            shrubs.update(self.hero)
-            shrubs.draw(self.screen)
-            for elem in shrubs:
+            fires.update(self.hero)
+            fires.draw(self.screen)
+            for elem in fires:
                 if elem.get_callback() == 'loss':
                     callback = 'loss'
                     self.end_game(font, callback)
@@ -200,7 +193,7 @@ class RunningInForest(MiniGame):
                     break
             score += 6
             score_text = font.render('%s - %d /%d' % (self.translate[self.language]['score'],
-                                                      score, goal), True, '#ebebeb')
+                                                      score, goal), True, pg.Color('#ebebeb'))
             self.screen.blit(score_text, (10, 5))
             if score >= goal:
                 callback = 'victory'
