@@ -7,7 +7,7 @@ class Dice(pg.sprite.Sprite, Loader):
     img_names = ['dice_1.png', 'dice_2.png', 'dice_3.png',
                  'dice_4.png', 'dice_5.png', 'dice_6.png']
     drop_sound = Loader.load_sound('dice-stop.wav')
-    drop_sound.set_volume(0.20)
+    drop_sound.set_volume(0.2)
 
     def __init__(self, field_size, field_indent, group):
         super(Dice, self).__init__(group)

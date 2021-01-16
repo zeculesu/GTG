@@ -47,6 +47,7 @@ def main():
     victory_sound.set_volume(0.1)
     loss_sound = Loader.load_sound('loss.wav')
     loss_sound.set_volume(0.1)
+    current_sound = None
     pg.mouse.set_visible(False)
     all_sprites.add(arrow)
     fps = 60
@@ -63,8 +64,9 @@ def main():
                 hero.add_live(-1)
                 field.disable_task()
                 if hero.get_live() == 0:
-                    dice.show()
-                    finish(screen, field, hero, all_sprites, bg, callback)
+                    dice.hide()
+                    current_sound = loss_sound
+                    finish(screen, field, hero, all_sprites, bg, callback, current_sound)
         else:
             for event in pg.event.get():
                 if event.type == pg.QUIT:
@@ -83,6 +85,7 @@ def main():
                             moves = dice.handle_rotating()
                             hero.add_moves(moves)
                         elif field.is_finished():
+                            current_sound.fadeout(500)
                             field.start(hero, dice)
                     else:
                         callback = field.handle_move(event, hero, dice)

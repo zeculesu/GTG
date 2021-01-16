@@ -21,13 +21,25 @@ class MiniGame:
                                  'pause': 'Pause',
                                  'victory': ('Victory', 'You have received 1 life'),
                                  'loss': ('Loss', 'You have lost 1 life'),
-                                 'score': 'Score'},
+                                 'score': 'Score',
+                                 'games': {
+                                     'StarFall': 'Starfall',
+                                     'RunningInForest': 'Running in Forest',
+                                     'MagicMaze': 'Magic Maze'
+                                 },
+                                 'inscription': 'Press Space'},
                           'ru': {'stars': 'Звёзды',
                                  'lives': 'Жизни',
                                  'pause': 'Пауза',
                                  'victory': ('Победа', 'Вы получили 1 жизнь'),
                                  'loss': ('Поражение', 'Вы потеряли 1 жизнь'),
-                                 'score': 'Счёт'}}
+                                 'score': 'Счёт',
+                                 'games': {
+                                     'StarFall': 'Звездопад',
+                                     'RunningInForest': 'Бегущий в лесу',
+                                     'MagicMaze': 'Лабиринт'
+                                 },
+                                 'inscription': 'Нажмите пробел'}}
         self.language = self.field.get_language()
         self.running = False
         self.game_over = ''
@@ -38,9 +50,11 @@ class MiniGame:
     def start(self):
         self.music = Loader.load_sound('main.wav')
         self.music.play(1000, fade_ms=3000)
-        self.music.set_volume(0.025)
+        self.music.set_volume(0.1)
         self.victory_sound = Loader.load_sound('victory.wav')
+        self.victory_sound.set_volume(0.1)
         self.loss_sound = Loader.load_sound('loss.wav')
+        self.loss_sound.set_volume(0.1)
         self.font = Loader.load_font(MiniGame.fontname, 60)
         self.running = True
 
@@ -75,18 +89,20 @@ class MiniGame:
         self.music.stop()
         return sound
 
-    def start_loop(self, title: str, width: int) -> str:
+    def start_loop(self, game_name: str, width: int) -> str:
         sprites = pg.sprite.Group()
         bg = StaticBackground(MiniGame.start_img, [0, 0], size=(760, 760))
         sprites.add(bg)
 
         screen_width, screen_height = self.screen.get_size()
         title_font = Loader.load_font(MiniGame.fontname, width)
-        title = title_font.render(title, True, pg.Color('#ebebeb'))
+        title = title_font.render(self.translate[self.language]['games'][game_name],
+                                  True, pg.Color('#ebebeb'))
         title_pos = (screen_width // 2 - title.get_width() // 2,
                      screen_height // 2.25)
         inscription_font = Loader.load_font(MiniGame.fontname, int(width * 0.5))
-        inscription = inscription_font.render('Press Space', True, pg.Color('#ebebeb'))
+        inscription = inscription_font.render(self.translate[self.language]['inscription'],
+                                              True, pg.Color('#ebebeb'))
         inscription_pos = (screen_width // 2 - inscription.get_width() // 2,
                            title_pos[1] + title.get_height() // 2 + screen_height // 10)
 
@@ -126,6 +142,7 @@ class MagicMaze(MiniGame):
             bottomright=(hero_width * (maze.current_cell[0] + 1),
                          hero_height * (maze.current_cell[1] + 1)))
         groups = [tiles_group, hero_group]
+        sound = None
         clock = pg.time.Clock()
         fps = 20
         running = True
@@ -164,9 +181,6 @@ class RunningInForest(MiniGame):
         self.hero.rect.x = int(width * 0.1)
         self.hero.rect.y = int(height * 0.8)
         all_sprites.add(bg_1, bg_2, self.hero)
-        running = True
-        fps = 80
-        clock = pg.time.Clock()
         fires = pg.sprite.Group()
         tile_velocity = 10
         ParticlesForRunningInForest(tile_velocity, fires, screen_size)
@@ -176,8 +190,12 @@ class RunningInForest(MiniGame):
                                                       score, goal), True, pg.Color('#ebebeb'))
         self.screen.blit(score_text, (90, 200))
         state = False
+        sound = None
         velocity_tick = 0
         spawn_tick = 0
+        running = True
+        fps = 80
+        clock = pg.time.Clock()
         while running:
             if not state:
                 velocity_tick += 1
@@ -213,6 +231,7 @@ class RunningInForest(MiniGame):
             for elem in fires:
                 if elem.get_callback() == 'loss':
                     callback = 'loss'
+                    sound = self.loss_sound
                     self.end_game(self.font, callback)
                     running = False
                     break
@@ -222,12 +241,12 @@ class RunningInForest(MiniGame):
             self.screen.blit(score_text, (10, 5))
             if score >= goal:
                 callback = 'victory'
+                sound = self.victory_sound
                 self.end_game(self.font, callback)
                 running = False
             pg.display.update()
             clock.tick(fps)
-        callback = self.end_loop()
-        return callback
+        return self.end_loop(sound)
 
 
 class StarFall(MiniGame):
@@ -266,6 +285,7 @@ class StarFall(MiniGame):
         self.screen.blit(lives, (90, 200))
         self.screen.blit(stars_caught_text, (90, 200))
         state = False
+        sound = None
         while self.running and not self.game_over:
             for event in pg.event.get():
                 if event.type == pg.QUIT:
@@ -291,12 +311,14 @@ class StarFall(MiniGame):
                         self.lives -= 1
                         elem.kill()
                         if self.lives == 0:
+                            sound = self.loss_sound
                             self.end_game(self.font, 'loss')
                             break
                     elif elem.get_callback() == '+':
                         stars_caught += 1
                         elem.kill()
                         if stars_caught == goal:
+                            sound = self.victory_sound
                             self.end_game(self.font, 'victory')
                             break
                 if self.game_over:
@@ -319,5 +341,4 @@ class StarFall(MiniGame):
             clock.tick(fps)
             pg.event.pump()
             pg.display.flip()
-        callback = self.end_loop()
-        return callback
+        return self.end_loop(sound)
