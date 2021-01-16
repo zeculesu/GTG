@@ -183,8 +183,8 @@ class RunningInForest(MiniGame):
                         state = not state
                         EndScreen.blur_surf(self.screen)
                         text = 'PAUSE' if self.field.get_language() == 'en' else 'ПАУЗА'
-                        self.screen.blit(font.render(text, True, pg.Color('#ebebeb')),
-                                         (self.screen.get_width() // 2 - font.size('PAUSE')[0] * 0.5,
+                        self.screen.blit(self.font.render(text, True, pg.Color('#ebebeb')),
+                                         (self.screen.get_width() // 2 - self.font.size('PAUSE')[0] * 0.5,
                                           self.screen.get_height() // 2.5))
                         pg.display.update()
                     if not state:
@@ -250,8 +250,8 @@ class StarFall(MiniGame):
         clock = pg.time.Clock()
         tick = 0
         stars_caught = 0
-        lives = font.render('%s - %d' % (self.translate[self.language]['lives'], self.lives),
-                            True, pg.Color('#ebebeb'))
+        lives = self.font.render('%s - %d' % (self.translate[self.language]['lives'], self.lives),
+                                 True, pg.Color('#ebebeb'))
         goal = choice([10, 15, 20])
         stars_caught_text = self.font.render('%s - %d/%d' % (self.translate[self.language]['stars'],
                                                              stars_caught, goal),

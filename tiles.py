@@ -38,7 +38,7 @@ class FieldMagicMaze:
         self.hero = hero
         self.generate_level(Loader.load_level('map_1.txt'), all_sprites, tiles_group)
 
-    def generate_level(self, level: str, all_sprites: pg.sprite.AbstractGroup,
+    def generate_level(self, level: list, all_sprites: pg.sprite.AbstractGroup,
                        tiles_group: pg.sprite.AbstractGroup) -> None:
         for x in range(len(level)):
             self.images.append([])
@@ -53,22 +53,24 @@ class FieldMagicMaze:
     def move(self, event: pg.event.Event) -> Union[str, None]:
         x, y = self.current_cell
         if event.type == pg.KEYDOWN:
-            if event.key == pg.K_LEFT:
+            if event.key == pg.K_LEFT or event.key == pg.K_a:
                 if self.hero.get_side() != 'left':
                     self.hero.change_side('left')
                 if self.images[x - 1][y].tile_type != 'wall':
                     self.current_cell[0] -= 1
                     self.lambd[0] += 1
-            elif event.key == pg.K_RIGHT:
+            elif event.key == pg.K_RIGHT or event.key == pg.K_d:
                 if self.hero.get_side() != 'right':
                     self.hero.change_side('right')
                 if self.images[x + 1][y].tile_type != 'wall':
                     self.current_cell[0] += 1
                     self.lambd[0] -= 1
-            elif event.key == pg.K_UP and self.images[x][y - 1].tile_type != 'wall':
+            elif ((event.key == pg.K_UP or event.key == pg.K_w)
+                  and self.images[x][y - 1].tile_type != 'wall'):
                 self.current_cell[1] -= 1
                 self.lambd[1] += 1
-            elif event.key == pg.K_DOWN and self.images[x][y + 1].tile_type != 'wall':
+            elif ((event.key == pg.K_DOWN or event.key == pg.K_s)
+                  and self.images[x][y + 1].tile_type != 'wall'):
                 self.current_cell[1] += 1
                 self.lambd[1] -= 1
             self.shift_tiles(*self.lambd)
