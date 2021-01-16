@@ -81,7 +81,7 @@ def main():
                 if event.type == pg.MOUSEBUTTONDOWN:
                     click_sound.play()
                     x, y = event.pos
-                    if x <= 40 and y <= 40:
+                    if x <= int(SCREEN_SIZE[0] * 0.05) and y <= int(SCREEN_SIZE[0] * 0.05):
                         field.change_language()
                 if event.type == pg.MOUSEMOTION:
                     arrow.rect.x, arrow.rect.y = pg.mouse.get_pos()
@@ -98,8 +98,10 @@ def main():
                     else:
                         callback = field.handle_move(event, hero, dice)
                         if callback == 'victory':
+                            current_sound = victory_sound
                             finish(screen, field, hero, all_sprites, bg, callback, victory_sound)
                         elif callback == 'loss':
+                            current_sound = loss_sound
                             finish(screen, field, hero, all_sprites, bg, callback, loss_sound)
             if dice.is_rotating():
                 dice_tick += 1

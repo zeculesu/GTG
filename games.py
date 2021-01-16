@@ -228,6 +228,7 @@ class RunningInForest(MiniGame):
                 tile_velocity += 1
             if spawn_tick == fps * 2.5:
                 spawn_tick = 0
+                print('The tile has been spawned')
                 ParticlesForRunningInForest(tile_velocity, fires, screen_size)
             all_sprites.update()
             all_sprites.draw(self.screen)
@@ -265,7 +266,7 @@ class StarFall(MiniGame):
         if self.start_loop('StarFall', 120) == 'closeEvent':
             return 'closeEvent'
         all_sprites = pg.sprite.Group()
-        bg = StaticBackground(StarFall.background_img, [0, 0], size=(760, 760))
+        bg = StaticBackground(StarFall.background_img, [0, 0], size=screen_size)
         self.hero.resize(110, 110)
         width, height = screen_size
         self.hero.rect.x = width // 2 - self.hero.image.get_width() // 2

@@ -106,7 +106,7 @@ class ParticlesForRunningInForest(pg.sprite.Sprite):
         length = velocity * 50
         x = None
         while not x or any(map(lambda spr: abs(spr.rect.x - x) < length, other_sprites)):
-            x = randint(self.screen_width * 1.25, self.screen_width * 4)
+            x = randint(self.screen_width * 1.25, self.screen_width * 1.5)
         self.rect.x = x
         self.velocity = velocity
         self.mask = pg.mask.from_surface(self.image)
