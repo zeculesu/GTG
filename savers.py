@@ -21,7 +21,7 @@ class StartScreen(Loader):
         pg.display.flip()
         start_music = Loader.load_sound('start.wav')
         start_music.play(10000, fade_ms=3000)
-        start_music.set_volume(0.5)
+        start_music.set_volume(0.1)
 
         running = True
         proceeded = False
@@ -76,7 +76,6 @@ class EndScreen:
                 os.remove(del_path)
 
     def update(self):
-        # 141b47
         font = Loader.load_font('Special Elite.ttf', 60)
         font_text = Loader.load_font('Special Elite.ttf', 40)
         font_text_2 = Loader.load_font('Special Elite.ttf', 30)
@@ -93,7 +92,6 @@ class EndScreen:
             message_2 = font_text_2.render('the space bar', True, pg.Color('#141b47'))
             self.screen.blit(game_over, (self.screen.get_width() // 2 - game_over.get_width() // 2,
                                          125))
-            # self.screen.blit(game_over, (230, 125))
             self.screen.blit(message_2, (275, 610))
         else:
             state_text = 'ПОБЕДА' if self.state == 'victory' else 'ВЫ ПРОИГРАЛИ'

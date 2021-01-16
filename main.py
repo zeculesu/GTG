@@ -48,23 +48,30 @@ def main():
     loss_sound = Loader.load_sound('loss.wav')
     loss_sound.set_volume(0.1)
     current_sound = None
+    music = Loader.load_sound('main.wav')
+    music_volume = 0.025
+    music.set_volume(music_volume)
+    music.play(1000, fade_ms=1000)
     pg.mouse.set_visible(False)
     all_sprites.add(arrow)
     fps = 60
     dice_tick = 0
     while running:
         if field.task_is_active():
+            music.set_volume(0)
             callback = field.current_game.loop(SCREEN_SIZE)
             if callback == 'closeEvent':
                 running = False
             elif callback == 'victory':
+                music.set_volume(music_volume)
                 hero.add_live(1)
                 field.disable_task()
             elif callback == 'loss':
                 hero.add_live(-1)
                 field.disable_task()
                 if hero.get_live() == 0:
-                    dice.hide()
+                    music.set_volume(0)
+                    dice.hide(sound=False)
                     current_sound = loss_sound
                     finish(screen, field, hero, all_sprites, bg, callback, current_sound)
         else:
@@ -86,6 +93,7 @@ def main():
                             hero.add_moves(moves)
                         elif field.is_finished():
                             current_sound.fadeout(500)
+                            music.set_volume(music_volume)
                             field.start(hero, dice)
                     else:
                         callback = field.handle_move(event, hero, dice)

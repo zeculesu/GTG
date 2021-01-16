@@ -16,6 +16,7 @@ class MiniGame:
         self.hero = None
         self.field = field
         self.screen = surface
+
         self.translate = {'en': {'stars': 'Stars',
                                  'lives': 'Lives',
                                  'pause': 'Pause',
@@ -40,6 +41,9 @@ class MiniGame:
                                      'MagicMaze': 'Лабиринт'
                                  },
                                  'inscription': 'Нажмите пробел'}}
+        self.music_data = {'minigame_1.wav': {'volume': 0.1},
+                           'minigame_2.wav': {'volume': 0.02}}
+
         self.language = self.field.get_language()
         self.running = False
         self.game_over = ''
@@ -48,9 +52,10 @@ class MiniGame:
         self.font = None
 
     def start(self):
-        self.music = Loader.load_sound('main.wav')
-        self.music.play(1000, fade_ms=3000)
-        self.music.set_volume(0.1)
+        filename = choice(['minigame_1.wav', 'minigame_2.wav'])
+        self.music = Loader.load_sound(filename)
+        self.music.play(1000)
+        self.music.set_volume(self.music_data[filename]['volume'])
         self.victory_sound = Loader.load_sound('victory.wav')
         self.victory_sound.set_volume(0.1)
         self.loss_sound = Loader.load_sound('loss.wav')
@@ -91,7 +96,7 @@ class MiniGame:
 
     def start_loop(self, game_name: str, width: int) -> str:
         sprites = pg.sprite.Group()
-        bg = StaticBackground(MiniGame.start_img, [0, 0], size=(760, 760))
+        bg = StaticBackground(MiniGame.start_img, [0, 0], size=self.screen.get_size())
         sprites.add(bg)
 
         screen_width, screen_height = self.screen.get_size()

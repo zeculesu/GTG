@@ -29,10 +29,11 @@ class Dice(pg.sprite.Sprite, Loader):
         self.rect.x = self.field_indent[0] + self.field_size[0] // 2 - self.img_width // 2
         self.rect.y = self.field_indent[1] + self.field_size[1] // 2 - self.img_height // 2
 
-    def hide(self):
+    def hide(self, sound: bool = True):
         self.visible = False
         self.rotating = False
-        Dice.drop_sound.play()
+        if sound:
+            Dice.drop_sound.play()
         pg.time.wait(500)
         self.rect.x = -1000
         self.rect.y = -1000
