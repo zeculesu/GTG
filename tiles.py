@@ -51,7 +51,7 @@ class FieldMagicMaze:
                     self.images[x].append(Tile('finish', x, y, all_sprites, tiles_group))
 
     def move(self, event: pg.event.Event) -> Union[str, None]:
-        x, y = self.current_cell[0], self.current_cell[1]
+        x, y = self.current_cell
         if event.type == pg.KEYDOWN:
             if event.key == pg.K_LEFT:
                 if self.hero.get_side() != 'left':
@@ -72,6 +72,7 @@ class FieldMagicMaze:
                 self.current_cell[1] += 1
                 self.lambd[1] -= 1
             self.shift_tiles(*self.lambd)
+            x, y = self.current_cell
             if self.images[x][y].tile_type == 'finish':
                 return 'finish'
             return None
