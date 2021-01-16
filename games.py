@@ -87,17 +87,16 @@ class MagicMaze(MiniGame):
         super(MagicMaze, self).__init__(field, surface, lives)
         self.hero = Hero()
 
-    def loop(self):
+    def loop(self, _):
         if self.start_loop('MagicMaze', 100) == 'closeEvent':
             return 'closeEvent'
         all_sprites = pg.sprite.Group()
         tiles_group = pg.sprite.Group()
         hero_group = pg.sprite.Group()
-        hero_width, hero_height = 80, 80
-        self.hero.resize(hero_width, hero_height)
+        self.hero.resize(80, 80)
         self.hero.rect = self.hero.image.get_rect(
-            bottomright=(hero_width * 5,
-                         hero_height * 5))
+            bottomright=(80 * 5,
+                         80 * 5))
         hero_group.add(self.hero)
         maze = FieldMagicMaze(all_sprites, tiles_group, self.hero)
         groups = [tiles_group, hero_group]
@@ -113,10 +112,10 @@ class MagicMaze(MiniGame):
                     self.end_game(Loader.load_font('Special Elite.ttf', 60), 'victory', '#ebebeb')
             for group in groups:
                 group.update()
+                group.draw(self.screen)
             pg.display.flip()
             clock.tick(fps)
-        callback = self.end_loop()
-        return callback
+        return self.end_loop()
 
 
 class RunningInForest(MiniGame):
