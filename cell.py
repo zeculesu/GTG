@@ -6,7 +6,7 @@ from typing import Union
 from hero import FieldHero
 
 
-GAMES = [StarFall, RunningInForest, MagicMaze]
+GAMES = [RunningInForest]
 
 
 class Cell:  # Наследуемый класс обычной клетки на поле

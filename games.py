@@ -214,16 +214,18 @@ class RunningInForest(MiniGame):  # Класс мини-игры "Бегущий
         width, height = screen_size  # Размеры экрана
         all_sprites = pg.sprite.Group()  # Иницилиализация группы спрайтов
         # Инициализация двух динамических задних фонов
-        bg_1 = DynamicBackground(RunningInForest.background_img, [0, 0])
-        bg_2 = DynamicBackground(RunningInForest.background_img_reverse, [bg_1.image.get_width(), 0])
+        bg_1 = DynamicBackground(RunningInForest.background_img,
+                                 [0, 0], size=screen_size)
+        bg_2 = DynamicBackground(RunningInForest.background_img_reverse,
+                                 [bg_1.image.get_width(), 0], size=screen_size)
         # Корректировка размеров и позиционирование героя
-        self.hero.resize(100, 100)
-        self.hero.rect.x = int(width * 0.1)
-        self.hero.rect.y = int(height * 0.8)
+        self.hero.adjust((100, 100), int(width * 0.1), int(height * 0.8))
+        hero_bottom = self.hero.rect.bottom
         all_sprites.add(bg_1, bg_2, self.hero)
         fires = pg.sprite.Group()  # Группа препятствий
         tile_velocity = 10  # Скорость приближения препятствий к герою
-        ParticlesForRunningInForest(tile_velocity, fires, screen_size)  # Инициализация 1-го спрайта
+        ParticlesForRunningInForest(tile_velocity, fires,
+                                    screen_size, hero_bottom)  # Инициализация 1-го спрайта
         score = 0  # Текущий счёт
         goal = choice([15000, 20000, 25000])  # Возможные цели счёта
         state = False  # Переменная паузы
@@ -270,7 +272,7 @@ class RunningInForest(MiniGame):  # Класс мини-игры "Бегущий
                 tile_velocity += 1
             if spawn_tick == fps * 2.5:
                 spawn_tick = 0
-                ParticlesForRunningInForest(tile_velocity, fires, screen_size)
+                ParticlesForRunningInForest(tile_velocity, fires, screen_size, hero_bottom)
             all_sprites.update()
             all_sprites.draw(self.screen)
             fires.update(self.hero)
@@ -292,7 +294,6 @@ class RunningInForest(MiniGame):  # Класс мини-игры "Бегущий
                                           int(self.screen_height * 0.005)))
             if score >= goal:
                 callback = 'victory'
-                sound = self.victory_sound
                 sound = self.end_game(self.font, callback)
                 running = False
             pg.display.update()
