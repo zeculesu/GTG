@@ -237,13 +237,13 @@ class Field:  # Основное клетчатое поле
         self.freeze()
         dice.show()
 
-    def get_size(self) -> tuple[int, int]:  # Возвращает размеры поля в пикселях
+    def get_size(self) -> tuple:  # Возвращает размеры поля в пикселях
         return self.width, self.height
 
-    def get_indent(self) -> tuple[int, int]:  # Возвращает координаты поля
+    def get_indent(self) -> tuple:  # Возвращает координаты поля
         return self.x, self.y
 
-    def get_current_cell(self) -> list[int, int]:  # Возвращает координаты текущей клетки
+    def get_current_cell(self) -> list:  # Возвращает координаты текущей клетки
         return self.current_cell
 
     def change_language(self) -> None:  # Меняет текущий язык

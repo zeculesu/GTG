@@ -1,5 +1,4 @@
 import os
-from loader import Loader
 import pygame as pg
 from PIL import Image, ImageFilter
 
@@ -54,7 +53,7 @@ class EndScreen:
         self.screen = screen
         self.hero = hero
         self.field_width, self.field_height = field.get_size()
-        self.field_x, self.field_y = field.get_indent()  # Получение координат поля
+        self.field_x, self.field_y = field.get_indent()
         self.state = state  # статус победа или поражение
         self.language = language
         self.font = Loader.load_font(EndScreen.fontname, 60)
