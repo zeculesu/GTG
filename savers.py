@@ -1,4 +1,5 @@
 import os
+from loader import Loader
 import pygame as pg
 from PIL import Image, ImageFilter
 
@@ -83,6 +84,7 @@ class EndScreen:
         self.blur_surf(screen)  # блюрим экран
         self.update()
 
+    @staticmethod
     def blur_surf(screen: pg.Surface) -> None:
         in_path = os.path.join('data', 'temp.png')
         pg.image.save(screen, in_path)  # сохраняем скрин в формате png

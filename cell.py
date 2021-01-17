@@ -10,6 +10,8 @@ GAMES = [StarFall, RunningInForest, MagicMaze]
 
 
 class Cell:  # Наследуемый класс обычной клетки на поле
+    color = '#ff4573'
+
     def __init__(self, hero: FieldHero):
         self.hero = hero  # Герой, стоящий на поле
         self.is_active = True  # Булево значение активности клетки - клетка активируется только 1 раз
@@ -21,9 +23,14 @@ class Cell:  # Наследуемый класс обычной клетки н�
         if self.is_active:
             self.hero.add_quantity(cell)
 
+    def get_color(self) -> str:  # Возвращает цвет клетки
+        return self.color
+
 
 class Trap(Cell):  # Клетка Капкан
-    def minus_health(self):
+    color = 'orange'
+
+    def activate(self):
         if self.is_active:
             self.hero.lives -= 1
             self.number_of_special_cells(self.__class__.__name__.lower())
@@ -31,7 +38,9 @@ class Trap(Cell):  # Клетка Капкан
 
 
 class Health(Cell):  # Клетка Здоровье
-    def add_health(self):
+    color = 'green'
+
+    def activate(self):
         if self.is_active:
             self.hero.lives += 1
             self.number_of_special_cells(self.__class__.__name__.lower())
@@ -39,6 +48,8 @@ class Health(Cell):  # Клетка Здоровье
 
 
 class Task(Cell):  # Клетка Задание
+    color = 'yellow'
+
     def start_game(self, surface: Surface, field, last_game: Union[StarFall.__class__,
                                                                    RunningInForest.__class__,
                                                                    MagicMaze.__class__]):
@@ -53,6 +64,8 @@ class Task(Cell):  # Клетка Задание
 
 
 class Teleport(Cell):  # Клетка Телепорт
+    color = 'purple'
+
     def __init__(self, i: int, j: int, hero: FieldHero, top: int, left: int):
         self.i = i  # Координата текущей клетки по высоте
         self.j = j  # Координата текущей клетки по ширине

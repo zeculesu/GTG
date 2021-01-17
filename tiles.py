@@ -59,8 +59,8 @@ class FieldMagicMaze:
         x, y = self.current_cell
         if event.type == pg.KEYDOWN:
             if event.key == pg.K_LEFT or event.key == pg.K_a:
-                if self.hero.get_side() != 'left':
-                    self.hero.change_side('left')
+                if self.hero.get_side() != 'x':
+                    self.hero.change_side('x')
                 if self.images[x - 1][y].tile_type != 'wall':
                     self.current_cell[0] -= 1
                     self.lambd[0] += 1
