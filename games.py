@@ -247,7 +247,7 @@ class RunningInForest(MiniGame):
             if score >= goal:
                 callback = 'victory'
                 sound = self.victory_sound
-                self.end_game(self.font, callback)
+                sound = self.end_game(self.font, callback)
                 running = False
             pg.display.update()
             clock.tick(fps)

@@ -1,12 +1,12 @@
 import os
-from loader import Loader
 import pygame as pg
 from PIL import Image, ImageFilter
 
 from hero import Hero
+from loader import Loader
 
 
-class StartScreen(Loader):
+class StartScreen(Loader):  # заставка
     @staticmethod
     def show() -> bool:
         pg.init()
@@ -15,7 +15,7 @@ class StartScreen(Loader):
         pg.display.set_caption('Goof the Game')
         fon = Loader.load_image('fon.png')
         in_alpha = 0
-        fon.set_alpha(in_alpha)
+        fon.set_alpha(in_alpha)  # для постепенного появления картинки
         pg.display.set_icon(Loader.load_image('icon.png'))
         screen.blit(fon, (0, 0))
         pg.display.flip()
@@ -31,17 +31,17 @@ class StartScreen(Loader):
             for event in pg.event.get():
                 if event.type == pg.QUIT:
                     running = False
-                elif event.type == pg.KEYDOWN:
+                elif event.type == pg.KEYDOWN:  # по нажатию переходим на основной экран
                     start_music.fadeout(1000)
                     proceeded = True
                     running = False
-            if in_alpha < 100:
+            if in_alpha < 100:  # добавляем яркость картинке
                 in_alpha += 2
                 fon.set_alpha(in_alpha)
                 screen.blit(fon, (0, 0))
                 pg.display.flip()
                 clock.tick(fps)
-        start_music.stop()
+        start_music.stop()  # останавливаем музыку
         pg.quit()
         return proceeded
 
@@ -54,10 +54,11 @@ class EndScreen:
         self.hero = hero
         self.field_width, self.field_height = field.get_size()
         self.field_x, self.field_y = map(int, (field.left, field.top))
-        self.state = state
+        self.state = state  # статус победа или поражение
         self.language = language
         self.font = Loader.load_font(EndScreen.fontname, 60)
 
+        # словарь для мультиязычности
         self.translate = {'en': {'victory': ('VICTORY', 0.06, 'main'),
                                  'loss': ('LOSS', 0.06, 'main'),
                                  'passed': ('You passed %d cells', 0.2, 'first'),
@@ -79,28 +80,16 @@ class EndScreen:
                                  'inscription': (('Чтобы начать заново', 'нажмите пробел'),
                                                  (0.85, 0.9), 'second')}}
 
-        self.blur_surf(screen)
-        self.clear_temp_files()
+        self.blur_surf(screen)  # блюрим экран
         self.update()
 
-    @staticmethod
     def blur_surf(screen: pg.Surface) -> None:
         in_path = os.path.join('data', 'temp.png')
-        out_path = os.path.join('data', 'temp2.png')
-        pg.image.save(screen, in_path)
-        pil_img = Image.open(in_path)
-        pil_img = pil_img.filter(ImageFilter.GaussianBlur(radius=6))
-        pil_img.save(out_path)
-        screen.blit(pg.image.load(out_path), screen.get_rect())
-        EndScreen.clear_temp_files()
-
-    @staticmethod
-    def clear_temp_files() -> None:
-        env = os.listdir(os.path.join('data'))
-        for filename in ('temp.png', 'temp2.png'):
-            if filename in env:
-                del_path = os.path.join('data', filename)
-                os.remove(del_path)
+        pg.image.save(screen, in_path)  # сохраняем скрин в формате png
+        pil_img = Image.open(in_path).filter(ImageFilter.GaussianBlur(radius=6))  # добавляем блюр
+        pil_img.save(in_path)
+        screen.blit(pg.image.load(in_path), screen.get_rect())  # блитим новое изображение
+        os.remove(os.path.join('data', 'temp.png'))  # удаляем это файл
 
     def update(self):
         cells = self.hero.get_quantity()
@@ -126,7 +115,7 @@ class EndScreen:
                 self.screen.blit(text, (x, y))
 
 
-class StaticBackground(pg.sprite.Sprite, Loader):
+class StaticBackground(pg.sprite.Sprite, Loader):  # статичный фон
     def __init__(self, image_filename, position, size=None):
         pg.sprite.Sprite.__init__(self)  # call Sprite initializer
         img = self.load_image(image_filename)
@@ -137,12 +126,12 @@ class StaticBackground(pg.sprite.Sprite, Loader):
         self.rect.x, self.rect.y = position
 
 
-class DynamicBackground(StaticBackground):
+class DynamicBackground(StaticBackground):  # двигающийся фон (для бегущего в лесу)
     def __init__(self, image_filename, position, size=None):
         super(DynamicBackground, self).__init__(image_filename, position, size)
-        self.velocity = 6
+        self.velocity = 6  # скорость движения фона
 
     def update(self):
-        self.rect.x -= self.velocity
-        if self.rect.x <= -self.image.get_width():
+        self.rect.x -= self.velocity  # двигаем фон влево
+        if self.rect.x <= -self.image.get_width():  # если он ушёл до конца влево, то переставляем картинку в начало
             self.rect.x = self.image.get_width()
