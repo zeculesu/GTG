@@ -94,8 +94,8 @@ class StarFallHero(TaskHero):
         if event.key == pg.K_LEFT or event.key == pg.K_a:
             if self.rect.x - self.step >= self.image.get_width() * 0.1:
                 self.rect.x -= self.step
-                if self.get_side() != 'left':
-                    self.change_side('left')
+                if self.get_side() != 'x':
+                    self.change_side('x')
         elif event.key == pg.K_RIGHT or event.key == pg.K_d:
             if self.rect.x + self.step <= screen_width - self.image.get_width():
                 self.rect.x += self.step

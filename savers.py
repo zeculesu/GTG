@@ -53,7 +53,7 @@ class EndScreen:
         self.screen = screen
         self.hero = hero
         self.field_width, self.field_height = field.get_size()
-        self.field_x, self.field_y = map(int, (field.left, field.top))
+        self.field_x, self.field_y = map(int, (field.x, field.y))
         self.state = state
         self.language = language
         self.font = Loader.load_font(EndScreen.fontname, 60)
@@ -80,27 +80,17 @@ class EndScreen:
                                                  (0.85, 0.9), 'second')}}
 
         self.blur_surf(screen)
-        self.clear_temp_files()
         self.update()
 
     @staticmethod
     def blur_surf(screen: pg.Surface) -> None:
-        in_path = os.path.join('data', 'temp.png')
-        out_path = os.path.join('data', 'temp2.png')
-        pg.image.save(screen, in_path)
-        pil_img = Image.open(in_path)
+        path = os.path.join('data', 'temp.png')
+        pg.image.save(screen, path)
+        pil_img = Image.open(path)
         pil_img = pil_img.filter(ImageFilter.GaussianBlur(radius=6))
-        pil_img.save(out_path)
-        screen.blit(pg.image.load(out_path), screen.get_rect())
-        EndScreen.clear_temp_files()
-
-    @staticmethod
-    def clear_temp_files() -> None:
-        env = os.listdir(os.path.join('data'))
-        for filename in ('temp.png', 'temp2.png'):
-            if filename in env:
-                del_path = os.path.join('data', filename)
-                os.remove(del_path)
+        pil_img.save(path)
+        screen.blit(pg.image.load(path), screen.get_rect())
+        os.remove(os.path.join('data', 'temp.png'))
 
     def update(self):
         cells = self.hero.get_quantity()

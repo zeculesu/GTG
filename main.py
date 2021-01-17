@@ -29,7 +29,7 @@ def main():
     screen = pg.display.set_mode(SCREEN_SIZE)
     pg.display.set_caption('Goof the Game')
     all_sprites = pg.sprite.Group()
-    field = Field(screen, all_sprites)
+    field = Field(screen)
     hero = FieldHero((0, 0), field.get_indent(), all_sprites)
     dice = Dice(field.get_size(), field.get_indent(), all_sprites)
     field.start(hero, dice)
