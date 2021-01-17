@@ -195,7 +195,7 @@ class MagicMaze(MiniGame):  # Класс мини-игры "Лабиринт"
                     if self.sound_active:
                         self.click_sound.play()
                     if self.volume_btn.handle_event(event):
-                        self.field.sound_on_off()
+                        self.field.handle_sound()
                         self.sound_active = self.field.sound_is_active()
                         self.render_sound()
                 elif maze.move(event) == 'finish':
@@ -269,7 +269,7 @@ class RunningInForest(MiniGame):  # Класс мини-игры "Бегущий
                         self.click_sound.play()
                     if self.volume_btn.handle_event(event):
                         self.sound_active = not self.sound_active
-                        self.field.sound_on_off()
+                        self.field.handle_sound()
                         self.render_sound()
                 elif event.type == pg.MOUSEMOTION:
                     self.arrow.rect.x, self.arrow.rect.y = event.pos
@@ -362,7 +362,7 @@ class StarFall(MiniGame):  # Класс мини-игры "Звездопад"
                         self.click_sound.play()
                     if self.volume_btn.handle_event(event):
                         self.sound_active = not self.sound_active
-                        self.field.sound_on_off()
+                        self.field.handle_sound()
                         self.render_sound()
                 elif event.type == pg.MOUSEMOTION:
                     self.arrow.rect.x, self.arrow.rect.y = event.pos

@@ -28,7 +28,7 @@ class Field:  # Основное клетчатое поле
         self.frozen, self.finished, self.moving_finish = None, None, None
         self.current_game, self.last_game = None, None
         self.task_active = None
-        self.sound_of_on = True
+        self.sound_active = True
 
         self.language = 'en'  # Начальный язык
         self.translate = {'en': {'moves': 'Moves',  # Словарь перевода надписей
@@ -142,7 +142,7 @@ class Field:  # Основное клетчатое поле
 
     # Функция отрисовки поля
     def render(self, screen: pg.Surface, moves: int, lives: int, background) -> None:
-        if self.sound_of_on:
+        if self.sound_active:
             pg.mixer.unpause()
         else:
             pg.mixer.pause()
@@ -254,8 +254,8 @@ class Field:  # Основное клетчатое поле
     def get_language(self) -> str:  # Возвращает текущий язык
         return self.language
 
-    def sound_on_off(self):
-        self.sound_of_on = not self.sound_of_on
+    def handle_sound(self):
+        self.sound_active = not self.sound_active
 
     def sound_is_active(self) -> bool:
-        return self.sound_of_on
+        return self.sound_active

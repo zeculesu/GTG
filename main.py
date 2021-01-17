@@ -102,7 +102,7 @@ def main():
                     if language_btn.handle_event(event):
                         field.change_language()
                     elif volume_btn.handle_event(event):
-                        field.sound_on_off()
+                        field.handle_sound()
                 if event.type == pg.MOUSEMOTION:
                     arrow.rect.x, arrow.rect.y = pg.mouse.get_pos()
                 elif event.type == pg.KEYDOWN:
