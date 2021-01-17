@@ -106,6 +106,7 @@ class RunningInForestHero(TaskHero):
         # Служебные переменные, падает ли герой или прыгает
         self.is_falling, self.is_jumping = False, False
         self.flying = 0  # Время, которое летит герой
+        self.height, self.bottom = None, None
 
     def make_move(self, event: pg.event.Event) -> None:  # Передвижение
         if event.key == pg.K_UP or event.key == pg.K_w:
@@ -113,10 +114,17 @@ class RunningInForestHero(TaskHero):
                 self.is_jumping = True
                 self.rect.y -= 25
 
+    def adjust(self, size: tuple, x: int, y: int) -> None:
+        self.resize(*size)
+        self.rect.x = x
+        self.rect.y = y
+        self.bottom = self.rect.bottom
+        self.height = size[1]
+
     def update(self) -> None:  # Переписанная функция update в pg.sprite.Sprite
         if self.is_jumping:
             self.rect.y -= 10
-            if self.rect.y <= 358:
+            if self.rect.y <= int(self.height * 3.5):
                 self.is_jumping = False
                 self.flying += 1
         if self.flying > 0:
@@ -126,5 +134,5 @@ class RunningInForestHero(TaskHero):
                 self.is_falling = True
         if self.is_falling:
             self.rect.y += 5
-            if self.rect.y >= 608:
+            if self.rect.bottom >= self.bottom:
                 self.is_falling = False

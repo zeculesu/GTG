@@ -96,12 +96,13 @@ class ParticlesForRunningInForest(pg.sprite.Sprite):
     fire_sound = Loader.load_sound('fire.wav')
     fire_sound.set_volume(0.05)
 
-    def __init__(self, velocity: int, group: pg.sprite.AbstractGroup, screen_size: tuple):
+    def __init__(self, velocity: int, group: pg.sprite.AbstractGroup,
+                 screen_size: tuple, hero_bottom: int):
         super(ParticlesForRunningInForest, self).__init__()
         self.screen_width, self.screen_height = screen_size
         self.image = ParticlesForRunningInForest.schrub
         self.rect = self.image.get_rect()
-        self.rect.y = int(self.screen_width * 0.8) - self.image.get_height() // 2
+        self.rect.bottom = hero_bottom
         other_sprites = group.sprites()
         length = velocity * 50
         x = None

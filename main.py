@@ -5,9 +5,10 @@ from hero import FieldHero
 from dice import Dice
 from savers import StartScreen, EndScreen, StaticBackground
 
-SCREEN_SIZE = 760, 760
+SCREEN_SIZE = 1280, 720  # Константа разрешения экрана
 
 
+# Функция конца игры
 def finish(screen: pg.Surface, field: Field, hero: FieldHero,
            all_sprites: pg.sprite.AbstractGroup, bg: StaticBackground,
            state: str, sound: pg.mixer.Sound) -> None:
@@ -21,13 +22,15 @@ def finish(screen: pg.Surface, field: Field, hero: FieldHero,
     EndScreen(screen, hero, field, state, field.get_language())
 
 
+# Основная функция
 def main():
-    proceeded = StartScreen.show()
+    proceeded = StartScreen.show()  # Нажал ли любую кнопку игрок?
     if not proceeded:
         return
     pg.init()
     screen = pg.display.set_mode(SCREEN_SIZE)
     pg.display.set_caption('Goof the Game')
+    # Спрайты, класс и группы спрайтов
     all_sprites = pg.sprite.Group()
     field = Field(screen)
     hero = FieldHero((0, 0), field.get_indent(), all_sprites)
@@ -38,9 +41,11 @@ def main():
     bg = StaticBackground('end_screen.png', [0, 0], size=SCREEN_SIZE)
     screen.fill((50, 41, 88))
     pg.display.set_icon(Loader.load_image('icon.png'))
+    # Курсор
     arrow = pg.sprite.Sprite(all_sprites)
     arrow.image = Loader.load_image('arrow.png')
     arrow.rect = arrow.image.get_rect()
+    # Звуки
     click_sound = Loader.load_sound('COOL CLICK.wav')
     click_sound.set_volume(0.25)
     victory_sound = Loader.load_sound('victory.wav')
@@ -48,6 +53,7 @@ def main():
     loss_sound = Loader.load_sound('loss.wav')
     loss_sound.set_volume(0.1)
     current_sound = None
+    # Музыка
     music = Loader.load_sound('main.wav')
     music_volume = 0.025
     music.set_volume(music_volume)
@@ -57,7 +63,7 @@ def main():
     fps = 60
     dice_tick = 0
     while running:
-        if field.task_is_active():
+        if field.task_is_active():  # Переход в игровой цикл мини-игры
             music.set_volume(0)
             callback = field.current_game.loop(SCREEN_SIZE)
             if callback == 'closeEvent':
@@ -74,7 +80,7 @@ def main():
                     dice.hide(sound=False)
                     current_sound = loss_sound
                     finish(screen, field, hero, all_sprites, bg, callback, current_sound)
-        else:
+        else:  # Цикл на поле
             for event in pg.event.get():
                 if event.type == pg.QUIT:
                     running = False
