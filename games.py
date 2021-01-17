@@ -7,17 +7,18 @@ from savers import StaticBackground, DynamicBackground, EndScreen
 from tiles import Comet, Star, ParticlesForRunningInForest, FieldMagicMaze
 
 
-class MiniGame:
-    start_img = 'mini_game.jpg'
-    fontname = 'Special Elite.ttf'
+class MiniGame:  # Родительский класс всех мини-игр
+    start_img = 'mini_game.jpg'  # Изображение заставки
+    fontname = 'Special Elite.ttf'  # Основной шрифт
 
-    def __init__(self, field, surface: pg.Surface, live):
-        self.lives = live
+    def __init__(self, field, surface: pg.Surface, lives: int):
+        self.lives = lives  # Жизни героя
         self.hero = None
-        self.field = field
-        self.screen = surface
-        self.screen_width, self.screen_height = surface.get_size()
+        self.field = field  # Экземпляр поля
+        self.screen = surface  # Экран
+        self.screen_width, self.screen_height = surface.get_size()  # Размеры экрана
 
+        # Перевод всех возможных надписей
         self.translate = {'en': {'stars': 'Stars',
                                  'lives': 'Lives',
                                  'pause': 'Pause',
@@ -42,29 +43,33 @@ class MiniGame:
                                      'MagicMaze': 'Лабиринт'
                                  },
                                  'inscription': 'Нажмите пробел'}}
+        # Значения громкости для разных звуковых файлов
         self.music_data = {'minigame_1.wav': {'volume': 0.1},
                            'minigame_2.wav': {'volume': 0.05}}
 
-        self.language = self.field.get_language()
-        self.running = False
-        self.game_over = ''
+        self.language = self.field.get_language()  # Текущий язык
+        self.running = False  # Булево значение завершённости игры
+        self.game_over = ''  # Значение победы или поражения в виде строки
+        # Далее служебные переменные
         self.music = None
         self.victory_sound, self.loss_sound = None, None
         self.font = None
 
-    def start(self):
+    def start(self):  # Функция начала игры
+        # Определение фоновой музыки
         filename = choice(['minigame_1.wav', 'minigame_2.wav'])
         self.music = Loader.load_sound(filename)
         self.music.play(1000)
         self.music.set_volume(self.music_data[filename]['volume'])
+        # Звуки победы и поражения
         self.victory_sound = Loader.load_sound('victory.wav')
         self.victory_sound.set_volume(0.1)
         self.loss_sound = Loader.load_sound('loss.wav')
         self.loss_sound.set_volume(0.1)
-        self.font = Loader.load_font(MiniGame.fontname, 60)
-        self.running = True
+        self.font = Loader.load_font(MiniGame.fontname, 60)  # Общеиспользуемый шрифт
+        self.running = True  # Статус начала игры
 
-    def end_loop(self, sound: pg.mixer.Sound) -> str:
+    def end_loop(self, sound: pg.mixer.Sound) -> str:  # Цикл выхода из игры по нажатию пробела
         callback = None
         while self.running and self.game_over:
             for event in pg.event.get():
@@ -78,6 +83,7 @@ class MiniGame:
                         self.running = False
         return callback
 
+    # Окончание игры и конечная заставка
     def end_game(self, font: pg.font.Font, state: str, color: str = '#ff4573') -> pg.mixer.Sound:
         sound = self.victory_sound if state == 'victory' else self.loss_sound
         sound.play()
@@ -95,6 +101,7 @@ class MiniGame:
         self.music.stop()
         return sound
 
+    # Цикл начальной заставки по нажатию пробела
     def start_loop(self, game_name: str, width: int) -> str:
         sprites = pg.sprite.Group()
         bg = StaticBackground(MiniGame.start_img, [0, 0],
@@ -129,22 +136,24 @@ class MiniGame:
             pg.display.flip()
 
 
-class MagicMaze(MiniGame):
+class MagicMaze(MiniGame):  # Класс мини-игры "Лабиринт"
     def __init__(self, field, surface: pg.Surface, lives: int):
         super(MagicMaze, self).__init__(field, surface, lives)
-        self.hero = Hero()
+        self.hero = Hero()  # Инициализация нового героя
 
-    def loop(self, _):
-        if self.start_loop('MagicMaze', 100) == 'closeEvent':
+    def loop(self, _):  # Игровой цикл
+        if self.start_loop('MagicMaze', 100) == 'closeEvent':  # Если на заставке игру закрыли
             return 'closeEvent'
+        # Инициализация групп спрайтов
         all_sprites = pg.sprite.Group()
         tiles_group = pg.sprite.Group()
         hero_group = pg.sprite.Group()
+        # Корректировка размеров героя
         hero_width, hero_height = 80, 80
         self.hero.resize(hero_width, hero_height)
         hero_group.add(self.hero)
-        maze = FieldMagicMaze(all_sprites, tiles_group, self.hero)
-        self.hero.rect = self.hero.image.get_rect(
+        maze = FieldMagicMaze(all_sprites, tiles_group, self.hero)  # Инициализация поля лабиринта
+        self.hero.rect = self.hero.image.get_rect(  # Перемещение героя в точку начала
             bottomright=(hero_width * (maze.current_cell[0] + 1),
                          hero_height * (maze.current_cell[1] + 1)))
         groups = [tiles_group, hero_group]
@@ -165,37 +174,39 @@ class MagicMaze(MiniGame):
             clock.tick(fps)
             if not running:
                 sound = self.end_game(self.font, 'victory', '#ebebeb')
-        return self.end_loop(sound)
+        return self.end_loop(sound)  # Возвращает callback из конечного цикла
 
 
-class RunningInForest(MiniGame):
-    background_img = 'forest_long.png'
-    background_img_reverse = 'forest_long_reverse.png'
+class RunningInForest(MiniGame):  # Класс мини-игры "Бегущий по лесу"
+    background_img = 'forest_long.png'  # Картинка заднего фона
+    background_img_reverse = 'forest_long_reverse.png'  # Отзеркаленная картинка заднего фона
 
     def __init__(self, field, surface: pg.Surface, lives: int):
         super(RunningInForest, self).__init__(field, surface, lives)
-        self.hero = RunningInForestHero()
+        self.hero = RunningInForestHero()  # Инициализация героя для этой мини-игры
 
-    def loop(self, screen_size: tuple):
+    def loop(self, screen_size: tuple):  # Игровой цикл
         if self.start_loop('RunningInForest', 70) == 'closeEvent':
             return 'closeEvent'
-        width, height = screen_size
-        all_sprites = pg.sprite.Group()
+        width, height = screen_size  # Размеры экрана
+        all_sprites = pg.sprite.Group()  # Иницилиализация группы спрайтов
+        # Инициализация двух динамических задних фонов
         bg_1 = DynamicBackground(RunningInForest.background_img, [0, 0])
         bg_2 = DynamicBackground(RunningInForest.background_img_reverse, [bg_1.image.get_width(), 0])
+        # Корректировка размеров и позиционирование героя
         self.hero.resize(100, 100)
         self.hero.rect.x = int(width * 0.1)
         self.hero.rect.y = int(height * 0.8)
         all_sprites.add(bg_1, bg_2, self.hero)
-        fires = pg.sprite.Group()
-        tile_velocity = 10
-        ParticlesForRunningInForest(tile_velocity, fires, screen_size)
-        score = 0
-        goal = choice([15000, 20000, 25000])
-        state = False
-        sound = None
-        velocity_tick = 0
-        spawn_tick = 0
+        fires = pg.sprite.Group()  # Группа препятствий
+        tile_velocity = 10  # Скорость приближения препятствий к герою
+        ParticlesForRunningInForest(tile_velocity, fires, screen_size)  # Инициализация 1-го спрайта
+        score = 0  # Текущий счёт
+        goal = choice([15000, 20000, 25000])  # Возможные цели счёта
+        state = False  # Переменная паузы
+        sound = None  # Переменная звука
+        velocity_tick = 0  # Счётчик увеличения скорости
+        spawn_tick = 0  # Счётчик спавна препятствий
         fps = 80
         clock = pg.time.Clock()
         running = True
@@ -226,14 +237,13 @@ class RunningInForest(MiniGame):
                 tile_velocity += 1
             if spawn_tick == fps * 2.5:
                 spawn_tick = 0
-                print('The tile has been spawned')
                 ParticlesForRunningInForest(tile_velocity, fires, screen_size)
             all_sprites.update()
             all_sprites.draw(self.screen)
             fires.update(self.hero)
             fires.draw(self.screen)
             for elem in fires:
-                if elem.get_callback() == 'loss':
+                if elem.get_callback() == 'loss':  # Проверка на столкновение героя с препятствием
                     callback = 'loss'
                     sound = self.loss_sound
                     self.end_game(self.font, callback)
@@ -254,16 +264,17 @@ class RunningInForest(MiniGame):
         return self.end_loop(sound)
 
 
-class StarFall(MiniGame):
-    background_img = 'forest.jpg'
+class StarFall(MiniGame):  # Класс мини-игры "Звездопад"
+    background_img = 'forest.jpg'  # Изображение заднего фона
 
     def __init__(self, field, surface: pg.Surface, lives: int):
         super(StarFall, self).__init__(field, surface, lives)
-        self.hero = StarFallHero()
+        self.hero = StarFallHero()  # Инициализация героя Звездопада
 
-    def loop(self, screen_size: tuple):
-        if self.start_loop('StarFall', 120) == 'closeEvent':
+    def loop(self, screen_size: tuple):  # Игровой цикл
+        if self.start_loop('StarFall', 120) == 'closeEvent':  # -/- с другими классами мини-игр
             return 'closeEvent'
+        # Далее сходная расстановка переменных с другими мини-играми
         all_sprites = pg.sprite.Group()
         bg = StaticBackground(StarFall.background_img, [0, 0], size=screen_size)
         self.hero.resize(110, 110)
@@ -273,9 +284,9 @@ class StarFall(MiniGame):
         self.hero.set_step(10)
         all_sprites.add(bg, self.hero)
         stars = pg.sprite.Group()
-        for _ in range(3):
+        for _ in range(3):  # Первый спавн комет
             Comet(stars, screen_size)
-        for _ in range(1):
+        for _ in range(1):  # Первый спавн звёздочки
             Star(stars, screen_size)
         fps = 60
         clock = pg.time.Clock()
@@ -292,7 +303,6 @@ class StarFall(MiniGame):
                     if event.key == pg.K_SPACE:
                         state = not state
                         EndScreen.blur_surf(self.screen)
-                        EndScreen.clear_temp_files()
                         text = 'PAUSE' if self.field.get_language() == 'en' else 'ПАУЗА'
                         self.screen.blit(self.font.render(text, True, pg.Color('#ebebeb')),
                                          (self.screen.get_width() // 2 - self.font.size('PAUSE')[0] * 0.5,
@@ -341,4 +351,4 @@ class StarFall(MiniGame):
             clock.tick(fps)
             pg.event.pump()
             pg.display.flip()
-        return self.end_loop(sound)
+        return self.end_loop(sound)  # Возвращение callback из конечного цикла
