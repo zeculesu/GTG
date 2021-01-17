@@ -3,7 +3,7 @@ from loader import Loader
 
 
 class Hero(pg.sprite.Sprite, Loader):  # Родительский класс героя
-    img_filename = 'hero_3.png'
+    img_filename = 'hero.png'
 
     def __init__(self):
         self.image = None

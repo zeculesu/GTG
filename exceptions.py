@@ -8,3 +8,7 @@ class FontNotFoundError(FileNotFoundError):  # Исключение ненахо
 
 class SoundNotFoundError(FileNotFoundError):  # Исключение ненахождения звука/музыки
     pass
+
+
+class ButtonInitializationError(Exception):
+    pass

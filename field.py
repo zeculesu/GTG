@@ -28,6 +28,7 @@ class Field:  # Основное клетчатое поле
         self.frozen, self.finished, self.moving_finish = None, None, None
         self.current_game, self.last_game = None, None
         self.task_active = None
+        self.sound_of_on = True
 
         self.language = 'en'  # Начальный язык
         self.translate = {'en': {'moves': 'Moves',  # Словарь перевода надписей
@@ -141,6 +142,10 @@ class Field:  # Основное клетчатое поле
 
     # Функция отрисовки поля
     def render(self, screen: pg.Surface, moves: int, lives: int, background) -> None:
+        if self.sound_of_on:
+            pg.mixer.unpause()
+        else:
+            pg.mixer.pause()
         screen.fill([255, 255, 255])  # Заполнение экрана чёрным экраном
         screen.blit(background.image, background.rect)  # Отрисовка заднего фона
         font = Loader.load_font(Field.fontname, 36)  # Инициализация шрифта
@@ -152,9 +157,6 @@ class Field:  # Основное клетчатое поле
                            self.y - int(move.get_height() * 1.5)))
         screen.blit(live, ((self.x + self.width) - live.get_width(),
                            self.y - int(live.get_height() * 1.5)))
-        image_translate = Loader.load_image('language.png')
-        screen.blit(image_translate, image_translate.get_rect(
-            bottomright=image_translate.get_size()))
         for i in range(12):
             for j in range(12):
                 cell = self.cells[i][j]
@@ -251,3 +253,9 @@ class Field:  # Основное клетчатое поле
 
     def get_language(self) -> str:  # Возвращает текущий язык
         return self.language
+
+    def sound_on_off(self):
+        self.sound_of_on = not self.sound_of_on
+
+    def sound_is_active(self) -> bool:
+        return self.sound_of_on

@@ -37,8 +37,8 @@ class Dice(pg.sprite.Sprite, Loader):  # Класс костей, использ
         self.rect.x = -1000
         self.rect.y = -1000
 
-    def handle_rotating(self):  # Убирает кубик и возвращает значение текущей картинки
-        self.hide()
+    def handle_rotating(self, sound_is_active: bool):  # Убирает кубик и возвращает значение текущей картинки
+        self.hide(sound_is_active)
         return self.images.index(self.image) + 1
 
     def rotate(self, tick: int) -> bool:  # С определённой частотой меняет сторону кубика на случайную

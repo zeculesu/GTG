@@ -117,10 +117,11 @@ class ParticlesForRunningInForest(pg.sprite.Sprite):
     def get_callback(self):
         return self.callback
 
-    def update(self, hero):
+    def update(self, hero, sound_active: bool):
         self.rect.x -= self.velocity
         if pg.sprite.collide_mask(self, hero):
-            ParticlesForRunningInForest.fire_sound.play()
+            if sound_active:
+                ParticlesForRunningInForest.fire_sound.play()
             self.callback = 'loss'
         if self.rect.x < -self.image.get_width():
             self.kill()
@@ -136,7 +137,7 @@ class ParticlesForStarFall(pg.sprite.Sprite):
         super(ParticlesForStarFall, self).__init__()
         self.image = image
         self.rect = rect
-        self.aktiv = True
+        self.active = True
         screen_width, screen_height = screen_size
         self.velocity = randint(2, 5)
         self.rect.y = -randint(self.image.get_height(),
@@ -145,15 +146,17 @@ class ParticlesForStarFall(pg.sprite.Sprite):
         self.mask = pg.mask.from_surface(self.image)
         self.callback = None
 
-    def update(self, hero):
-        if pg.sprite.collide_mask(self, hero) and self.aktiv:
-            self.aktiv = not self.aktiv
+    def update(self, hero, sound_active: bool):
+        if pg.sprite.collide_mask(self, hero) and self.active:
+            self.active = not self.active
             if isinstance(self, Comet):
                 self.callback = '-'
-                ParticlesForStarFall.comet_sound.play()
+                if sound_active:
+                    ParticlesForStarFall.comet_sound.play()
             else:
                 self.callback = '+'
-                ParticlesForStarFall.stars_sound.play()
+                if sound_active:
+                    ParticlesForStarFall.stars_sound.play()
         else:
             self.callback = None
             self.rect.y += self.velocity
