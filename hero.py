@@ -26,13 +26,13 @@ class FieldHero(Hero):
         super(FieldHero, self).__init__()
         group.add(self)
         self.resize(50, 50)  # Загружаем картинку и растягиваем под нужный размер
-        self.live, self.size_hero, self.moves, self.cells_passed = None, None, None, None
+        self.lives, self.size_hero, self.moves, self.cells_passed = None, None, None, None
         self.quantity = None
 
         self.start(current_cell, indent)
 
     def start(self, current_cell: list, indent: tuple) -> None:
-        self.live = 1
+        self.lives = 1
         self.size_hero = 50
         if self.side != 'right':
             self.change_side('right')
@@ -53,10 +53,10 @@ class FieldHero(Hero):
         self.quantity[cell] += 1
 
     def add_live(self, live: int) -> None:
-        self.live += live
+        self.lives += live
 
     def get_live(self) -> int:
-        return self.live
+        return self.lives
 
     def move_hero(self, current_cell: list, indent: tuple):
         if self.moves != 0:

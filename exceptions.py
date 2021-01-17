@@ -1,10 +1,10 @@
-class ImageNotFoundError(FileNotFoundError):
+class ImageNotFoundError(FileNotFoundError):  # Исключение ненахождения картинки
     pass
 
 
-class FontNotFoundError(FileNotFoundError):
+class FontNotFoundError(FileNotFoundError):  # Исключение ненахождения шрифта
     pass
 
 
-class MusicNotFoundError(FileNotFoundError):
+class SoundNotFoundError(FileNotFoundError):  # Исключение ненахождения звука/музыки
     pass

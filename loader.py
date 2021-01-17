@@ -1,6 +1,6 @@
 import os
 import pygame as pg
-from exceptions import ImageNotFoundError, FontNotFoundError, MusicNotFoundError
+from exceptions import ImageNotFoundError, FontNotFoundError, SoundNotFoundError
 
 
 class Loader:
@@ -27,7 +27,7 @@ class Loader:
         try:
             sound = pg.mixer.Sound(os.path.join('data', 'music', filename))
         except FileNotFoundError:
-            raise MusicNotFoundError('Не удалось загрузить звуковой файл %s' % filename)
+            raise SoundNotFoundError('Не удалось загрузить звуковой файл %s' % filename)
         return sound
 
     @staticmethod
