@@ -125,7 +125,7 @@ class Field:  # Основное клетчатое поле
                     callback = hero.move_hero(self.current_cell, (self.x, self.y))
                     if hero.get_moves() == 0:  # Если ходов не осталось - герой остановился
                         self.activate_cell(hero)  # Активация текущей клетки
-                        if hero.get_live() == 0:  # Если герой теряет последнюю жизнь
+                        if hero.get_lives() == 0:  # Если герой теряет последнюю жизнь
                             self.freeze()  # Заморозка поля
                             self.finished = True  # Статус завершения игры
                             return 'loss'

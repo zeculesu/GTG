@@ -12,7 +12,7 @@ def finish(screen: pg.Surface, field: Field, hero: FieldHero,
            all_sprites: pg.sprite.AbstractGroup, bg: StaticBackground,
            state: str, sound: pg.mixer.Sound) -> None:
     sound.play()
-    field.render(screen, hero.get_moves(), hero.get_live(), bg)
+    field.render(screen, hero.get_moves(), hero.get_lives(), bg)
     if not field.is_frozen():
         field.freeze()
     field.finished = True
@@ -64,12 +64,12 @@ def main():
                 running = False
             elif callback == 'victory':
                 music.set_volume(music_volume)
-                hero.add_live(1)
+                hero.lives -= 1
                 field.disable_task()
             elif callback == 'loss':
-                hero.add_live(-1)
+                hero.lives += 1
                 field.disable_task()
-                if hero.get_live() == 0:
+                if hero.get_lives() == 0:
                     music.set_volume(0)
                     dice.hide(sound=False)
                     current_sound = loss_sound
@@ -81,7 +81,7 @@ def main():
                 if event.type == pg.MOUSEBUTTONDOWN:
                     click_sound.play()
                     x, y = event.pos
-                    if x <= int(SCREEN_SIZE[0] * 0.05) and y <= int(SCREEN_SIZE[0] * 0.05):
+                    if x <= 40 and y <= 40:  # Получение нажатия на кнопку перевода
                         field.change_language()
                 if event.type == pg.MOUSEMOTION:
                     arrow.rect.x, arrow.rect.y = pg.mouse.get_pos()
@@ -90,7 +90,7 @@ def main():
                         if hero.get_moves() == 0 and not field.is_finished():
                             field.freeze()
                             moves = dice.handle_rotating()
-                            hero.add_moves(moves)
+                            hero.moves += moves
                         elif field.is_finished():
                             current_sound.fadeout(500)
                             music.set_volume(music_volume)
@@ -111,7 +111,7 @@ def main():
                 if rotation:
                     dice_tick = 0
             if not field.is_finished():
-                field.render(screen, hero.get_moves(), hero.get_live(), bg)
+                field.render(screen, hero.get_moves(), hero.get_lives(), bg)
                 all_sprites.update()
                 all_sprites.draw(screen)
             pg.display.flip()
