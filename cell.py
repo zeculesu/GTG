@@ -58,7 +58,7 @@ class Task(Cell):  # Клетка Задание
             games = GAMES[:last_game_idx] + GAMES[last_game_idx + 1:]
         else:
             games = GAMES[:]
-        game = choice(games)(field, surface, self.hero.get_lives())  # Инициализация игры
+        game = choice(games)(field, surface, self.hero.get_lives(), field.sound_of_on)  # Инициализация игры
         game.start()
         return game
 

@@ -34,6 +34,7 @@ class Field:  # Основное клетчатое поле
                                  'lives': 'Lives'},
                           'ru': {'moves': 'Ходы',
                                  'lives': 'Жизни'}}
+        self.sound_of_on = None
 
     def start(self, hero: FieldHero, dice: Dice) -> None:  # Функция начала игры
         if self.finish:  # Если финиш есть в служебной переменной - убрать его
@@ -44,6 +45,7 @@ class Field:  # Основное клетчатое поле
         self.frozen = True  # Булево значение замороженности поля
         self.finished = False  # Булево значение завершённости игры
         self.moving_finish = 0  # Количество перемещения финиша
+        self.sound_of_on = True
         hero.start(self.current_cell, (self.x, self.y))  # Вызов функции начала игры у героя
         dice.show()  # Вызов функции запуска костей
 
@@ -153,8 +155,16 @@ class Field:  # Основное клетчатое поле
         screen.blit(live, ((self.x + self.width) - live.get_width(),
                            self.y - int(live.get_height() * 1.5)))
         image_translate = Loader.load_image('language.png')
+        if self.sound_of_on:
+            pg.mixer.unpause()
+            image_sound = Loader.load_image('volume.png')
+        else:
+            pg.mixer.pause()
+            image_sound = Loader.load_image('mute.png')
         screen.blit(image_translate, image_translate.get_rect(
             bottomright=image_translate.get_size()))
+        screen.blit(image_sound, image_sound.get_rect(
+            bottomright=(self.screen.get_size()[0], image_sound.get_size()[1])))
         for i in range(12):
             for j in range(12):
                 cell = self.cells[i][j]
@@ -251,3 +261,6 @@ class Field:  # Основное клетчатое поле
 
     def get_language(self) -> str:  # Возвращает текущий язык
         return self.language
+
+    def sound_on_off(self):
+        self.sound_of_on = not self.sound_of_on

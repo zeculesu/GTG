@@ -60,7 +60,10 @@ def main():
     while running:
         if field.task_is_active():
             music.set_volume(0)
-            callback = field.current_game.loop(SCREEN_SIZE)
+            callback, sound = field.current_game.loop(SCREEN_SIZE)
+            pg.mouse.set_visible(False)
+            if field.sound_of_on != sound:
+                field.sound_on_off()
             if callback == 'closeEvent':
                 running = False
             elif callback == 'victory':
@@ -84,6 +87,8 @@ def main():
                     x, y = event.pos
                     if x <= 40 and y <= 40:  # Получение нажатия на кнопку перевода
                         field.change_language()
+                    if x >= screen.get_width() - 36 and y <= 40:
+                        field.sound_on_off()
                 if event.type == pg.MOUSEMOTION:
                     arrow.rect.x, arrow.rect.y = pg.mouse.get_pos()
                 elif event.type == pg.KEYDOWN:
